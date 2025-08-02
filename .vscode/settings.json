@@ -1,0 +1,54 @@
+{
+  "todohighlight.isEnable": true,
+  "todohighlight.isCaseSensitive": true,
+  "todohighlight.keywords": [
+    {
+      "text": "TODO:",
+      "color": "#FF8C00",
+      "backgroundColor": "#FFE4B5",
+      "overviewRulerColor": "#FF8C00"
+    },
+    {
+      "text": "FIXME:",
+      "color": "#FF2400",
+      "backgroundColor": "#FFB6C1",
+      "overviewRulerColor": "#FF2400"
+    },
+    {
+      "text": "NOTE:",
+      "color": "#007ACC",
+      "backgroundColor": "#E0F2FE",
+      "overviewRulerColor": "#007ACC"
+    },
+    {
+      "text": "HACK:",
+      "color": "#8B008B",
+      "backgroundColor": "#E6E6FA",
+      "overviewRulerColor": "#8B008B"
+    },
+    {
+      "text": "BUG:",
+      "color": "#DC143C",
+      "backgroundColor": "#FFDAB9",
+      "overviewRulerColor": "#DC143C"
+    }
+  ],
+  "todohighlight.include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.svelte",
+    "**/*.css",
+    "**/*.html"
+  ],
+  "todohighlight.exclude": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.vscode/**",
+    "**/.git/**"
+  ],
+  "todohighlight.maxFilesForSearch": 5120,
+  "todohighlight.toggleURI": false
+}
