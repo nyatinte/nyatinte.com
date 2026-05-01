@@ -1,8 +1,10 @@
 {
-  "name": "dotcom",
+  "name": "nyatinte.com",
+  "private": true,
   "type": "module",
   "version": "0.0.1",
   "license": "MIT",
+  "author": "Takumi Nakamura",
   "engines": {
     "node": ">=22.12.0"
   },
