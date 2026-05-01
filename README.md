@@ -1,5 +1,7 @@
 # Astro Starter Kit: Blog
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ```sh
 pnpm create astro@latest -- --template blog
 ```
