@@ -1,13 +1,10 @@
 {
   "name": "nyatinte.com",
-  "private": true,
-  "type": "module",
   "version": "0.0.1",
+  "private": true,
   "license": "MIT",
   "author": "Takumi Nakamura",
-  "engines": {
-    "node": ">=22.12.0"
-  },
+  "type": "module",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -15,7 +12,9 @@
     "astro": "astro",
     "typecheck": "astro check && tsc --noEmit",
     "lint": "oxlint",
-    "lint:fix": "oxlint --fix"
+    "lint:fix": "oxlint --fix",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.4",
@@ -26,7 +25,11 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
-    "typescript": "^6.0.3",
-    "oxlint": "1.62.0"
+    "oxfmt": "0.47.0",
+    "oxlint": "1.62.0",
+    "typescript": "^6.0.3"
+  },
+  "engines": {
+    "node": ">=22.12.0"
   }
 }
