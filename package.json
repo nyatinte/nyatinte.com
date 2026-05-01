@@ -14,7 +14,9 @@
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "fmt": "oxfmt",
-    "fmt:check": "oxfmt --check"
+    "fmt:check": "oxfmt --check",
+    "test:e2e": "playwright test",
+    "test:e2e:update": "playwright test --update-snapshots"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.4",
@@ -25,6 +27,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
+    "@playwright/test": "^1.59.1",
     "oxfmt": "0.47.0",
     "oxlint": "1.62.0",
     "typescript": "^6.0.3"
