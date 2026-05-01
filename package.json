@@ -1,9 +1,12 @@
 {
-  "name": "dotcom",
+  "name": "nyatinte.com",
+  "private": true,
   "type": "module",
   "version": "0.0.1",
+  "author": "Takumi Nakamura",
+  "license": "MIT",
   "engines": {
-    "node": ">=22.12.0"
+    "pnpm": ">=11"
   },
   "scripts": {
     "dev": "astro dev",
