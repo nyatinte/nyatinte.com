@@ -82,4 +82,18 @@ import HeaderLink from './HeaderLink.astro';
 			display: none;
 		}
 	}
+	@media (max-width: 480px) {
+		nav {
+			flex-wrap: wrap;
+			gap: 0;
+		}
+		h2 {
+			width: 100%;
+			padding: 0.5em 0;
+		}
+		.internal-links {
+			width: 100%;
+			display: flex;
+		}
+	}
 </style>
