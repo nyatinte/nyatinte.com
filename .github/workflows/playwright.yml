@@ -32,17 +32,25 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Run Playwright tests
-        run: pnpm exec playwright test --update-snapshots=missing
+        run: pnpm exec playwright test --update-snapshots
 
-      - name: Commit new snapshots if generated
+      - name: Commit snapshots if changed
+        id: snapshot-commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add e2e/
           if ! git diff --staged --quiet; then
-            git commit -m "chore(e2e): add missing playwright snapshots [skip ci]"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git commit -m "chore(e2e): update playwright snapshots [skip ci]"
             git push
           fi
+
+      - name: Fail if snapshots were updated
+        if: steps.snapshot-commit.outputs.changed == 'true'
+        run: |
+          echo "::error::スナップショットが更新されました。差分を確認して問題なければ再実行してください。"
+          exit 1
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
