@@ -31,26 +31,28 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
 
-      - name: Run Playwright tests
-        run: pnpm exec playwright test --update-snapshots
-
-      - name: Commit snapshots if changed
-        id: snapshot-commit
+      - name: Check if snapshots exist
+        id: snapshots
         run: |
+          if find e2e -name "*.png" 2>/dev/null | grep -q .; then
+            echo "exist=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exist=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Generate initial snapshots
+        if: steps.snapshots.outputs.exist == 'false'
+        run: |
+          pnpm exec playwright test --update-snapshots
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add e2e/
-          if ! git diff --staged --quiet; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            git commit -m "chore(e2e): update playwright snapshots [skip ci]"
-            git push
-          fi
+          git commit -m "chore(e2e): add initial playwright snapshots"
+          git push
 
-      - name: Fail if snapshots were updated
-        if: steps.snapshot-commit.outputs.changed == 'true'
-        run: |
-          echo "::error::スナップショットが更新されました。差分を確認して問題なければ再実行してください。"
-          exit 1
+      - name: Run Playwright tests
+        if: steps.snapshots.outputs.exist == 'true'
+        run: pnpm exec playwright test
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
