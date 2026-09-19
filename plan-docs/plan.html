@@ -1,0 +1,1123 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>実績 / 実装計画書 v1.0</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0b0d;
+        --panel: #101216;
+        --panel-2: #15181d;
+        --line: #23272e;
+        --line-soft: #1a1e24;
+        --text: #e8ebee;
+        --muted: #8a939c;
+        --accent: #38bdf8;
+        --warn: #f5a623;
+        --ok: #4ade80;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'M PLUS 1p', -apple-system, 'Hiragino Kaku Gothic ProN', sans-serif;
+        font-size: 15px;
+        line-height: 1.8;
+        -webkit-font-smoothing: antialiased;
+      }
+      body.light {
+        --bg: #fbfbfa;
+        --panel: #fff;
+        --panel-2: #f4f5f6;
+        --line: #e2e5e9;
+        --line-soft: #eef0f2;
+        --text: #14181d;
+        --muted: #5f6a74;
+        --accent: #0284c7;
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.88em;
+        background: var(--panel-2);
+        border: 1px solid var(--line-soft);
+        border-radius: 5px;
+        padding: 1px 5px;
+      }
+      pre {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 14px 16px;
+        overflow-x: auto;
+        font-size: 12.5px;
+        line-height: 1.7;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      pre code {
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: inherit;
+      }
+
+      /* ---------- layout ---------- */
+      .shell {
+        display: grid;
+        grid-template-columns: 250px minmax(0, 1fr);
+        gap: 0;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      @media (max-width: 980px) {
+        .shell {
+          grid-template-columns: 1fr;
+        }
+        nav.toc {
+          position: static !important;
+          height: auto !important;
+          border-right: none !important;
+          border-bottom: 1px solid var(--line);
+        }
+      }
+      nav.toc {
+        position: sticky;
+        top: 0;
+        align-self: start;
+        height: 100vh;
+        overflow-y: auto;
+        padding: 22px 18px 40px;
+        border-right: 1px solid var(--line);
+        font-size: 13px;
+      }
+      nav.toc .brand {
+        font-weight: 700;
+        font-size: 14px;
+        margin-bottom: 2px;
+      }
+      nav.toc .ver {
+        color: var(--muted);
+        font-size: 11.5px;
+        margin-bottom: 18px;
+      }
+      nav.toc a {
+        display: block;
+        color: var(--muted);
+        padding: 4px 0 4px 10px;
+        border-left: 2px solid transparent;
+        line-height: 1.5;
+      }
+      nav.toc a:hover {
+        color: var(--text);
+        border-left-color: var(--line);
+        text-decoration: none;
+      }
+      nav.toc a.sub {
+        padding-left: 22px;
+        font-size: 12.5px;
+      }
+      main {
+        padding: 30px 30px 120px;
+        min-width: 0;
+      }
+      @media (max-width: 640px) {
+        main {
+          padding: 22px 18px 80px;
+        }
+      }
+
+      /* ---------- header ---------- */
+      .doc-head {
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+      }
+      .doc-head h1 {
+        font-size: 26px;
+        margin: 0 0 6px;
+        line-height: 1.35;
+      }
+      .doc-head .meta {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .doc-head .toggle {
+        margin-top: 14px;
+      }
+
+      h2 {
+        font-size: 20px;
+        margin: 44px 0 14px;
+        padding-top: 10px;
+        border-top: 1px solid var(--line-soft);
+        scroll-margin-top: 16px;
+      }
+      h2 .num {
+        color: var(--accent);
+        font-size: 15px;
+        margin-right: 8px;
+        font-weight: 700;
+      }
+      h3 {
+        font-size: 15.5px;
+        margin: 26px 0 8px;
+        scroll-margin-top: 16px;
+      }
+      h4 {
+        font-size: 14px;
+        margin: 18px 0 6px;
+        color: var(--muted);
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+      p {
+        margin: 8px 0;
+      }
+      ul,
+      ol {
+        margin: 8px 0;
+        padding-left: 22px;
+      }
+      li {
+        margin: 4px 0;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13.5px;
+        margin: 12px 0;
+      }
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        background: var(--panel-2);
+        font-weight: 700;
+        font-size: 12.5px;
+        white-space: nowrap;
+      }
+      td.nowrap {
+        white-space: nowrap;
+      }
+
+      .callout {
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--accent);
+        border-radius: 10px;
+        background: var(--panel);
+        padding: 12px 16px;
+        margin: 14px 0;
+        font-size: 13.5px;
+      }
+      .callout.warn {
+        border-left-color: var(--warn);
+      }
+      .callout.ok {
+        border-left-color: var(--ok);
+      }
+      .callout .t {
+        font-weight: 700;
+        font-size: 12.5px;
+        letter-spacing: 0.04em;
+        margin-bottom: 4px;
+      }
+      .callout.warn .t {
+        color: var(--warn);
+      }
+      .callout.ok .t {
+        color: var(--ok);
+      }
+      .callout p:first-of-type {
+        margin-top: 0;
+      }
+      .callout p:last-child {
+        margin-bottom: 0;
+      }
+
+      .badge {
+        display: inline-block;
+        font-size: 10.5px;
+        font-weight: 700;
+        border-radius: 4px;
+        padding: 0 6px;
+        vertical-align: 1.5px;
+        margin-left: 6px;
+        letter-spacing: 0.04em;
+      }
+      .badge.check {
+        color: var(--warn);
+        border: 1px solid rgba(245, 166, 35, 0.55);
+      }
+      .badge.conf {
+        color: var(--muted);
+        border: 1px solid var(--line);
+        font-weight: 500;
+      }
+
+      /* ---------- diagram ---------- */
+      .diagram {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--panel);
+        padding: 18px;
+        margin: 14px 0;
+        font-size: 12.5px;
+      }
+      .diagram .zone {
+        border: 1px dashed var(--line);
+        border-radius: 10px;
+        padding: 12px;
+        margin: 8px 0;
+      }
+      .diagram .zone > .zlabel {
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .node {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel-2);
+        padding: 8px 12px;
+        flex: 1;
+        min-width: 140px;
+      }
+      .node b {
+        display: block;
+        font-size: 13px;
+      }
+      .node span {
+        color: var(--muted);
+        font-size: 11.5px;
+      }
+      .arrow {
+        text-align: center;
+        color: var(--muted);
+        font-size: 11px;
+        padding: 4px 0;
+      }
+
+      /* ---------- og preview ---------- */
+      .og {
+        position: relative;
+        width: 100%;
+        max-width: 560px;
+        aspect-ratio: 1200 / 630;
+        container-type: inline-size;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background:
+          radial-gradient(90% 130% at 0% 0%, rgba(56, 189, 248, 0.1), transparent 55%),
+          linear-gradient(180deg, #0d1014, #08090b);
+        color: #e8ebee;
+        margin: 12px 0;
+      }
+      .og .abs {
+        position: absolute;
+        inset: 0;
+        padding: 5.4cqw 5.6cqw 5cqw;
+        display: flex;
+        flex-direction: column;
+        border-left: 0.6cqw solid rgba(56, 189, 248, 0.7);
+      }
+      .og .top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .og .mark {
+        display: flex;
+        align-items: center;
+        gap: 1.4cqw;
+        font-size: 1.9cqw;
+        font-weight: 700;
+      }
+      .og .mark i {
+        width: 2.8cqw;
+        height: 2.8cqw;
+        border-radius: 0.6cqw;
+        background: linear-gradient(135deg, #38bdf8, #7c3aed);
+        display: block;
+      }
+      .og .mark span {
+        color: #7c868f;
+        font-weight: 400;
+      }
+      .og .date {
+        font-size: 1.85cqw;
+        color: #7c868f;
+      }
+      .og .mid {
+        margin-top: auto;
+        margin-bottom: auto;
+      }
+      .og .title {
+        font-size: 4cqw;
+        font-weight: 700;
+        line-height: 1.32;
+      }
+      .og .summary {
+        margin-top: 1.9cqw;
+        font-size: 2.15cqw;
+        color: #8b949c;
+        line-height: 1.55;
+      }
+      .og .bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .og .tags {
+        display: flex;
+        gap: 1cqw;
+      }
+      .og .tags span {
+        font-size: 1.7cqw;
+        color: #a4adb5;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 999px;
+        padding: 0.45cqw 1.5cqw;
+      }
+      .og .user {
+        display: flex;
+        align-items: center;
+        gap: 1.1cqw;
+        font-size: 1.85cqw;
+      }
+      .og .user .av {
+        width: 3.4cqw;
+        height: 3.4cqw;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #38bdf8, #7c3aed 60%, #f91880);
+        display: grid;
+        place-items: center;
+        font-size: 1.4cqw;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      .mocks {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+        gap: 10px;
+        margin: 12px 0;
+      }
+      .mocks a {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--panel);
+        padding: 12px 14px;
+        display: block;
+      }
+      .mocks a b {
+        display: block;
+        color: var(--text);
+        font-size: 13.5px;
+      }
+      .mocks a span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .toc-toggle {
+        font-family: inherit;
+        font-size: 12.5px;
+        padding: 6px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+      }
+      .toc-toggle:hover {
+        color: var(--text);
+      }
+
+      hr {
+        border: none;
+        border-top: 1px solid var(--line-soft);
+        margin: 30px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <nav class="toc">
+        <div class="brand">実績 / 実装計画書</div>
+        <div class="ver">v1.0 · 2026-09-19</div>
+        <a href="#s1">1. プロダクト</a>
+        <a href="#s2">2. 決定事項サマリ</a>
+        <a href="#s3">3. 技術スタック</a>
+        <a href="#s4">4. アーキテクチャ</a>
+        <a href="#s5">5. データモデル</a>
+        <a href="#s6">6. ルーティング / 画面</a>
+        <a href="#s7">7. 管理 API / MCP</a>
+        <a href="#s8">8. OGP 生成</a>
+        <a href="#s9">9. 非機能</a>
+        <a href="#s10">10. 実装フェーズ</a>
+        <a href="#s11">11. テスト / CI</a>
+        <a href="#s12">12. 未決とリスク</a>
+        <a href="#s13">13. 受け入れ条件</a>
+        <a href="#s14">14. レビュー観点</a>
+        <a href="#s15">15. モック一覧</a>
+      </nav>
+
+      <main>
+        <div class="doc-head">
+          <h1>実績 / 実装計画書</h1>
+          <div class="meta">
+            v1.0 · 2026-09-19 · 対象: <code>nyatinte.com/done</code> · 対象読者: 自分（レビュー用）
+          </div>
+          <div class="toggle">
+            <button class="toc-toggle" id="theme">ライト / ダーク</button>
+          </div>
+        </div>
+
+        <div class="callout">
+          <div class="t">この計画書の読み方</div>
+          <p>
+            決定は基本的に私（エージェント）が埋めています。<span class="badge check">要確認</span>
+            が付いたものは自信が80%以下だった箇所なので、そこだけ重点的に見てください。判断が変わったら、その場で言ってもらえれば差し替えます。
+          </p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 id="s1"><span class="num">1</span>プロダクト</h2>
+
+        <h3>一文で</h3>
+        <p><b>書く前に需要が分かる、タイムライン型の実績ログ。</b></p>
+
+        <h3>背景と課題</h3>
+        <ul>
+          <li>すべての成果を長いブログ記事に仕上げるコストが、AI時代に見合わなくなっている。</li>
+          <li>一方で、日々やったことや技術的な成果は公開可能な形で残しておきたい。</li>
+          <li>PC・スマホ・AIエージェントのどこからでも、短時間で記録したい。</li>
+        </ul>
+
+        <h3>ゴール</h3>
+        <ul>
+          <li>タイトルと一言だけで実績を公開でき、1件を1分以内で登録できる。</li>
+          <li>時系列で誰でも眺められ、タグで絞り込める。</li>
+          <li>需要や気分が乗った実績に、後から Markdown の詳細を足せる。</li>
+          <li>MCP から追加・編集・削除・取得ができる。</li>
+          <li>X に貼ったときに、実績カードとして映える OGP が出る。</li>
+        </ul>
+
+        <h3>MVP でやらないこと</h3>
+        <ul>
+          <li><b>プッシュ（匿名リアクション）</b>。トラフィックが無いうちは信号として成立せず、実装が一番重いため v1.1 に回す。データモデルに Reaction は作らない。</li>
+          <li>やる宣言（未達成フラグ）。</li>
+          <li>下書き・非公開状態。作成は即公開のみ。</li>
+          <li>階級（GOLD / SILVER / BRONZE）やレア度。完了や分布の概念が無く、出すと嘘になる。</li>
+          <li>投稿用 Web 管理画面。投稿は MCP 経由のみ。</li>
+          <li>閲覧者アカウント、フォロー、コメント。</li>
+          <li>通知、リッチテキスト編集、全文検索、画像アップロード。</li>
+        </ul>
+
+        <h3>ユーザー</h3>
+        <table>
+          <tr><th>役割</th><th>誰</th><th>できること</th></tr>
+          <tr>
+            <td>投稿者</td>
+            <td>本人1名のみ</td>
+            <td>MCP 経由で作成・取得・編集・削除・復元・一覧取得</td>
+          </tr>
+          <tr>
+            <td>閲覧者</td>
+            <td>不特定多数</td>
+            <td>ログイン不要。一覧・詳細の閲覧、タグ絞り込み、X への共有</td>
+          </tr>
+        </table>
+
+        <h3>用語</h3>
+        <table>
+          <tr><th>用語</th><th>意味</th></tr>
+          <tr><td>実績</td><td>完了・経験・制作したことを表す1件の記録</td></tr>
+          <tr><td>詳細</td><td>実績に後から足す Markdown 本文</td></tr>
+          <tr><td>実施日</td><td>その実績を行った日（<code>occurred_at</code>）。日付のみ</td></tr>
+          <tr><td>リビジョン</td><td>更新のたびに増える版番号。楽観ロックと OGP キャッシュに使う</td></tr>
+        </table>
+
+        <h3>名称とURL</h3>
+        <table>
+          <tr><th>項目</th><th>決定</th></tr>
+          <tr><td>サービス名</td><td>実績</td></tr>
+          <tr><td>ドメイン</td><td><code>nyatinte.com</code>（保有済み）</td></tr>
+          <tr><td>実績一覧</td><td><code>/done</code></td></tr>
+          <tr><td>実績1件</td><td><code>/done/&lt;slug&gt;</code></td></tr>
+        </table>
+        <p>
+          ホーム（<code>/</code>）はプロフィールの普通のページとして別途作り、<code>/done</code> をそこから辿れるようにする。ホームの中身はこの計画の対象外。
+        </p>
+
+        <!-- ============================================================ -->
+        <h2 id="s2"><span class="num">2</span>決定事項サマリ</h2>
+
+        <table>
+          <tr><th>論点</th><th>決定</th><th>理由</th></tr>
+          <tr><td>投稿経路</td><td>MCP のみ</td><td>投稿者は1人。認証・フォーム・CSRF の工数を削れる</td></tr>
+          <tr><td>プッシュ</td><td>作らない</td><td>信号が成立しない。実装が最も重い</td></tr>
+          <tr><td>階級・レア度</td><td>作らない</td><td>算出根拠が無い</td></tr>
+          <tr><td>下書き</td><td>作らない</td><td>即公開のみ。状態遷移を持たない</td></tr>
+          <tr><td>永続化</td><td>D1 + Drizzle</td><td>単一文の UPSERT で整合が取れる。マイグレーションが運用に乗る</td></tr>
+          <tr><td>ホスティング</td><td>Cloudflare Workers</td><td>既に保有。D1 と同居できる</td></tr>
+          <tr><td>MCP の置き場所</td><td>本体 Worker の <code>/mcp</code></td><td>デプロイ1つ。管理ロジックを二重定義しない</td></tr>
+          <tr><td>MCP の認証</td><td>Cloudflare Access（サービス トークン）</td><td>Zero Trust で閉じる。実装は Worker 側で <code>Cf-Access-Jwt-Assertion</code> を検証</td></tr>
+          <tr><td>スマホからの投稿</td><td>MVP 外</td><td>OAuth が要る。MCP が安定してから</td></tr>
+          <tr><td>タイムラインの並び</td><td>実施日の降順</td><td>「いつやったか」が主。公開日はメタとして保持のみ</td></tr>
+          <tr><td>タグの複数指定</td><td>AND</td><td>絞り込みの意図に合う</td></tr>
+          <tr><td>削除</td><td>ソフトデリート。URL は 410 Gone</td><td>共有済みリンクに誠実。復元可能</td></tr>
+          <tr><td>Markdown</td><td>読み取り時に変換 + サニタイズ</td><td>保存時に HTML を持つとサニタイズ漏れが残る</td></tr>
+          <tr><td>OGP 画像</td><td>実績カード風（案A）+ 動的生成</td><td>X に貼ることが主要な導線</td></tr>
+          <tr><td>OGP のエンブレム</td><td>使わない</td><td>階級が無いので不要。タイポと縦線で見せる</td></tr>
+          <tr><td>OGP のフォント</td><td>M PLUS 1p の 700 を1ウェイトだけ</td><td>収録範囲を削らずに済む。太字を残せる</td></tr>
+          <tr><td>アクセス解析</td><td>入れない</td><td>プライバシー。Cloudflare のログで足りる</td></tr>
+          <tr><td>ライセンス</td><td>private のまま</td><td>個人サイト</td></tr>
+        </table>
+
+        <!-- ============================================================ -->
+        <h2 id="s3"><span class="num">3</span>技術スタック</h2>
+
+        <table>
+          <tr><th>領域</th><th>採用</th><th>補足</th></tr>
+          <tr><td>フレームワーク</td><td>SvelteKit 3 (RC) + Svelte 5</td><td>設定は <code>vite.config.ts</code> に集約される<span class="badge check">要確認</span></td></tr>
+          <tr><td>言語</td><td>TypeScript 6</td><td>SvelteKit 3 の最低要件</td></tr>
+          <tr><td>ツールチェーン</td><td>Vite+（<code>vp</code>）</td><td>dev / check / test / build を1つに。Vite 8 + Rolldown を内包</td></tr>
+          <tr><td>バリデーション</td><td>valibot</td><td>MCP の入力検証とフロントの両方で使う</td></tr>
+          <tr><td>スタイル</td><td>Tailwind CSS v4 + shadcn-svelte</td><td>v4 の <code>@theme</code> 前提</td></tr>
+          <tr><td>デザインlint</td><td><code>@shadcn/lint</code></td><td>Svelte でどこまで効くかは要検証<span class="badge check">要確認</span></td></tr>
+          <tr><td>実行環境</td><td>Cloudflare Workers</td><td><code>adapter-cloudflare</code></td></tr>
+          <tr><td>DB</td><td>D1 + Drizzle ORM</td><td><code>drizzle-kit</code> でマイグレーション</td></tr>
+          <tr><td>環境変数</td><td>varlock</td><td>ローカルと本番の差分を1か所に寄せる</td></tr>
+          <tr><td>認証</td><td>Cloudflare Access</td><td><code>/mcp</code> のみ保護</td></tr>
+          <tr><td>OGP 画像</td><td>Takumi + BudouX</td><td>WASM。Chromium を載せない</td></tr>
+          <tr><td>テスト</td><td>Vitest</td><td>MVP はロジック中心。E2E は後回し</td></tr>
+          <tr><td>CI/CD</td><td>GitHub Actions + wrangler</td><td>typecheck / lint / fmt:check / test → deploy</td></tr>
+          <tr><td>パッケージ管理</td><td>pnpm</td><td>Vite+ 経由でも可</td></tr>
+        </table>
+
+        <div class="callout warn">
+          <div class="t">先行して検証すべきもの</div>
+          <p>
+            SvelteKit 3 は RC、Vite+ は beta。どちらも壊れたときに引き返せるよう、<b>素の Vite + Vitest + oxlint に落とせる構成</b>で始めます。フレームワークの便利機能に依存しすぎない書き方を守ります。
+          </p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 id="s4"><span class="num">4</span>アーキテクチャ</h2>
+
+        <div class="diagram">
+          <div class="zone">
+            <div class="zlabel">閲覧（公開）</div>
+            <div class="row">
+              <div class="node"><b>閲覧者</b><span>ログイン不要</span></div>
+              <div class="node"><b>SvelteKit Worker</b><span>SSR / 一覧 / 詳細 / 410</span></div>
+              <div class="node"><b>D1</b><span>実績・タグ・リビジョン</span></div>
+            </div>
+          </div>
+          <div class="arrow">▲ X / Slack / Discord に貼ると OGP を取得</div>
+          <div class="zone">
+            <div class="zlabel">OGP 画像</div>
+            <div class="row">
+              <div class="node"><b>OG Worker</b><span><code>/og/&lt;slug&gt;.png?v=&lt;rev&gt;</code></span></div>
+              <div class="node"><b>Takumi (WASM)</b><span>1200×630 を描画</span></div>
+              <div class="node"><b>Cache API</b><span>rev 単位で固定キャッシュ</span></div>
+              <div class="node"><b>D1</b><span>実績を読むだけ</span></div>
+            </div>
+          </div>
+          <div class="arrow">▲ MCP（Streamable HTTP）</div>
+          <div class="zone">
+            <div class="zlabel">投稿（本人のみ）</div>
+            <div class="row">
+              <div class="node"><b>Cloudflare Access</b><span>サービス トークン検証</span></div>
+              <div class="node"><b>SvelteKit Worker <code>/mcp</code></b><span>MCP ツール</span></div>
+              <div class="node"><b>D1</b><span>書き込み + リビジョン作成</span></div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Worker の分け方</h3>
+        <ul>
+          <li><b>本体 Worker</b>（SvelteKit）: 公開ページと <code>/mcp</code>。</li>
+          <li><b>OG Worker</b>: <code>/og/*</code> のみ。Takumi の WASM とフォントでバンドルが膨らむので、本体のデプロイに巻き込まない。<span class="badge check">要確認</span></li>
+          <li>両者は Workerd のルーティングで同じドメインに同居させ、D1 は同じデータベースをバインドする。</li>
+        </ul>
+
+        <h3>環境</h3>
+        <table>
+          <tr><th>環境</th><th>用途</th><th>DB</th></tr>
+          <tr><td>local</td><td><code>wrangler dev</code> ＋ ローカル D1</td><td>ローカル SQLite</td></tr>
+          <tr><td>preview</td><td>PR ごとのプレビュー</td><td>本番 D1 を読み取り専用で使う<span class="badge check">要確認</span></td></tr>
+          <tr><td>production</td><td><code>nyatinte.com</code></td><td>本番 D1</td></tr>
+        </table>
+
+        <!-- ============================================================ -->
+        <h2 id="s5"><span class="num">5</span>データモデル</h2>
+
+        <p>D1 は SQLite。真偽値・日時の専用型が無いので、<code>INTEGER</code>（0/1）と <code>TEXT</code> で持つ。</p>
+
+        <h3>Achievement</h3>
+        <table>
+          <tr><th>列</th><th>型</th><th>制約</th><th>説明</th></tr>
+          <tr><td class="nowrap">id</td><td>TEXT</td><td>PK</td><td>不変のID（ULID か UUIDv7）</td></tr>
+          <tr><td class="nowrap">slug</td><td>TEXT</td><td>UNIQUE, NOT NULL</td><td>URL 用。作成時に確定し<b>変更しない</b></td></tr>
+          <tr><td class="nowrap">title</td><td>TEXT</td><td>NOT NULL</td><td>タイトル</td></tr>
+          <tr><td class="nowrap">summary</td><td>TEXT</td><td>NOT NULL</td><td>一言説明</td></tr>
+          <tr><td class="nowrap">body_markdown</td><td>TEXT</td><td>NULL 可</td><td>詳細本文。無ければ「詳細はまだありません」</td></tr>
+          <tr><td class="nowrap">cover_image_url</td><td>TEXT</td><td>NULL 可</td><td>外部URLのみ</td></tr>
+          <tr><td class="nowrap">occurred_at</td><td>TEXT</td><td>NOT NULL</td><td><code>YYYY-MM-DD</code>（Asia/Tokyo）<span class="badge check">要確認</span></td></tr>
+          <tr><td class="nowrap">published_at</td><td>TEXT</td><td>NOT NULL</td><td>公開日時（ISO8601）</td></tr>
+          <tr><td class="nowrap">created_at / updated_at</td><td>TEXT</td><td>NOT NULL</td><td>ISO8601</td></tr>
+          <tr><td class="nowrap">deleted_at</td><td>TEXT</td><td>NULL 可</td><td>ソフトデリート日時</td></tr>
+          <tr><td class="nowrap">revision</td><td>INTEGER</td><td>NOT NULL, DEFAULT 1</td><td>楽観ロック。更新のたびに +1</td></tr>
+        </table>
+
+        <h4>インデックス</h4>
+        <pre><code>CREATE INDEX idx_achievement_alive   ON achievement(deleted_at, occurred_at DESC);
+CREATE UNIQUE INDEX idx_achievement_slug ON achievement(slug);</code></pre>
+
+        <h3>Tag / AchievementTag</h3>
+        <table>
+          <tr><th>テーブル</th><th>列</th></tr>
+          <tr><td>tag</td><td><code>id</code>, <code>name</code>（表示名）, <code>normalized</code>（UNIQUE）, <code>created_at</code></td></tr>
+          <tr><td>achievement_tag</td><td><code>achievement_id</code>, <code>tag_id</code>（複合PK）</td></tr>
+        </table>
+        <p>
+          正規化は NFKC → 小文字化 → 前後空白除去 → 連続空白の圧縮。表示名は別に持つので、<code>Cloudflare</code> と <code>cloudflare</code> は同じタグに寄る。
+        </p>
+
+        <h3>Link</h3>
+        <table>
+          <tr><th>列</th><th>型</th><th>説明</th></tr>
+          <tr><td>id / achievement_id</td><td>TEXT</td><td>実績に従属</td></tr>
+          <tr><td>url</td><td>TEXT</td><td><code>http</code> / <code>https</code> のみ許可</td></tr>
+          <tr><td>label</td><td>TEXT</td><td>表示ラベル（任意）</td></tr>
+          <tr><td>position</td><td>INTEGER</td><td>表示順</td></tr>
+        </table>
+
+        <h3>AchievementRevision</h3>
+        <p>
+          復元用のスナップショット。更新のたびに<b>変更前</b>の状態を1行積む。
+        </p>
+        <pre><code>achievement_revision(
+  id, achievement_id, revision,
+  snapshot_json,          -- 変更前の Achievement 全体
+  source,                 -- 'mcp' | 'system' | 'restore'
+  created_at
+)</code></pre>
+        <div class="callout">
+          <div class="t">監査ログについて<span class="badge check">要確認</span></div>
+          <p>
+            原本の要件では「監査ログ」と「変更履歴」を別々に持つ想定でしたが、個人1人の運用では重複します。MVP では
+            <b>変更履歴の <code>source</code> カラム</b>で代替し、独立した監査ログテーブルは作りません。Workers のログにも操作は残ります。
+          </p>
+        </div>
+
+        <h3>作らないもの</h3>
+        <ul>
+          <li><b>Reaction</b>。プッシュを MVP から外したため。後から足す場合は独立テーブルの追加になるので、既存データの移行は不要。</li>
+          <li>ユーザー、セッション、セッションストア。Cookie を使わない。</li>
+        </ul>
+
+        <!-- ============================================================ -->
+        <h2 id="s6"><span class="num">6</span>ルーティング / 画面</h2>
+
+        <table>
+          <tr><th>パス</th><th>内容</th><th>備考</th></tr>
+          <tr><td class="nowrap"><code>/</code></td><td>プロフィール</td><td>対象外。普通のページ</td></tr>
+          <tr><td class="nowrap"><code>/done</code></td><td>実績一覧</td><td>実施日降順。タグ絞り込み。20件 + 「もっと見る」</td></tr>
+          <tr><td class="nowrap"><code>/done/&lt;slug&gt;</code></td><td>実績詳細</td><td>Markdown 本文。前後の実績への移動</td></tr>
+          <tr><td class="nowrap"><code>/og/&lt;slug&gt;.png</code></td><td>OGP 画像</td><td><code>?v=&lt;revision&gt;</code></td></tr>
+          <tr><td class="nowrap"><code>/mcp</code></td><td>MCP サーバー</td><td>Access 保護。Streamable HTTP</td></tr>
+          <tr><td class="nowrap"><code>/privacy</code></td><td>プライバシーポリシー</td><td>静的</td></tr>
+          <tr><td class="nowrap">その他</td><td>404 / 410 / 500</td><td>410 は削除済み実績の専用表示</td></tr>
+        </table>
+
+        <h3>実績カード（一覧の1行）</h3>
+        <p>採用した形（<code>card-patterns.html</code> の A 案ベース）:</p>
+        <ul>
+          <li>左端に細い縦線、タイトル、一言、タグ、実施日、詳細の有無。</li>
+          <li>画像は <code>cover_image_url</code> があるときだけ出す。</li>
+          <li>ゲーム風の装飾はしない。アプリのUIは通常のデザイン。</li>
+        </ul>
+
+        <h3>SEO / 共有メタデータ</h3>
+        <ul>
+          <li>各実績ページに <code>og:title</code> / <code>og:description</code> / <code>og:url</code> / <code>og:type=article</code> / <code>twitter:card=summary_large_image</code>。</li>
+          <li><code>og:image</code> は <code>/og/&lt;slug&gt;.png?v=&lt;revision&gt;</code> の絶対URL ＋ <code>og:image:width</code> / <code>height</code> / <code>alt</code>。</li>
+          <li>一覧ページにも静的OGPを付ける。</li>
+          <li>sitemap と RSS は MVP 外（後回し）。</li>
+        </ul>
+
+        <!-- ============================================================ -->
+        <h2 id="s7"><span class="num">7</span>管理 API / MCP</h2>
+
+        <p>
+          MCP サーバーは本人専用。<code>/mcp</code> を Cloudflare Access で保護し、Worker 側で
+          <code>Cf-Access-Jwt-Assertion</code> を検証する。MCP は AI 本文生成を行わず、クライアントが作った Markdown を保存する責務に絞る。
+        </p>
+
+        <table>
+          <tr><th>ツール</th><th>引数</th><th>戻り</th></tr>
+          <tr>
+            <td class="nowrap">create_achievement</td>
+            <td>title, summary, slug?, occurred_at?, cover_image_url?, tags[], links[], body_markdown?</td>
+            <td>id, slug, url, revision</td>
+          </tr>
+          <tr>
+            <td class="nowrap">list_achievements</td>
+            <td>tags[], limit?, cursor?, include_deleted?</td>
+            <td>items[], next_cursor</td>
+          </tr>
+          <tr>
+            <td class="nowrap">get_achievement</td>
+            <td>id または slug</td>
+            <td>実績一式 + revision</td>
+          </tr>
+          <tr>
+            <td class="nowrap">update_achievement</td>
+            <td>id, expected_revision, 変更するフィールドのみ</td>
+            <td>id, slug, revision</td>
+          </tr>
+          <tr>
+            <td class="nowrap">delete_achievement</td>
+            <td>id, expected_revision</td>
+            <td>id, deleted_at</td>
+          </tr>
+          <tr>
+            <td class="nowrap">restore_achievement</td>
+            <td>id</td>
+            <td>id, revision</td>
+          </tr>
+        </table>
+
+        <div class="callout">
+          <div class="t">原本からの変更点</div>
+          <p>
+            <code>get_reaction_stats</code> は削除（プッシュが無いため）。<code>emblem</code> と <code>tier</code> は追加しない。<code>update_achievement</code> の引数名は実装時に詰める<span class="badge check">要確認</span>。
+          </p>
+        </div>
+
+        <h4>共通の決まり</h4>
+        <ul>
+          <li>作成・更新・削除・復元は監査のため <code>source</code> を残す。</li>
+          <li>更新は <code>expected_revision</code> が一致しなければ失敗させる（同時更新で上書きしない）。</li>
+          <li>削除はソフトデリート。復元可能。</li>
+          <li>秘密情報をログに出さない。</li>
+          <li>入力は valibot で検証する。</li>
+        </ul>
+
+        <!-- ============================================================ -->
+        <h2 id="s8"><span class="num">8</span>OGP 生成</h2>
+
+        <p>X に貼ることが主要な導線なので、ここは妥協しない。</p>
+
+        <h3>仕上がり</h3>
+        <div class="og">
+          <div class="abs">
+            <div class="top">
+              <div class="mark"><i></i>nyatinte.com<span>/done</span></div>
+              <div class="date">2026/09/16</div>
+            </div>
+            <div class="mid">
+              <div class="title">
+                Cloudflare Workers の OGP 画像生成を<br />
+                Satori から Takumi に移行して、<br />
+                日本語の折返しを制御できるようにした
+              </div>
+              <div class="summary">
+                日本語の文節で折り返すために BudouX を挟んだ。フォントは M PLUS 1p をサブセットで同梱。
+              </div>
+            </div>
+            <div class="bottom">
+              <div class="tags"><span>Cloudflare</span><span>OGP</span><span>Rust</span></div>
+              <div class="user"><div class="av">ny</div>@nyatinte</div>
+            </div>
+          </div>
+        </div>
+
+        <h3>仕様</h3>
+        <table>
+          <tr><th>項目</th><th>決定</th></tr>
+          <tr><td>サイズ / 形式</td><td>1200×630、PNG、5MB 以下<span class="badge check">要確認</span></td></tr>
+          <tr><td>カード種別</td><td><code>summary_large_image</code></td></tr>
+          <tr><td>構図</td><td>左端の縦線 / サイト名（左上）/ 日付（右上）/ タイトル / 一言 / タグ（左下）/ ハンドル（右下）</td></tr>
+          <tr><td>エンブレム</td><td>使わない</td></tr>
+          <tr><td>レンダラ</td><td>Takumi（WASM / Workers 上）</td></tr>
+          <tr><td>フォント</td><td>M PLUS 1p の <b>700 のみ</b>をサブセット同梱</td></tr>
+          <tr><td>文字サイズ</td><td>タイトル 76 / 68 / 58 / 48 / 40px の5段階。最大3行。超過は末尾省略</td></tr>
+          <tr><td>一言</td><td>26px。最大2行</td></tr>
+          <tr><td>タグ</td><td>最大3個。超えたら <code>+N</code></td></tr>
+          <tr><td>詳細なし</td><td>「詳細はまだありません。」を一言の位置に置く</td></tr>
+          <tr><td>キャッシュ</td><td>Cache API。キーは slug + revision。<code>immutable</code>、1年</td></tr>
+          <tr><td>生成失敗時</td><td>同梱の汎用カード PNG を 200 で返す</td></tr>
+          <tr><td>削除済み</td><td>汎用カードにフォールバック（画像を欠けさせない）</td></tr>
+        </table>
+
+        <h3>日本語の折返し</h3>
+        <ol>
+          <li>BudouX で文節の候補を得る。</li>
+          <li>行頭の閉じ括弧類、行末の開き括弧類を補正する。</li>
+          <li>1〜3行の分割候補を作り、各行幅の二乗誤差が最小のものを選ぶ。</li>
+          <li>選んだ行を <code>white-space: nowrap</code> の明示ブロックとして Takumi に渡す（レンダラに折返させない）。</li>
+          <li>収まらなければ文字サイズを1段落として再試行する。</li>
+        </ol>
+
+        <h3>サイズの見積もり</h3>
+        <table>
+          <tr><th>要素</th><th>gzip</th></tr>
+          <tr><td>Takumi WASM</td><td>約 1.5 MiB</td></tr>
+          <tr><td>M PLUS 1p 700 サブセット</td><td>未計測（JIS第1水準＋かな＋記号で 0.7 MiB 前後を想定）</td></tr>
+          <tr><td>Workers 無料枠</td><td>3 MiB</td></tr>
+        </table>
+        <div class="callout warn">
+          <div class="t">要実測<span class="badge check">要確認</span></div>
+          <p>
+            合計が 3 MiB を超える場合は、収録する漢字の範囲を落とします。第2水準を削ると「曖昧」のような語が豆腐になる可能性があるので、削る順番は 記号 → 第2水準 の順にします。
+          </p>
+        </div>
+
+        <!-- ============================================================ -->
+        <h2 id="s9"><span class="num">9</span>非機能</h2>
+
+        <h3>セキュリティ</h3>
+        <ul>
+          <li><code>/mcp</code> は Cloudflare Access で保護。Worker 側でも JWT を検証する（多層防御）。</li>
+          <li>Markdown は読み取り時にサニタイズ。許可要素は見出し・段落・リスト・コード・リンク・画像・強調・引用のみ。<b>raw HTML は無効</b>。</li>
+          <li>外部リンクは <code>http</code> / <code>https</code> のみ。別タブで開き <code>rel="noopener noreferrer"</code>。</li>
+          <li>文字数に上限を設ける（title 120 / summary 200 / body 20,000 など）。</li>
+          <li>CSRF は Cookie を使わないため対象外。MCP はトークン認証のみ。</li>
+        </ul>
+
+        <h3>プライバシー</h3>
+        <ul>
+          <li>Cookie を発行しない。匿名IDもIPハッシュも持たない（プッシュを外したため）。</li>
+          <li>アクセス解析を入れない。Cloudflare の標準ログのみ。</li>
+          <li>プライバシーポリシーは「Cookie を使わない」「アクセス解析をしない」「Cloudflare のログが残る」の3点を短く書く。</li>
+        </ul>
+
+        <h3>パフォーマンス</h3>
+        <ul>
+          <li>一覧は SSR で返し、20件 + 「もっと見る」。無限スクロールは使わない（SEO とアクセシビリティのため）。</li>
+          <li>OGP 画像はキャッシュヒット時はほぼ無コスト。初回のみ描画。</li>
+          <li>合計件数などの集計は都度 SQL で数える。集計テーブルは持たない。</li>
+        </ul>
+
+        <h3>可用性・復旧</h3>
+        <ul>
+          <li>D1 の Time Travel でポイント復元。加えて月1回のエクスポートを保管。</li>
+          <li>削除・誤更新は <code>achievement_revision</code> から復元できる。</li>
+          <li>書き込みは D1 のバッチで原子的に行う。</li>
+        </ul>
+
+        <h3>アクセシビリティ</h3>
+        <ul>
+          <li>一覧・タグ・並び替えに適切なラベルを付ける。</li>
+          <li>色だけで状態を表現しない。</li>
+          <li>「もっと見る」はキーボードで操作できるボタンにする。</li>
+        </ul>
+
+        <h3>対応端末</h3>
+        <p>スマートフォンと PC のレスポンシブ。モダンブラウザのみ。</p>
+
+        <!-- ============================================================ -->
+        <h2 id="s10"><span class="num">10</span>実装フェーズ</h2>
+
+        <p>各フェーズは単独でマージできる粒度にし、終わったら PR を出す。</p>
+
+        <h3>P0. 土台</h3>
+        <ul>
+          <li>SvelteKit 3 + Vite+ + TypeScript 6 + Tailwind v4 + shadcn-svelte の初期化。</li>
+          <li>lint / fmt / typecheck のスクリプトと GitHub Actions。</li>
+          <li>varlock の設定、<code>wrangler.jsonc</code>、Cloudflare への接続。</li>
+        </ul>
+        <p><b>完了条件</b>: <code>vp check</code> と <code>vp build</code> が通り、空のページが Workers にデプロイできる。</p>
+
+        <h3>P1. データ層</h3>
+        <ul>
+          <li>Drizzle のスキーマとマイグレーション。</li>
+          <li>リポジトリ層（作成・取得・一覧・更新・削除・復元）。</li>
+          <li>リビジョンの記録と復元。</li>
+          <li>Vitest でリポジトリ層のテスト。</li>
+        </ul>
+        <p><b>完了条件</b>: ローカル D1 に対して CRUD・楽観ロック・復元のテストが通る。</p>
+
+        <h3>P2. 公開ページ</h3>
+        <ul>
+          <li><code>/done</code> 一覧（タグ絞り込み、実施日降順、もっと見る）。</li>
+          <li><code>/done/&lt;slug&gt;</code> 詳細（Markdown レンダリング、サニタイズ）。</li>
+          <li>SEO メタデータ、410 ページ、404 ページ。</li>
+        </ul>
+        <p><b>完了条件</b>: 手で投入したダミーデータで一覧と詳細が表示でき、Lighthouse の SEO が通る。</p>
+
+        <h3>P3. 管理経路</h3>
+        <ul>
+          <li>管理ロジックを MCP から呼べる形に分離。</li>
+          <li><code>/mcp</code> に Streamable HTTP のエンドポイントを実装。</li>
+          <li>Cloudflare Access の検証。</li>
+          <li>MCP クライアントから実際に1件作成できることを確認。</li>
+        </ul>
+        <p><b>完了条件</b>: ローカルの MCP クライアントから作成・編集・削除・復元ができる。</p>
+
+        <h3>P4. OGP</h3>
+        <ul>
+          <li>フォントのサブセット作成とサイズ実測。</li>
+          <li>BudouX の組版ロジックとテスト。</li>
+          <li>Takumi での描画、OG Worker、Cache API。</li>
+          <li>X の Card Validator で確認。</li>
+        </ul>
+        <p><b>完了条件</b>: 実績の URL を X に貼ると、実績カードの画像が出る。</p>
+
+        <h3>P5. 仕上げ</h3>
+        <ul>
+          <li>プライバシーポリシー、ホームページからの導線。</li>
+          <li>エラー時の表示、監視の確認。</li>
+          <li>バックアップ手順の文書化。</li>
+        </ul>
+
+        <!-- ============================================================ -->
+        <h2 id="s11"><span class="num">11</span>テスト / CI</h2>
+
+        <table>
+          <tr><th>種類</th><th>対象</th><th>道具</th></tr>
+          <tr><td>単体</td><td>組版ロジック、タグ正規化、slug 生成、valibot スキーマ</td><td>Vitest</td></tr>
+          <tr><td>結合</td><td>リポジトリ層（ローカル D1）</td><td>Vitest</td></tr>
+          <tr><td>OGP スナップショット</td><td>長い・短い・英語混在・詳細なしの4種を PNG で比較</td><td>Vitest</td></tr>
+        </table>
+        <p>E2E（Playwright）は MVP では入れない。OGP の見た目は PNG のスナップショットで守る。</p>
+
+        <h4>CI</h4>
+        <pre><code>vp check   # fmt + lint + typecheck
+vp test
+vp build
+wrangler deploy  # main のみ</code></pre>
+
+        <!-- ============================================================ -->
+        <h2 id="s12"><span class="num">12</span>未決とリスク</h2>
+
+        <table>
+          <tr><th>項目</th><th>状態</th><th>対応</th></tr>
+          <tr>
+            <td>SvelteKit 3 が RC</td>
+            <td>リスク</td>
+            <td>バージョン固定。破壊的変更が来たら stable 2.x に落とせるようにする</td>
+          </tr>
+          <tr>
+            <td>Vite+ が beta</td>
+            <td>リスク</td>
+            <td>素の Vite + Vitest + oxlint に戻せる構成を維持</td>
+          </tr>
+          <tr>
+            <td>Takumi の WASM が Workers で動くか</td>
+            <td>未検証</td>
+            <td>P0 の時点で最小の PoC を作る</td>
+          </tr>
+          <tr>
+            <td>フォントのサブセットが無料枠に収まるか</td>
+            <td>未検証</td>
+            <td>P4 の最初に実測。超えたら収録範囲を削る</td>
+          </tr>
+          <tr>
+            <td>Access のサービス トークンを MCP クライアントが送れるか</td>
+            <td>未検証</td>
+            <td>P3 の前に確認。送れなければ Bearer に切り替える</td>
+          </tr>
+          <tr>
+            <td><code>@shadcn/lint</code> が Svelte で効くか</td>
+            <td>未検証</td>
+            <td>効かなければ oxlint のみで進める</td>
+          </tr>
+          <tr>
+            <td>OG Worker を分けるか本体に同居させるか</td>
+            <td>要確認</td>
+            <td>バンドルサイズの実測で決める</td>
+          </tr>
+          <tr>
+            <td>日付を日付のみにするか時刻も持つか</td>
+            <td>要確認</td>
+            <td>日付のみを推奨。時刻が要るなら後から足せる</td>
+          </tr>
+        </table>
+
+        <!-- ============================================================ -->
+        <h2 id="s13"><span class="num">13</span>受け入れ条件</h2>
+        <ul>
+          <li>MCP からタイトルと一言だけで実績を作成でき、即時公開される。</li>
+          <li>任意でリンク・代表画像・複数タグ・詳細 Markdown を付けられる。</li>
+          <li>一覧を実施日順で眺められ、タグで絞り込める。</li>
+          <li>詳細 Markdown を後から追加・編集でき、見出し・リスト・コード・リンク・画像が表示される。</li>
+          <li>編集すると revision が上がり、古い版に復元できる。</li>
+          <li>削除すると 410 になり、復元できる。</li>
+          <li>実績の URL を X に貼ると、実績カードの OGP 画像が出る。</li>
+          <li>MCP から CRUD と一覧取得ができる。</li>
+          <li>スマホと PC で主要操作が破綻しない。</li>
+          <li>CI で typecheck / lint / test が通る。</li>
+        </ul>
+
+        <!-- ============================================================ -->
+        <h2 id="s14"><span class="num">14</span>レビュー観点</h2>
+        <ul>
+          <li><span class="badge check">要確認</span> が付いた箇所の判断は妥当か。</li>
+          <li>P0〜P5 の順番と粒度は、1人で回せる大きさか。</li>
+          <li>「MVP でやらないこと」に、実は必要なものが混ざっていないか。</li>
+          <li>データモデルに、後から足すと痛い制約が残っていないか（特に slug の不変化）。</li>
+          <li>OGP のサイズ見積もりが破綻したときの代替案（PNG をやめる、フォントを削る）で足りるか。</li>
+        </ul>
+
+        <h2 id="s15"><span class="num">15</span>モック一覧</h2>
+        <p>検討に使ったモックは、この計画書と同じ <code>plan-docs/</code> に置いています。</p>
+        <div class="mocks">
+          <a href="grill-check.html"><b>grill-check.html</b><span>要件のすり合わせ用チェックリスト</span></a>
+          <a href="card-patterns.html"><b>card-patterns.html</b><span>実績カード3案（X風プレビュー）</span></a>
+          <a href="ogp-patterns.html"><b>ogp-patterns.html</b><span>OGP画像3案（タイポ中心）</span></a>
+          <a href="ogp-done-style.html"><b>ogp-done-style.html</b><span>OGP 実績カード風（採用案）</span></a>
+          <a href="done-ui-mock.html"><b>done-ui-mock.html</b><span>ゲーム実績風UI（不採用・記録用）</span></a>
+        </div>
+
+        <hr />
+        <p style="color: var(--muted); font-size: 13px">
+          この計画書は実装の進行に合わせて更新します。決定が変わった箇所は、次の版で上書きします。
+        </p>
+      </main>
+    </div>
+
+    <script>
+      const btn = document.getElementById('theme');
+      btn.addEventListener('click', () => {
+        document.body.classList.toggle('light');
+      });
+    </script>
+  </body>
+</html>

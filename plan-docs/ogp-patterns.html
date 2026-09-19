@@ -1,0 +1,924 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OGP 画像 3案 / X での見え方</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --page-bg: #000;
+        --panel: #0d0d0d;
+        --line: #2f3336;
+        --text: #e7e9ea;
+        --muted: #71767b;
+        --blue: #1d9bf0;
+        --hover: rgba(255, 255, 255, 0.03);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        background: var(--page-bg);
+        color: var(--text);
+        font-family: 'M PLUS 1p', -apple-system, 'Hiragino Kaku Gothic ProN', sans-serif;
+        font-size: 15px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .head {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--line);
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      .head h1 {
+        font-size: 15px;
+        margin: 0;
+        font-weight: 700;
+      }
+      .head .spacer {
+        flex: 1;
+      }
+      .seg {
+        display: flex;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .seg button {
+        font-family: inherit;
+        font-size: 12.5px;
+        padding: 6px 14px;
+        border: none;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+      }
+      .seg button.on {
+        background: var(--text);
+        color: #000;
+        font-weight: 700;
+      }
+
+      main {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 24px 20px 80px;
+      }
+
+      .spec {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin-bottom: 32px;
+        background: var(--panel);
+        font-size: 13px;
+        line-height: 1.75;
+      }
+      .spec h2 {
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 10px;
+        font-weight: 500;
+      }
+      .spec ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+      .spec li {
+        margin: 3px 0;
+      }
+      .spec code {
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 12px;
+        background: #1a1a1a;
+        border-radius: 4px;
+        padding: 1px 5px;
+      }
+
+      .design {
+        margin-bottom: 56px;
+      }
+      .design > header {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        margin-bottom: 4px;
+      }
+      .design > header h2 {
+        font-size: 16px;
+        margin: 0;
+      }
+      .design > header .pill {
+        font-size: 11px;
+        border: 1px solid var(--blue);
+        color: var(--blue);
+        border-radius: 4px;
+        padding: 1px 7px;
+      }
+      .design > p.desc {
+        color: var(--muted);
+        font-size: 13px;
+        margin: 0 0 14px;
+      }
+
+      /* ============ OGP image canvas ============ */
+      .og {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1200 / 630;
+        container-type: inline-size;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: #0a0a0a;
+        color: #fff;
+      }
+      .og .abs {
+        position: absolute;
+        inset: 0;
+      }
+      .og .title,
+      .og .summary {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+      .og .title {
+        -webkit-line-clamp: 4;
+      }
+      .og .summary {
+        -webkit-line-clamp: 2;
+      }
+
+      /* --- 1: dark type --- */
+      .og.d1 .abs {
+        padding: 5.6cqw 6cqw 5cqw;
+        display: flex;
+        flex-direction: column;
+        background:
+          radial-gradient(120% 120% at 100% 0%, rgba(29, 155, 240, 0.16), transparent 45%),
+          linear-gradient(180deg, #0c0d10, #060607);
+      }
+      .og.d1 .top {
+        display: flex;
+        align-items: center;
+        gap: 1.5cqw;
+      }
+      .og.d1 .mark {
+        width: 3.4cqw;
+        height: 3.4cqw;
+        border-radius: 0.8cqw;
+        background: linear-gradient(135deg, #1d9bf0, #7c3aed);
+      }
+      .og.d1 .sitename {
+        font-size: 1.9cqw;
+        font-weight: 700;
+      }
+      .og.d1 .sitename span {
+        color: #71767b;
+        font-weight: 400;
+      }
+      /* 4.0cqw = 48px / 4.83 = 58 / 5.67 = 68 / 6.33 = 76 (at 1200px) */
+      .og.d1 .title {
+        margin-top: 4cqw;
+        font-size: 4cqw;
+        font-weight: 700;
+        line-height: 1.3;
+        letter-spacing: -0.01em;
+      }
+      .og.d1 .title.s {
+        font-size: 5.67cqw;
+      }
+      .og.d1 .title.m {
+        font-size: 4.83cqw;
+      }
+      .og.d1 .title.xs {
+        font-size: 6.33cqw;
+      }
+      .og.d1 .summary {
+        margin-top: 2.2cqw;
+        font-size: 2.2cqw;
+        color: #a9b0b7;
+        line-height: 1.6;
+      }
+      .og.d1 .foot {
+        margin-top: auto;
+        padding-top: 2.5cqw;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 2cqw;
+      }
+      .og.d1 .date {
+        font-size: 1.9cqw;
+        color: #71767b;
+      }
+      .og.d1 .tags {
+        display: flex;
+        gap: 1cqw;
+        margin-top: 1.2cqw;
+      }
+      .og.d1 .tags span {
+        font-size: 1.7cqw;
+        color: #c9d1d9;
+        background: rgba(255, 255, 255, 0.07);
+        border-radius: 999px;
+        padding: 0.4cqw 1.4cqw;
+      }
+      .og.d1 .user {
+        display: flex;
+        align-items: center;
+        gap: 1.2cqw;
+      }
+      .og.d1 .ava {
+        width: 4.4cqw;
+        height: 4.4cqw;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #1d9bf0, #7c3aed 60%, #f91880);
+        display: grid;
+        place-items: center;
+        font-size: 1.8cqw;
+        font-weight: 700;
+      }
+      .og.d1 .handle {
+        font-size: 2cqw;
+        font-weight: 700;
+      }
+      .og.d1 .handle span {
+        display: block;
+        color: #71767b;
+        font-weight: 400;
+        font-size: 1.6cqw;
+      }
+
+      /* --- 2: framed card --- */
+      .og.d2 {
+        background: #05060a;
+      }
+      .og.d2 .frame {
+        position: absolute;
+        inset: 3.4cqw;
+        border: 0.3cqw solid rgba(255, 255, 255, 0.14);
+        border-radius: 2cqw;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 4cqw 5.5cqw;
+        background: radial-gradient(90% 90% at 50% 0%, rgba(29, 155, 240, 0.14), transparent 60%);
+      }
+      .og.d2 .kicker {
+        font-size: 1.7cqw;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: #7cc4f5;
+      }
+      .og.d2 .title {
+        margin-top: 2cqw;
+        font-size: 4cqw;
+        font-weight: 700;
+        line-height: 1.35;
+      }
+      .og.d2 .rule {
+        width: 7cqw;
+        height: 0.35cqw;
+        border-radius: 999px;
+        background: #1d9bf0;
+        margin: 2cqw 0;
+      }
+      .og.d2 .summary {
+        font-size: 2.1cqw;
+        color: #a9b0b7;
+        line-height: 1.6;
+        max-width: 78cqw;
+      }
+      .og.d2 .bottom {
+        margin-top: auto;
+        padding-top: 2.4cqw;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.2cqw;
+        font-size: 1.8cqw;
+        color: #8b929a;
+      }
+      .og.d2 .ava {
+        width: 3cqw;
+        height: 3cqw;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #1d9bf0, #7c3aed 60%, #f91880);
+      }
+
+      /* --- 3: cover-led --- */
+      .og.d3 .cover {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(140deg, #0f2027, #203a43 42%, #2c5364);
+      }
+      .og.d3 .cover::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          180deg,
+          rgba(0, 0, 0, 0.15) 0%,
+          rgba(0, 0, 0, 0.82) 58%,
+          #000 100%
+        );
+      }
+      .og.d3 .abs {
+        padding: 5.6cqw 6cqw;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+      }
+      .og.d3 .topper {
+        position: absolute;
+        top: 5.6cqw;
+        left: 6cqw;
+        right: 6cqw;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .og.d3 .sitename {
+        font-size: 1.9cqw;
+        font-weight: 700;
+        color: #dfe6ec;
+      }
+      .og.d3 .badge {
+        font-size: 1.7cqw;
+        color: #dfe6ec;
+        background: rgba(0, 0, 0, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 999px;
+        padding: 0.5cqw 1.6cqw;
+      }
+      .og.d3 .title {
+        font-size: 4.4cqw;
+        font-weight: 700;
+        line-height: 1.3;
+        text-shadow: 0 0.3cqw 1.5cqw rgba(0, 0, 0, 0.6);
+      }
+      .og.d3 .summary {
+        margin-top: 1.8cqw;
+        font-size: 2.2cqw;
+        color: #c2cad2;
+      }
+      .og.d3 .foot {
+        margin-top: 2.6cqw;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 1.9cqw;
+        color: #9aa3ab;
+      }
+
+      /* ============ X preview ============ */
+      .xlabel {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 22px 0 8px;
+        letter-spacing: 0.05em;
+      }
+      .xtweet {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px 16px 12px;
+        transition:
+          background 0.15s,
+          border-color 0.15s,
+          color 0.15s;
+      }
+      body.light .xtweet {
+        background: #fff;
+        border-color: #e1e8ed;
+      }
+      body.light {
+        --page-bg: #f7f9f9;
+        --text: #0f1419;
+        --muted: #536471;
+        --line: #cfd9de;
+        --hover: rgba(0, 0, 0, 0.03);
+        --panel: #fff;
+        background: var(--page-bg);
+        color: var(--text);
+      }
+      body.light .head {
+        background: rgba(255, 255, 255, 0.85);
+      }
+      body.light .spec code {
+        background: #eff3f4;
+      }
+      .xtweet .row {
+        display: flex;
+        gap: 10px;
+      }
+      .xtweet .ava {
+        width: 38px;
+        height: 38px;
+        border-radius: 999px;
+        flex: 0 0 auto;
+        background: linear-gradient(135deg, #1d9bf0, #7c3aed 60%, #f91880);
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .xtweet .who {
+        font-size: 14.5px;
+        line-height: 1.25;
+      }
+      .xtweet .who b {
+        font-weight: 700;
+      }
+      .xtweet .who span {
+        color: var(--muted);
+        font-weight: 400;
+      }
+      .xtweet .text {
+        margin-top: 2px;
+        font-size: 14.5px;
+      }
+      .xtweet .card {
+        margin-top: 10px;
+        margin-left: 48px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        overflow: hidden;
+        cursor: pointer;
+      }
+      .xtweet .card .thumb .og {
+        border: none;
+        border-radius: 0;
+      }
+      .xtweet .card .meta {
+        padding: 10px 12px 12px;
+      }
+      .xtweet .card .domain {
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+      .xtweet .card .cardtitle {
+        font-size: 14.5px;
+        margin-top: 2px;
+      }
+      .xtweet .card .carddesc {
+        font-size: 13.5px;
+        color: var(--muted);
+        margin-top: 2px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .dup {
+        display: inline-block;
+        font-size: 11px;
+        color: #f91880;
+        border: 1px solid rgba(249, 24, 128, 0.5);
+        border-radius: 4px;
+        padding: 0 6px;
+        margin-left: 6px;
+        vertical-align: 1px;
+      }
+      body.light .dup {
+        color: #d61b6e;
+      }
+
+      .variations {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      @media (max-width: 640px) {
+        .variations {
+          grid-template-columns: 1fr;
+        }
+      }
+      .variations figure {
+        margin: 0;
+      }
+      .variations figcaption {
+        font-size: 12.5px;
+        color: var(--muted);
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="head">
+      <h1>OGP 画像 3案 / X での見え方</h1>
+      <div class="spacer"></div>
+      <div class="seg">
+        <button id="dark" class="on">ダーク</button>
+        <button id="light">ライト</button>
+      </div>
+    </div>
+
+    <main>
+      <div class="spec">
+        <h2>前提</h2>
+        <ul>
+          <li>画像は <code>1200 × 630</code>（1.91:1）。X はこの比率で表示し、違う比率はセンタークロップされる。</li>
+          <li><code>twitter:card = summary_large_image</code>。5MB 以下、JPG / PNG / WebP。</li>
+          <li>角丸で端が落ちるので、外周 <code>48px</code> 程度は余白（セーフエリア）にする。</li>
+          <li>
+            タイトルは <code>76 / 68 / 58 / 48 / 40px</code> の5段階、最大4行。行数と文字量から選び、<b>長いほど小さくする</b>。それでも収まらない長さだけ末尾を省略する。
+          </li>
+          <li>折返しは BudouX で文節分割 → 行頭の閉じ括弧・行末の開き括弧を補正 → 行幅の二乗誤差が最小の分割を選ぶ。</li>
+          <li>下のモックは、その計算結果を手で置いたもの。実装では自動でこの形になる。</li>
+        </ul>
+      </div>
+
+      <!-- ============ 1 ============ -->
+      <section class="design">
+        <header>
+          <h2>1. ダーク・タイポ</h2>
+          <span class="pill">推奨</span>
+        </header>
+        <p class="desc">
+          黒地にタイトルを左寄せ。サイトのダーク基調と揃い、X のタイムラインで浮かない。文字だけなので生成も速い。
+        </p>
+        <div class="og d1">
+          <div class="abs">
+            <div class="top">
+              <div class="mark"></div>
+              <div class="sitename">nyatinte.com<span> / done</span></div>
+            </div>
+            <div class="title">
+              Cloudflare Workers の OGP 画像生成を<br />
+              Satori から Takumi に移行して、<br />
+              日本語の折返しを制御できるようにした
+            </div>
+            <div class="summary">
+              日本語の文節で折り返すために BudouX を挟んだ。フォントは M PLUS 1p をサブセットで同梱。
+            </div>
+            <div class="foot">
+              <div>
+                <div class="date">2026/09/16</div>
+                <div class="tags"><span>Cloudflare</span><span>OGP</span><span>Rust</span></div>
+              </div>
+              <div class="user">
+                <div class="ava">ny</div>
+                <div class="handle">@nyatinte<span>Takumi Nakamura</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="xlabel">X での見え方</div>
+        <div class="xtweet">
+          <div class="row">
+            <div class="ava">ny</div>
+            <div>
+              <div class="who"><b>Takumi Nakamura</b> <span>@nyatinte · 3日前</span></div>
+              <div class="text">OGP、日本語の折返しだけ手で組んでる。</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="thumb">
+              <div class="og d1">
+                <div class="abs">
+                  <div class="top">
+                    <div class="mark"></div>
+                    <div class="sitename">nyatinte.com<span> / done</span></div>
+                  </div>
+                  <div class="title">
+                    Cloudflare Workers の OGP 画像生成を<br />
+                    Satori から Takumi に移行して、<br />
+                    日本語の折返しを制御できるようにした
+                  </div>
+                  <div class="summary">
+                    日本語の文節で折り返すために BudouX を挟んだ。フォントは M PLUS 1p をサブセットで同梱。
+                  </div>
+                  <div class="foot">
+                    <div>
+                      <div class="date">2026/09/16</div>
+                      <div class="tags"><span>Cloudflare</span><span>OGP</span></div>
+                    </div>
+                    <div class="user">
+                      <div class="ava">ny</div>
+                      <div class="handle">@nyatinte<span>Takumi Nakamura</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="meta">
+              <div class="domain">nyatinte.com</div>
+              <div class="cardtitle">
+                Cloudflare Workers の OGP 画像生成を Takumi に移行した<span class="dup">画像内と重複</span>
+              </div>
+              <div class="carddesc">
+                Satori をやめて、日本語の折返しを BudouX で制御できるようにした。
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 2 ============ -->
+      <section class="design">
+        <header>
+          <h2>2. フレーム・カード</h2>
+        </header>
+        <p class="desc">
+          中央寄せ＋罫線フレームでブランド感を出す。タイトルの行数で重心が動きやすいので、行数が増えるほど文字を落とす前提。
+        </p>
+        <div class="og d2">
+          <div class="frame">
+            <div class="kicker">Done</div>
+            <div class="title">
+              Cloudflare Workers の OGP 画像生成を<br />
+              Satori から Takumi に移行して、<br />
+              日本語の折返しを制御できるようにした
+            </div>
+            <div class="rule"></div>
+            <div class="summary">
+              日本語の文節で折り返すために BudouX を挟んだ。フォントは M PLUS 1p をサブセットで同梱。
+            </div>
+            <div class="bottom">
+              <div class="ava"></div>
+              <span>@nyatinte · 2026/09/16 · nyatinte.com/done</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="xlabel">X での見え方</div>
+        <div class="xtweet">
+          <div class="row">
+            <div class="ava">ny</div>
+            <div>
+              <div class="who"><b>Takumi Nakamura</b> <span>@nyatinte · 3日前</span></div>
+              <div class="text">OGP、日本語の折返しだけ手で組んでる。</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="thumb">
+              <div class="og d2">
+                <div class="frame">
+                  <div class="kicker">Done</div>
+                  <div class="title">
+                    Cloudflare Workers の OGP 画像生成を<br />
+                    Satori から Takumi に移行して、<br />
+                    日本語の折返しを制御できるようにした
+                  </div>
+                  <div class="rule"></div>
+                  <div class="summary">
+                    日本語の文節で折り返すために BudouX を挟んだ。フォントは M PLUS 1p をサブセットで同梱。
+                  </div>
+                  <div class="bottom">
+                    <div class="ava"></div>
+                    <span>@nyatinte · 2026/09/16</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="meta">
+              <div class="domain">nyatinte.com</div>
+              <div class="cardtitle">
+                Cloudflare Workers の OGP 画像生成を Takumi に移行した<span class="dup">画像内と重複</span>
+              </div>
+              <div class="carddesc">
+                Satori をやめて、日本語の折返しを BudouX で制御できるようにした。
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 3 ============ -->
+      <section class="design">
+        <header>
+          <h2>3. カバー主体</h2>
+        </header>
+        <p class="desc">
+          カバー画像の上に下寄せでタイトルを重ねる。画像がある実績は映えるが、画像がない実績では成立しないので、その場合は 1 にフォールバックする。
+        </p>
+        <div class="og d3">
+          <div class="cover"></div>
+          <div class="abs">
+            <div class="topper">
+              <div class="sitename">nyatinte.com / done</div>
+              <div class="badge">2026/09/16</div>
+            </div>
+            <div class="title">
+              Cloudflare Workers の OGP 画像生成を<br />
+              Satori から Takumi に移行した
+            </div>
+            <div class="summary">Satori をやめて、日本語の折返しを BudouX で制御できるようにした。</div>
+            <div class="foot">
+              <span>@nyatinte</span>
+              <span>Cloudflare · OGP · Rust</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="xlabel">X での見え方</div>
+        <div class="xtweet">
+          <div class="row">
+            <div class="ava">ny</div>
+            <div>
+              <div class="who"><b>Takumi Nakamura</b> <span>@nyatinte · 3日前</span></div>
+              <div class="text">OGP、日本語の折返しだけ手で組んでる。</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="thumb">
+              <div class="og d3">
+                <div class="cover"></div>
+                <div class="abs">
+                  <div class="topper">
+                    <div class="sitename">nyatinte.com / done</div>
+                    <div class="badge">2026/09/16</div>
+                  </div>
+                  <div class="title">
+                    Cloudflare Workers の OGP 画像生成を<br />
+                    Satori から Takumi に移行した
+                  </div>
+                  <div class="summary">Satori をやめて、日本語の折返しを BudouX で制御できるようにした。</div>
+                  <div class="foot">
+                    <span>@nyatinte</span>
+                    <span>Cloudflare · OGP · Rust</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="meta">
+              <div class="domain">nyatinte.com</div>
+              <div class="cardtitle">
+                Cloudflare Workers の OGP 画像生成を Takumi に移行した<span class="dup">画像内と重複</span>
+              </div>
+              <div class="carddesc">
+                Satori をやめて、日本語の折返しを BudouX で制御できるようにした。
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ variations ============ -->
+      <section class="design">
+        <header>
+          <h2>案1のバリエーション</h2>
+        </header>
+        <p class="desc">
+          同じレイアウトに、長いタイトル・短いタイトル・詳細なし・カバーありが流れ込む。文字サイズの4段階で吸収できるかを見る。
+        </p>
+        <div class="variations">
+          <figure>
+            <div class="og d1">
+              <div class="abs">
+                <div class="top">
+                  <div class="mark"></div>
+                  <div class="sitename">nyatinte.com<span> / done</span></div>
+                </div>
+                <div class="title">
+                  Cloudflare Workers の OGP 画像生成を<br />
+                  Satori から Takumi に移行して、<br />
+                  日本語の折返しを制御できるようにした
+                </div>
+                <div class="summary">
+                  日本語の文節で折り返すために BudouX を挟んだ。
+                </div>
+                <div class="foot">
+                  <div>
+                    <div class="date">2026/09/16</div>
+                    <div class="tags"><span>Cloudflare</span><span>OGP</span></div>
+                  </div>
+                  <div class="user">
+                    <div class="ava">ny</div>
+                    <div class="handle">@nyatinte<span>Takumi Nakamura</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <figcaption><b>48px / 3行</b>。長いタイトルの下限。これ以上長いと4行に落ちてさらに縮む。</figcaption>
+          </figure>
+
+          <figure>
+            <div class="og d1">
+              <div class="abs">
+                <div class="top">
+                  <div class="mark"></div>
+                  <div class="sitename">nyatinte.com<span> / done</span></div>
+                </div>
+                <div class="title">
+                  pnpm から Vite+ に移行して<br />
+                  設定ファイルを1枚にした
+                </div>
+                <div class="summary">
+                  lint / fmt / test / build が全部 vp から生える。
+                </div>
+                <div class="foot">
+                  <div>
+                    <div class="date">2026/09/02</div>
+                    <div class="tags"><span>Vite+</span><span>DX</span></div>
+                  </div>
+                  <div class="user">
+                    <div class="ava">ny</div>
+                    <div class="handle">@nyatinte<span>Takumi Nakamura</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <figcaption><b>58px / 2行</b>。英語混在の中間。余白が広がって気持ちいい。</figcaption>
+          </figure>
+
+          <figure>
+            <div class="og d1">
+              <div class="abs">
+                <div class="top">
+                  <div class="mark"></div>
+                  <div class="sitename">nyatinte.com<span> / done</span></div>
+                </div>
+                <div class="title xs">
+                  MCP サーバーを<br />Worker に同居させた
+                </div>
+                <div class="summary">Cloudflare Access のサービス トークンで認証する。</div>
+                <div class="foot">
+                  <div>
+                    <div class="date">2026/09/09</div>
+                    <div class="tags"><span>MCP</span><span>SvelteKit</span></div>
+                  </div>
+                  <div class="user">
+                    <div class="ava">ny</div>
+                    <div class="handle">@nyatinte<span>Takumi Nakamura</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <figcaption><b>76px / 2行</b>。短いタイトルは最大サイズ。余白が主役になる。</figcaption>
+          </figure>
+
+          <figure>
+            <div class="og d1">
+              <div class="abs">
+                <div class="top">
+                  <div class="mark"></div>
+                  <div class="sitename">nyatinte.com<span> / done</span></div>
+                </div>
+                <div class="title s">
+                  個人サイトのデザインを<br />全部作り直した
+                </div>
+                <div class="summary" style="color: #71767b">詳細はまだありません。</div>
+                <div class="foot">
+                  <div>
+                    <div class="date">2026/08/26</div>
+                    <div class="tags"><span>Design</span></div>
+                  </div>
+                  <div class="user">
+                    <div class="ava">ny</div>
+                    <div class="handle">@nyatinte<span>Takumi Nakamura</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <figcaption>
+              <b>68px / 2行</b>。詳細なしでも「まだありません」で成立させる。
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const dark = document.getElementById('dark');
+      const light = document.getElementById('light');
+      dark.addEventListener('click', () => {
+        document.body.classList.remove('light');
+        dark.classList.add('on');
+        light.classList.remove('on');
+      });
+      light.addEventListener('click', () => {
+        document.body.classList.add('light');
+        light.classList.add('on');
+        dark.classList.remove('on');
+      });
+    </script>
+  </body>
+</html>
