@@ -1,0 +1,926 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OGP 実績カード風 3案</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0b0d;
+        --panel: #101216;
+        --line: #23272e;
+        --text: #e8ebee;
+        --muted: #7c868f;
+        --accent: #38bdf8;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'M PLUS 1p', -apple-system, 'Hiragino Kaku Gothic ProN', sans-serif;
+        font-size: 15px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .head {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: rgba(10, 11, 13, 0.86);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--line);
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .head h1 {
+        font-size: 14.5px;
+        margin: 0;
+        font-weight: 700;
+      }
+      .head .spacer {
+        flex: 1;
+      }
+      .seg {
+        display: flex;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .seg button {
+        font-family: inherit;
+        font-size: 12.5px;
+        padding: 6px 13px;
+        border: none;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+      }
+      .seg button.on {
+        background: var(--text);
+        color: #0a0b0d;
+        font-weight: 700;
+      }
+
+      main {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 22px 20px 80px;
+      }
+
+      .spec {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--panel);
+        padding: 15px 17px;
+        font-size: 13px;
+        line-height: 1.75;
+        margin-bottom: 30px;
+      }
+      .spec h2 {
+        font-size: 11.5px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 8px;
+        font-weight: 500;
+      }
+      .spec ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+      .spec li {
+        margin: 2px 0;
+      }
+      .spec code {
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 12px;
+        background: #1a1e24;
+        border-radius: 4px;
+        padding: 1px 5px;
+      }
+
+      .design {
+        margin-bottom: 52px;
+      }
+      .design > header {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+      }
+      .design > header h2 {
+        font-size: 16px;
+        margin: 0;
+      }
+      .design > header .pill {
+        font-size: 11px;
+        border: 1px solid var(--accent);
+        color: var(--accent);
+        border-radius: 4px;
+        padding: 1px 7px;
+      }
+      .design > header .pill.off {
+        border-color: var(--line);
+        color: var(--muted);
+      }
+      .design > p.desc {
+        color: var(--muted);
+        font-size: 13px;
+        margin: 4px 0 14px;
+      }
+
+      /* ============ OGP canvas ============ */
+      .og {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1200 / 630;
+        container-type: inline-size;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: #0b0d10;
+        color: #e8ebee;
+      }
+      .og .abs {
+        position: absolute;
+        inset: 0;
+      }
+      .og .title,
+      .og .summary {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+      .og .title {
+        -webkit-line-clamp: 3;
+      }
+      .og .summary {
+        -webkit-line-clamp: 2;
+      }
+
+      /* emblem */
+      .emblem {
+        display: block;
+        flex: 0 0 auto;
+      }
+      .emblem .f1 {
+        fill: #0e141c;
+        stroke: rgba(56, 189, 248, 0.45);
+        stroke-width: 2.6;
+      }
+      .emblem .f2 {
+        fill: rgba(56, 189, 248, 0.09);
+        stroke: rgba(56, 189, 248, 0.25);
+        stroke-width: 1.6;
+      }
+      .emblem .gl {
+        fill: #38bdf8;
+      }
+      .emblem .gl-line {
+        fill: none;
+        stroke: #38bdf8;
+        stroke-width: 6;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      /* --- A: row --- */
+      .og.a {
+        background:
+          radial-gradient(90% 130% at 0% 0%, rgba(56, 189, 248, 0.1), transparent 55%),
+          linear-gradient(180deg, #0d1014, #08090b);
+      }
+      .og.a .abs {
+        padding: 5.4cqw 5.6cqw 5cqw;
+        display: flex;
+        flex-direction: column;
+        border-left: 0.6cqw solid rgba(56, 189, 248, 0.7);
+      }
+      .og.a .top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .og.a .mark {
+        display: flex;
+        align-items: center;
+        gap: 1.4cqw;
+        font-size: 1.9cqw;
+        font-weight: 700;
+      }
+      .og.a .mark i {
+        width: 2.8cqw;
+        height: 2.8cqw;
+        border-radius: 0.6cqw;
+        background: linear-gradient(135deg, #38bdf8, #7c3aed);
+        display: block;
+      }
+      .og.a .mark span {
+        color: #7c868f;
+        font-weight: 400;
+      }
+      .og.a .date {
+        font-size: 1.85cqw;
+        color: #7c868f;
+      }
+      .og.a .mid {
+        margin-top: auto;
+        margin-bottom: auto;
+        display: flex;
+        align-items: center;
+        gap: 4.4cqw;
+      }
+      .og.a .emblem {
+        width: 15cqw;
+        height: 15cqw;
+      }
+      .og.a .text {
+        min-width: 0;
+      }
+      .og.a .title {
+        font-size: 4cqw;
+        font-weight: 700;
+        line-height: 1.32;
+      }
+      .og.a .title.s {
+        font-size: 5.67cqw;
+      }
+      .og.a .title.m {
+        font-size: 4.83cqw;
+      }
+      .og.a .summary {
+        margin-top: 1.9cqw;
+        font-size: 2.15cqw;
+        color: #a4adb5;
+        line-height: 1.55;
+      }
+      .og.a .bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .og.a .tags {
+        display: flex;
+        gap: 1cqw;
+      }
+      .og.a .tags span {
+        font-size: 1.7cqw;
+        color: #a4adb5;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 999px;
+        padding: 0.45cqw 1.5cqw;
+      }
+      .og.a .user {
+        display: flex;
+        align-items: center;
+        gap: 1.1cqw;
+        font-size: 1.85cqw;
+      }
+      .og.a .user .av {
+        width: 3.4cqw;
+        height: 3.4cqw;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #38bdf8, #7c3aed 60%, #f91880);
+        display: grid;
+        place-items: center;
+        font-size: 1.4cqw;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      /* --- B: header panel --- */
+      .og.b {
+        background: linear-gradient(180deg, #0d1014, #08090b);
+      }
+      .og.b .abs {
+        display: flex;
+        flex-direction: column;
+      }
+      .og.b .bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 3.4cqw 5.4cqw;
+        border-bottom: 0.12cqw solid rgba(255, 255, 255, 0.08);
+      }
+      .og.b .mark {
+        display: flex;
+        align-items: center;
+        gap: 1.3cqw;
+        font-size: 1.9cqw;
+        font-weight: 700;
+      }
+      .og.b .mark i {
+        width: 2.6cqw;
+        height: 2.6cqw;
+        border-radius: 0.6cqw;
+        background: linear-gradient(135deg, #38bdf8, #7c3aed);
+        display: block;
+      }
+      .og.b .bar .handle {
+        font-size: 1.8cqw;
+        color: #7c868f;
+      }
+      .og.b .body {
+        flex: 1;
+        padding: 0 5.6cqw;
+        display: flex;
+        align-items: center;
+        gap: 4.4cqw;
+        min-height: 0;
+      }
+      .og.b .emblem {
+        width: 15cqw;
+        height: 15cqw;
+      }
+      .og.b .text {
+        min-width: 0;
+      }
+      .og.b .title {
+        font-size: 3.5cqw;
+        font-weight: 700;
+        line-height: 1.32;
+      }
+      .og.b .title.s {
+        font-size: 5.67cqw;
+      }
+      .og.b .title.m {
+        font-size: 4.83cqw;
+      }
+      .og.b .summary {
+        margin-top: 1.9cqw;
+        font-size: 2.15cqw;
+        color: #a4adb5;
+        line-height: 1.55;
+      }
+      .og.b .foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 3.2cqw 5.6cqw;
+        border-top: 0.12cqw solid rgba(255, 255, 255, 0.08);
+        font-size: 1.8cqw;
+        color: #7c868f;
+      }
+
+      /* --- C: centered badge --- */
+      .og.c {
+        background:
+          radial-gradient(70% 80% at 50% 12%, rgba(56, 189, 248, 0.13), transparent 60%),
+          linear-gradient(180deg, #0d1014, #08090b);
+      }
+      .og.c .abs {
+        padding: 5cqw 6cqw;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .og.c .mark {
+        display: flex;
+        align-items: center;
+        gap: 1.2cqw;
+        font-size: 1.85cqw;
+        font-weight: 700;
+        color: #b9c1c9;
+      }
+      .og.c .mark i {
+        width: 2.4cqw;
+        height: 2.4cqw;
+        border-radius: 0.5cqw;
+        background: linear-gradient(135deg, #38bdf8, #7c3aed);
+        display: block;
+      }
+      .og.c .emblem {
+        width: 12.4cqw;
+        height: 12.4cqw;
+        margin-top: 2.6cqw;
+      }
+      .og.c .title {
+        margin-top: 2.4cqw;
+        font-size: 4.3cqw;
+        font-weight: 700;
+        line-height: 1.32;
+      }
+      .og.c .title.s {
+        font-size: 5.6cqw;
+      }
+      .og.c .title.m {
+        font-size: 4.9cqw;
+      }
+      .og.c .summary {
+        margin-top: 1.7cqw;
+        font-size: 2.1cqw;
+        color: #a4adb5;
+        line-height: 1.55;
+      }
+      .og.c .foot {
+        margin-top: auto;
+        font-size: 1.85cqw;
+        color: #7c868f;
+      }
+
+      /* ============ X preview ============ */
+      .xlabel {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 20px 0 8px;
+        letter-spacing: 0.05em;
+      }
+      .xtweet {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px 16px 12px;
+        background: #000;
+      }
+      body.light .xtweet {
+        background: #fff;
+        border-color: #e1e8ed;
+      }
+      body.light {
+        --bg: #f7f9f9;
+        --panel: #fff;
+        --line: #cfd9de;
+        --text: #0f1419;
+        --muted: #536471;
+        background: var(--bg);
+        color: var(--text);
+      }
+      body.light .head {
+        background: rgba(255, 255, 255, 0.86);
+      }
+      body.light .spec code {
+        background: #eff3f4;
+      }
+      .xtweet .row {
+        display: flex;
+        gap: 10px;
+      }
+      .xtweet .av {
+        width: 38px;
+        height: 38px;
+        border-radius: 999px;
+        flex: 0 0 auto;
+        background: linear-gradient(135deg, #38bdf8, #7c3aed 60%, #f91880);
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .xtweet .who {
+        font-size: 14.5px;
+        line-height: 1.25;
+      }
+      .xtweet .who span {
+        color: var(--muted);
+        font-weight: 400;
+      }
+      .xtweet .text {
+        margin-top: 2px;
+        font-size: 14.5px;
+      }
+      .xtweet .card {
+        margin-top: 10px;
+        margin-left: 48px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .xtweet .card .thumb .og {
+        border: none;
+        border-radius: 0;
+      }
+      .xtweet .card .meta {
+        padding: 10px 12px 12px;
+      }
+      .xtweet .card .domain {
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+      .xtweet .card .cardtitle {
+        font-size: 14.5px;
+        margin-top: 2px;
+      }
+      .xtweet .card .carddesc {
+        font-size: 13.5px;
+        color: var(--muted);
+        margin-top: 2px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .dup {
+        display: inline-block;
+        font-size: 11px;
+        color: #f91880;
+        border: 1px solid rgba(249, 24, 128, 0.5);
+        border-radius: 4px;
+        padding: 0 6px;
+        margin-left: 6px;
+        vertical-align: 1px;
+      }
+
+      .variations {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+      @media (max-width: 640px) {
+        .variations {
+          grid-template-columns: 1fr;
+        }
+      }
+      .variations figure {
+        margin: 0;
+      }
+      .variations figcaption {
+        font-size: 12.5px;
+        color: var(--muted);
+        margin-top: 8px;
+      }
+      .variations .og .title {
+        -webkit-line-clamp: 3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="head">
+      <h1>OGP 実績カード風 3案</h1>
+      <div class="spacer"></div>
+      <div class="seg">
+        <button id="dark" class="on">ダーク</button>
+        <button id="light">ライト</button>
+      </div>
+    </div>
+
+    <main>
+      <div class="spec">
+        <h2>方針</h2>
+        <ul>
+          <li>OGP 画像だけを実績カード風にする。アプリの一覧UIは通常のデザインのまま。</li>
+          <li><b>階級もエンブレムも無し</b>。GOLD / SILVER / BRONZE を入れず、アイコンも使わない。縦線とタイポだけで見せる。</li>
+          <li>実在ゲームの名称・アイコン・画面は使わない。構造（縦線＋タイトル＋一言＋メタ）だけを参考にする。</li>
+          <li>数字は <code>1200 × 630</code>、<code>summary_large_image</code>、タイトルは最大3行。</li>
+        </ul>
+      </div>
+
+      <!-- ============ A ============ -->
+      <section class="design">
+        <header><h2>A. 実績行の拡大</h2><span class="pill">採用</span></header>
+        <p class="desc">
+          一覧の1行をそのまま大きくした構図。左端の縦線と、タイトル・一言だけで「実績カード」だと伝わる。<b>エンブレムは使わない。</b>
+        </p>
+        <div class="og a">
+          <div class="abs">
+            <div class="top">
+              <div class="mark"><i></i>nyatinte.com<span>/done</span></div>
+              <div class="date">2026/09/16</div>
+            </div>
+            <div class="mid">
+              <div class="text">
+                <div class="title">
+                  Cloudflare Workers の OGP 画像生成を<br />
+                  Satori から Takumi に移行して、<br />
+                  日本語の折返しを制御できるようにした
+                </div>
+                <div class="summary">
+                  日本語の文節で折り返すために BudouX を挟んだ。フォントは M PLUS 1p をサブセットで同梱。
+                </div>
+              </div>
+            </div>
+            <div class="bottom">
+              <div class="tags"><span>Cloudflare</span><span>OGP</span><span>Rust</span></div>
+              <div class="user"><div class="av">ny</div>@nyatinte</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="xlabel">X での見え方</div>
+        <div class="xtweet">
+          <div class="row">
+            <div class="av">ny</div>
+            <div>
+              <div class="who"><b>Takumi Nakamura</b> <span>@nyatinte · 3日前</span></div>
+              <div class="text">OGP、日本語の折返しだけ手で組んでる。</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="thumb">
+              <div class="og a">
+                <div class="abs">
+                  <div class="top">
+                    <div class="mark"><i></i>nyatinte.com<span>/done</span></div>
+                    <div class="date">2026/09/16</div>
+                  </div>
+                  <div class="mid">
+                    <div class="text">
+                      <div class="title">
+                        Cloudflare Workers の OGP 画像生成を<br />
+                        Satori から Takumi に移行して、<br />
+                        日本語の折返しを制御できるようにした
+                      </div>
+                      <div class="summary">
+                        日本語の文節で折り返すために BudouX を挟んだ。フォントは M PLUS 1p をサブセットで同梱。
+                      </div>
+                    </div>
+                  </div>
+                  <div class="bottom">
+                    <div class="tags"><span>Cloudflare</span><span>OGP</span></div>
+                    <div class="user"><div class="av">ny</div>@nyatinte</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="meta">
+              <div class="domain">nyatinte.com</div>
+              <div class="cardtitle">
+                Cloudflare Workers の OGP 画像生成を Takumi に移行した<span class="dup">画像内と重複</span>
+              </div>
+              <div class="carddesc">
+                Satori をやめて、日本語の折返しを BudouX で制御できるようにした。
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ B ============ -->
+      <section class="design">
+        <header><h2>B. ヘッダ付きパネル</h2><span class="pill off">不採用</span></header>
+        <p class="desc">
+          上にサイト名のバーを置いて、アプリのパネルを切り取ったように見せる。実績の一覧画面らしさが一番強い。
+        </p>
+        <div class="og b">
+          <div class="abs">
+            <div class="bar">
+              <div class="mark"><i></i>nyatinte.com / done</div>
+              <div class="handle">@nyatinte</div>
+            </div>
+            <div class="body">
+              <svg class="emblem" viewBox="0 0 100 100" aria-hidden="true">
+                <path class="f1" d="M50 5 89 27.5v45L50 95 11 72.5v-45z" />
+                <path class="f2" d="M50 15 80 32.5v35L50 85 20 67.5v-35z" />
+                <path class="gl" d="M57 27 35 54h11.5l-4 21 22-29H53z" />
+              </svg>
+              <div class="text">
+                <div class="title">
+                  Cloudflare Workers の OGP 画像生成を<br />
+                  Satori から Takumi に移行して、<br />
+                  日本語の折返しを制御できるようにした
+                </div>
+                <div class="summary">
+                  日本語の文節で折り返すために BudouX を挟んだ。フォントは M PLUS 1p をサブセットで同梱。
+                </div>
+              </div>
+            </div>
+            <div class="foot">
+              <span>2026/09/16</span>
+              <span>Cloudflare · OGP · Rust</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="xlabel">X での見え方</div>
+        <div class="xtweet">
+          <div class="row">
+            <div class="av">ny</div>
+            <div>
+              <div class="who"><b>Takumi Nakamura</b> <span>@nyatinte · 3日前</span></div>
+              <div class="text">OGP、日本語の折返しだけ手で組んでる。</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="thumb">
+              <div class="og b">
+                <div class="abs">
+                  <div class="bar">
+                    <div class="mark"><i></i>nyatinte.com / done</div>
+                    <div class="handle">@nyatinte</div>
+                  </div>
+                  <div class="body">
+                    <svg class="emblem" viewBox="0 0 100 100" aria-hidden="true">
+                      <path class="f1" d="M50 5 89 27.5v45L50 95 11 72.5v-45z" />
+                      <path class="f2" d="M50 15 80 32.5v35L50 85 20 67.5v-35z" />
+                      <path class="gl" d="M57 27 35 54h11.5l-4 21 22-29H53z" />
+                    </svg>
+                    <div class="text">
+                      <div class="title">
+                        Cloudflare Workers の OGP 画像生成を<br />
+                        Satori から Takumi に移行して、<br />
+                        日本語の折返しを制御できるようにした
+                      </div>
+                      <div class="summary">
+                        日本語の文節で折り返すために BudouX を挟んだ。
+                      </div>
+                    </div>
+                  </div>
+                  <div class="foot">
+                    <span>2026/09/16</span>
+                    <span>Cloudflare · OGP</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="meta">
+              <div class="domain">nyatinte.com</div>
+              <div class="cardtitle">
+                Cloudflare Workers の OGP 画像生成を Takumi に移行した<span class="dup">画像内と重複</span>
+              </div>
+              <div class="carddesc">
+                Satori をやめて、日本語の折返しを BudouX で制御できるようにした。
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ C ============ -->
+      <section class="design">
+        <header><h2>C. 中央バッジ</h2><span class="pill off">不採用</span></header>
+        <p class="desc">
+          エンブレムを主役に中央へ。表彰状に近い。タイトルが短い実績ほど映える。
+        </p>
+        <div class="og c">
+          <div class="abs">
+            <div class="mark"><i></i>nyatinte.com / done</div>
+            <svg class="emblem" viewBox="0 0 100 100" aria-hidden="true">
+              <path class="f1" d="M50 5 89 27.5v45L50 95 11 72.5v-45z" />
+              <path class="f2" d="M50 15 80 32.5v35L50 85 20 67.5v-35z" />
+              <path class="gl" d="M57 27 35 54h11.5l-4 21 22-29H53z" />
+            </svg>
+            <div class="title s">MCP サーバーを Worker に同居させた</div>
+            <div class="summary">Cloudflare Access のサービス トークンで認証して、同じ Worker から生やす。</div>
+            <div class="foot">2026/09/09 · @nyatinte · Cloudflare</div>
+          </div>
+        </div>
+
+        <div class="xlabel">X での見え方</div>
+        <div class="xtweet">
+          <div class="row">
+            <div class="av">ny</div>
+            <div>
+              <div class="who"><b>Takumi Nakamura</b> <span>@nyatinte · 1週間前</span></div>
+              <div class="text">MCP、Worker に同居させた。</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="thumb">
+              <div class="og c">
+                <div class="abs">
+                  <div class="mark"><i></i>nyatinte.com / done</div>
+                  <svg class="emblem" viewBox="0 0 100 100" aria-hidden="true">
+                    <path class="f1" d="M50 5 89 27.5v45L50 95 11 72.5v-45z" />
+                    <path class="f2" d="M50 15 80 32.5v35L50 85 20 67.5v-35z" />
+                    <path class="gl" d="M57 27 35 54h11.5l-4 21 22-29H53z" />
+                  </svg>
+                  <div class="title s">MCP サーバーを Worker に同居させた</div>
+                  <div class="summary">Cloudflare Access のサービス トークンで認証する。</div>
+                  <div class="foot">2026/09/09 · @nyatinte</div>
+                </div>
+              </div>
+            </div>
+            <div class="meta">
+              <div class="domain">nyatinte.com</div>
+              <div class="cardtitle">
+                MCP サーバーを SvelteKit の Worker に同居させた<span class="dup">画像内と重複</span>
+              </div>
+              <div class="carddesc">Cloudflare Access のサービス トークンで認証する。</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ variations ============ -->
+      <section class="design">
+        <header><h2>A案のバリエーション</h2></header>
+        <p class="desc">
+          長いタイトル・短いタイトル・詳細なし・タグが少ないケースが流れ込んでも崩れないか。
+        </p>
+        <div class="variations">
+          <figure>
+            <div class="og a">
+              <div class="abs">
+                <div class="top">
+                  <div class="mark"><i></i>nyatinte.com<span>/done</span></div>
+                  <div class="date">2026/09/02</div>
+                </div>
+                <div class="mid">
+                  <div class="text">
+                    <div class="title m">
+                      pnpm から Vite+ に移行して<br />
+                      設定ファイルを1枚にした
+                    </div>
+                    <div class="summary">lint / fmt / test / build が全部 vp から生える。</div>
+                  </div>
+                </div>
+                <div class="bottom">
+                  <div class="tags"><span>Vite+</span><span>DX</span></div>
+                  <div class="user"><div class="av">ny</div>@nyatinte</div>
+                </div>
+              </div>
+            </div>
+            <figcaption>中間の長さ。タイトルは 58px / 2行。</figcaption>
+          </figure>
+
+          <figure>
+            <div class="og a">
+              <div class="abs">
+                <div class="top">
+                  <div class="mark"><i></i>nyatinte.com<span>/done</span></div>
+                  <div class="date">2026/09/09</div>
+                </div>
+                <div class="mid">
+                  <div class="text">
+                    <div class="title s">MCP サーバーを<br />Worker に同居させた</div>
+                    <div class="summary">Cloudflare Access のサービス トークンで認証する。</div>
+                  </div>
+                </div>
+                <div class="bottom">
+                  <div class="tags"><span>MCP</span><span>SvelteKit</span></div>
+                  <div class="user"><div class="av">ny</div>@nyatinte</div>
+                </div>
+              </div>
+            </div>
+            <figcaption>短いタイトルは 68px / 2行。余白が主役になる。</figcaption>
+          </figure>
+
+          <figure>
+            <div class="og a">
+              <div class="abs">
+                <div class="top">
+                  <div class="mark"><i></i>nyatinte.com<span>/done</span></div>
+                  <div class="date">2026/08/26</div>
+                </div>
+                <div class="mid">
+                  <div class="text">
+                    <div class="title m">個人サイトのデザインを<br />全部作り直した</div>
+                    <div class="summary" style="color: #7c868f">詳細はまだありません。</div>
+                  </div>
+                </div>
+                <div class="bottom">
+                  <div class="tags"><span>Design</span></div>
+                  <div class="user"><div class="av">ny</div>@nyatinte</div>
+                </div>
+              </div>
+            </div>
+            <figcaption>詳細なしでも成立。「詳細はまだありません。」を静かに置く。</figcaption>
+          </figure>
+
+          <figure>
+            <div class="og a">
+              <div class="abs">
+                <div class="top">
+                  <div class="mark"><i></i>nyatinte.com<span>/done</span></div>
+                  <div class="date">2026/08/05</div>
+                </div>
+                <div class="mid">
+                  <div class="text">
+                    <div class="title m">
+                      Varlock で環境変数を管理しはじめた
+                    </div>
+                    <div class="summary">ローカルと本番の差分を1か所に寄せて、Secrets への注入を自動化した。</div>
+                  </div>
+                </div>
+                <div class="bottom">
+                  <div class="tags"><span>DX</span></div>
+                  <div class="user"><div class="av">ny</div>@nyatinte</div>
+                </div>
+              </div>
+            </div>
+            <figcaption>タグが少なく一言が長いケース。行数が増えても密度が保てる。</figcaption>
+          </figure>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const dark = document.getElementById('dark');
+      const light = document.getElementById('light');
+      dark.addEventListener('click', () => {
+        document.body.classList.remove('light');
+        dark.classList.add('on');
+        light.classList.remove('on');
+      });
+      light.addEventListener('click', () => {
+        document.body.classList.add('light');
+        light.classList.add('on');
+        dark.classList.remove('on');
+      });
+    </script>
+  </body>
+</html>
