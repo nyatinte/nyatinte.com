@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "skills": {
+    "cloudflare": {
+      "source": "cloudflare/skills",
+      "sourceType": "github",
+      "skillPath": "skills/cloudflare/SKILL.md",
+      "computedHash": "c9b25ff6c3be26e74162e7df183990f8ee76ad6d1ee37d9ca50b4dd23cb06ad1"
+    },
+    "cloudflare-one": {
+      "source": "cloudflare/skills",
+      "sourceType": "github",
+      "skillPath": "skills/cloudflare-one/SKILL.md",
+      "computedHash": "b59b87e0f533dce3bf32d7e46f6f14f1d01bab5158b59679c8f4644522df3447"
+    },
+    "d1-drizzle-schema": {
+      "source": "jezweb/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/cloudflare/skills/d1-drizzle-schema/SKILL.md",
+      "computedHash": "5289811403c82a76bdde0b65305ba869896a66db31be5bb57a32c4ae966110ac"
+    },
+    "d1-migration": {
+      "source": "jezweb/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/cloudflare/skills/d1-migration/SKILL.md",
+      "computedHash": "caf6a0ccf6a65ad496d219576ebcfe6f6708d50ea502baf75b6c60766275d218"
+    },
+    "mcp-builder": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/mcp-builder/SKILL.md",
+      "computedHash": "826e46adf81e1372282e205c34e1a2ee876e72148007726e4a2512599d2fef7b"
+    },
+    "shadcn-svelte": {
+      "source": "huntabyte/shadcn-svelte",
+      "sourceType": "github",
+      "skillPath": "skills/shadcn-svelte/SKILL.md",
+      "computedHash": "d4f3f983a71466a86649985a8a7fbce47da29f44de3a9d02540bbcf3167134e0"
+    },
+    "svelte-code-writer": {
+      "source": "sveltejs/ai-tools",
+      "sourceType": "github",
+      "skillPath": "plugins/claude/svelte/skills/svelte-code-writer/SKILL.md",
+      "computedHash": "6f78193a79906175595ce8e4ca8d726da350eb99035a9544b6553620df5673a1"
+    },
+    "svelte-core-bestpractices": {
+      "source": "sveltejs/ai-tools",
+      "sourceType": "github",
+      "skillPath": "plugins/claude/svelte/skills/svelte-core-bestpractices/SKILL.md",
+      "computedHash": "98b4ee346ac45e13740c9f3353b604d5c6e844c96cdc8867052fa961cbdb525d"
+    },
+    "tailwind-4-docs": {
+      "source": "lombiq/tailwind-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/tailwind-4-docs/SKILL.md",
+      "computedHash": "de756f5f03cc20a029983875b00b9dfef9d0ba8567d242c5cbb0262037d0a134"
+    },
+    "varlock": {
+      "source": "dmno-dev/varlock",
+      "sourceType": "github",
+      "skillPath": "skills/varlock/SKILL.md",
+      "computedHash": "2fe44911234ed0ac31f10d1127b8b6ea54ee1f51f11da4dfa70050ee4075ca9e"
+    },
+    "vite-plus": {
+      "source": "uinaf/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/vite-plus/SKILL.md",
+      "computedHash": "36472163afd7aa3631e4028dec884c817d0e9711129a290da2a257b4f75de7b8"
+    },
+    "vitest": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vitest/SKILL.md",
+      "computedHash": "943d436114c677802426741980146c07560bf375297666b03062444f4b98a785"
+    },
+    "workers-best-practices": {
+      "source": "cloudflare/skills",
+      "sourceType": "github",
+      "skillPath": "skills/workers-best-practices/SKILL.md",
+      "computedHash": "61834fa098e16280aae54e584f5a16e047391790b1e1e4995c0e9a111d6d75c3"
+    },
+    "wrangler": {
+      "source": "cloudflare/skills",
+      "sourceType": "github",
+      "skillPath": "skills/wrangler/SKILL.md",
+      "computedHash": "4d247a243fec7e23f1247976e0e491520cb0feb397c5477022551e7b4f5cdd93"
+    }
+  }
+}
