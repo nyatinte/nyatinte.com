@@ -23,11 +23,17 @@ export default defineConfig(({ mode }) => ({
     environment: "node",
     include: ["src/**/*.test.ts"],
   },
-  fmt: {},
+  fmt: {
+    ignorePatterns: [".agents/**", "plan-docs/**", "AGENTS.md", "README.md", "skills-lock.json"],
+    svelte: true,
+  },
   lint: {
     ignorePatterns: [".agents/**", "plan-docs/**", "AGENTS.md", "README.md"],
     jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
     rules: { "vite-plus/prefer-vite-plus-imports": "error" },
     options: { typeAware: true, typeCheck: true },
+  },
+  staged: {
+    "*.{js,ts,tsx,vue,svelte}": "vp check --fix",
   },
 }));
