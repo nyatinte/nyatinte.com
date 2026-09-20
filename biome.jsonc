@@ -1,0 +1,43 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "extends": ["ultracite/biome/core", "ultracite/biome/svelte"],
+  "files": {
+    "includes": ["**/*.{js,jsx,mjs,cjs,ts,tsx,json,jsonc,css,svelte}"]
+  },
+  "linter": {
+    "includes": [
+      "**/*.{js,jsx,mjs,cjs,ts,tsx,json,jsonc,css,svelte}",
+      "!**/.agents/**",
+      "!plan-docs/**",
+      "!skills-lock.json"
+    ]
+  },
+  "formatter": {
+    "includes": [
+      "**/*.{js,jsx,mjs,cjs,ts,tsx,json,jsonc,css,svelte}",
+      "!**/.agents/**",
+      "!plan-docs/**",
+      "!skills-lock.json"
+    ]
+  },
+  "assist": {
+    "includes": [
+      "**/*.{js,jsx,mjs,cjs,ts,tsx,json,jsonc,css,svelte}",
+      "!**/.agents/**",
+      "!plan-docs/**",
+      "!skills-lock.json"
+    ]
+  },
+  "overrides": [
+    {
+      "includes": ["**/*.d.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noNamespace": "off"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -12,7 +12,10 @@ export default [
       },
     },
     rules: {
-      "svelte/button-has-type": "error",
+      "svelte/no-at-debug-tags": "off",
+      "svelte/no-at-html-tags": "off",
+      "svelte/no-unnecessary-state-wrap": "off",
+      "svelte/require-each-key": "off",
     },
   },
 ];
