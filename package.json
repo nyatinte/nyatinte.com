@@ -1,0 +1,39 @@
+{
+  "name": "nyatinte-com",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev",
+    "check": "wrangler types && svelte-kit sync && vp check && svelte-check --tsconfig ./tsconfig.json",
+    "test": "vp test --run",
+    "build": "wrangler types && svelte-kit sync && vp build",
+    "preview": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --port 4173",
+    "dev:worker": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --local --port 8787",
+    "types": "wrangler types",
+    "deploy": "pnpm build && varlock-wrangler deploy",
+    "prepare": "svelte-kit sync"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-cloudflare": "8.0.0-next.7",
+    "@sveltejs/kit": "3.0.0-next.27",
+    "@sveltejs/vite-plugin-svelte": "7.3.0",
+    "@tailwindcss/vite": "4.3.3",
+    "@types/node": "24.13.6",
+    "@varlock/cloudflare-integration": "1.6.0",
+    "@varlock/vite-integration": "1.5.2",
+    "svelte": "5.57.1",
+    "svelte-check": "4.7.6",
+    "tailwindcss": "4.3.3",
+    "typescript": "6.0.3",
+    "varlock": "1.20.0",
+    "vite": "catalog:",
+    "vite-plus": "catalog:",
+    "vitest": "catalog:",
+    "wrangler": "4.135.0"
+  },
+  "engines": {
+    "node": "24.21.0"
+  },
+  "packageManager": "pnpm@12.4.2"
+}

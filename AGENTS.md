@@ -17,7 +17,7 @@
 
 | 領域 | 採用 |
 | --- | --- |
-| フレームワーク | SvelteKit 3 (RC) + Svelte 5 |
+| フレームワーク | SvelteKit 3.0.0-next.27 + Svelte 5 |
 | 言語 | TypeScript 6 |
 | ツールチェーン | Vite+ (`vp`) |
 | バリデーション | valibot |
@@ -36,11 +36,11 @@
 実装が進んだら確定させる。現時点の想定:
 
 ```sh
-vp dev        # 開発サーバー
-vp check      # fmt + lint + typecheck
-vp test       # Vitest
-vp build      # ビルド
-wrangler deploy
+pnpm dev      # 開発サーバー
+pnpm check    # fmt + lint + typecheck
+pnpm test     # Vitest
+pnpm build    # ビルド
+pnpm deploy   # ビルドしてデプロイ
 ```
 
 ## スキル
@@ -99,4 +99,4 @@ wrangler deploy
 - M PLUS 1p 700 のサブセットが Workers 無料枠（gzip 3MiB）に収まるか
 - Cloudflare Access のサービス トークンを MCP クライアントが送れるか
 - `@shadcn/lint` が Svelte で機能するか
-- SvelteKit 3 RC / Vite+ beta が実用に耐えるか
+- SvelteKit 3 の next prerelease と Vite+ beta が実用に耐えるか

@@ -1,65 +1,54 @@
-# Astro Starter Kit: Blog
+# nyatinte.com
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+最小構成の SvelteKit 3 + Cloudflare Workers アプリです。`GET /` が `200` と `Hello World` を返します。
+
+## 開発
+
+Node.js と pnpm はリポジトリの指定バージョンを使用します。
 
 ```sh
-pnpm create astro@latest -- --template blog
+pnpm install
+pnpm dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+主なコマンド:
 
-Features:
+| コマンド | 内容 |
+| --- | --- |
+| `pnpm check` | Wrangler 型生成、整形、lint、型チェック |
+| `pnpm test` | HTTP テストを実行 |
+| `pnpm build` | Cloudflare Workers 用にビルド |
+| `pnpm preview` | ビルド済み Worker を `:4173` で確認 |
+| `pnpm dev:worker` | ビルド済み Worker を `:8787` で起動 |
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+### ローカル Worker の HTTP テスト
 
-## 🚀 Project Structure
+ビルド済み Worker を 2 つのターミナルで確認します。`wrangler dev` ではなく `varlock-wrangler dev` を使うのは、Varlock のランタイム初期化に必要なためです。
 
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
+ターミナル 1:
+```sh
+pnpm build
+pnpm dev:worker
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+ターミナル 2:
+```sh
+pnpm test
+```
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+テスト対象 URL を変更する場合は `VITE_HELLO_WORLD_URL` を指定できます。
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+## デプロイ
 
-Any static assets, like images, can be placed in the `public/` directory.
+デプロイ先は既存の Custom Domain `https://nyatinte.com` です。Custom Domain は `nyatinte-com` Worker に紐付いており、DNS 変更は必要ありません。デプロイすると、現在の Next.js/OpenNext の応答を Hello World に置き換えます。`wrangler.jsonc` の `keep_vars: true` により、既存の Cloudflare vars を保持したまま、`.env.schema` に定義した vars を更新します。Varlock が渡す secrets は追加扱いで、既存の secrets は削除されません。`workers.dev` と Preview URL は使用しません。
 
-## 🧞 Commands
+GitHub Actions は pull request と `main` への push で検証を実行します。`main` への push のみ、検証成功後に `varlock-wrangler deploy` を実行し、`https://nyatinte.com` への HTTP smoke test を行います。`main` の新しい実行が始まると古い実行はキャンセルされます。Actions には `CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` の Secrets が必要です。
 
-All commands are run from the root of the project, from a terminal:
+Worker 名は `nyatinte-com` です。
 
-| Command                | Action                                           |
-| :--------------------- | :----------------------------------------------- |
-| `pnpm install`         | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+## 構成
 
-## 👀 Want to learn more?
-
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+- `src/routes/+page.svelte`: Hello World ページ
+- `src/routes/hello-world.test.ts`: 実際の Worker に対する HTTP テスト
+- `wrangler.jsonc`: Worker、静的アセット、Observability の設定
+- `.env.schema`: Varlock の環境変数スキーマ

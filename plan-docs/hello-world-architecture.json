@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Hello World — 完成予定のシステム構成",
+    "quality_profile": "showcase",
+    "viewBox": [1380, 640]
+  },
+  "components": [
+    {
+      "id": "github-repository",
+      "type": "external",
+      "label": "GitHub リポジトリ",
+      "sublabel": "nyatinte/nyatinte.com",
+      "tag": "private · feat/hello-world-cloudflare",
+      "pos": [70, 60],
+      "size": [250, 100]
+    },
+    {
+      "id": "github-actions-ci",
+      "type": "backend",
+      "label": "GitHub Actions",
+      "sublabel": "PR CI / main deploy",
+      "tag": "凍結 install · format · lint · typecheck · build · smoke",
+      "pos": [380, 60],
+      "size": [270, 100]
+    },
+    {
+      "id": "sveltekit-build",
+      "type": "backend",
+      "label": "SvelteKit ビルド",
+      "sublabel": "3.0.0-next.27 · Svelte 5.57.1",
+      "tag": "TypeScript 6 · Tailwind 4",
+      "pos": [710, 60],
+      "size": [280, 100]
+    },
+    {
+      "id": "wrangler-varlock",
+      "type": "backend",
+      "label": "Wrangler + Varlock",
+      "sublabel": "build-time env · adapter-cloudflare 8",
+      "tag": "Vite+ 0.3.3 · pnpm 12 · Node 24",
+      "pos": [1050, 60],
+      "size": [280, 100]
+    },
+    {
+      "id": "public-browser",
+      "type": "external",
+      "label": "公開ブラウザ",
+      "sublabel": "nyatinte.com",
+      "tag": "HTTPS / GET /",
+      "pos": [70, 280],
+      "size": [230, 100]
+    },
+    {
+      "id": "cloudflare-worker",
+      "type": "cloud",
+      "label": "Cloudflare Worker",
+      "sublabel": "nyatinte-com · custom domain",
+      "tag": "workers.dev disabled",
+      "pos": [380, 280],
+      "size": [290, 100]
+    },
+    {
+      "id": "hello-world-route",
+      "type": "frontend",
+      "label": "SvelteKit Hello World",
+      "sublabel": "GET / → HTTP 200",
+      "tag": "SSR route",
+      "pos": [750, 280],
+      "size": [290, 100]
+    },
+    {
+      "id": "static-assets",
+      "type": "cloud",
+      "label": "静的アセット",
+      "sublabel": "Worker 配信",
+      "tag": "adapter-cloudflare 8",
+      "pos": [1120, 460],
+      "size": [220, 100]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "配布・ビルド",
+      "wraps": ["github-repository", "github-actions-ci", "sveltekit-build", "wrangler-varlock"],
+      "pad": 34
+    },
+    {
+      "kind": "region",
+      "label": "公開ランタイム",
+      "wraps": ["public-browser", "cloudflare-worker", "hello-world-route", "static-assets"],
+      "pad": 34
+    }
+  ],
+  "connections": [
+    {
+      "id": "push-to-ci",
+      "from": "github-repository",
+      "to": "github-actions-ci",
+      "label": "git push / PR",
+      "variant": "emphasis",
+      "labelDy": 74
+    },
+    {
+      "id": "ci-to-build",
+      "from": "github-actions-ci",
+      "to": "sveltekit-build",
+      "label": "quality gates",
+      "labelDy": 74
+    },
+    {
+      "id": "build-to-deploy",
+      "from": "sveltekit-build",
+      "to": "wrangler-varlock",
+      "label": "build artifact",
+      "labelDy": 81
+    },
+    {
+      "id": "deploy-to-worker",
+      "from": "wrangler-varlock",
+      "to": "cloudflare-worker",
+      "label": "Wrangler deploy",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "request-to-worker",
+      "from": "public-browser",
+      "to": "cloudflare-worker",
+      "label": "HTTPS / GET /",
+      "variant": "emphasis"
+    },
+    {
+      "id": "worker-to-route",
+      "from": "cloudflare-worker",
+      "to": "hello-world-route",
+      "label": "SvelteKit SSR"
+    },
+    {
+      "id": "worker-to-assets",
+      "from": "cloudflare-worker",
+      "to": "static-assets",
+      "label": "static assets",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "完成予定",
+      "items": [
+        "SvelteKit 3.0.0-next.27 + Svelte 5.57.1 の Hello World",
+        "Cloudflare adapter 8 が Worker SSR と静的アセットを生成"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "品質ゲート",
+      "items": [
+        "PR で frozen install、format / lint / typecheck / build を実行",
+        "実 Worker の HTTP smoke が通った main だけを配布"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "公開結果",
+      "items": [
+        "nyatinte.com → nyatinte-com が HTTPS GET / に HTTP 200 Hello World を返す",
+        "CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_API_TOKEN は deploy 専用で図には値を載せない"
+      ]
+    }
+  ]
+}

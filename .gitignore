@@ -12,6 +12,9 @@ dist/
 .env
 .env.*
 !.env.example
+!.env.schema
+env.d.ts
+worker-configuration.d.ts
 
 # misc
 .DS_Store
