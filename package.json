@@ -2,17 +2,22 @@
   "name": "nyatinte-com",
   "version": "0.0.0",
   "private": true,
+  "author": {
+    "name": "nyatinte",
+    "url": "https://nyatinte.com"
+  },
   "type": "module",
   "scripts": {
     "dev": "vp dev",
-    "check": "wrangler types && svelte-kit sync && vp check && svelte-check --tsconfig ./tsconfig.json",
+    "check": "wrangler types && svelte-kit sync && vp check && pnpm run lint:svelte && svelte-check --tsconfig ./tsconfig.json",
+    "lint:svelte": "eslint \"src/**/*.{svelte,svelte.js,svelte.ts}\"",
     "test": "vp test --run",
     "build": "wrangler types && svelte-kit sync && vp build",
     "preview": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --port 4173",
     "dev:worker": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --local --port 8787",
     "types": "wrangler types",
     "deploy": "pnpm build && varlock-wrangler deploy",
-    "prepare": "svelte-kit sync"
+    "prepare": "svelte-kit sync && vp config --no-agent --hooks"
   },
   "devDependencies": {
     "@sveltejs/adapter-cloudflare": "8.0.0-next.7",
@@ -20,8 +25,11 @@
     "@sveltejs/vite-plugin-svelte": "7.3.0",
     "@tailwindcss/vite": "4.3.3",
     "@types/node": "24.13.6",
+    "@typescript-eslint/parser": "8.70.0",
     "@varlock/cloudflare-integration": "1.6.0",
     "@varlock/vite-integration": "1.5.2",
+    "eslint": "10.11.0",
+    "eslint-plugin-svelte": "3.23.0",
     "svelte": "5.57.1",
     "svelte-check": "4.7.6",
     "tailwindcss": "4.3.3",

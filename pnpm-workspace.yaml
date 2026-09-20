@@ -1,20 +1,11 @@
 allowBuilds:
   esbuild: true
   workerd: true
+engineStrict: true
 catalog:
   vite: npm:@voidzero-dev/vite-plus-core@0.3.3
   vite-plus: 0.3.3
   vitest: 4.1.11
-minimumReleaseAgeExclude:
-  - "@varlock/cloudflare-integration@1.6.0"
-  - "@varlock/native-helper-darwin@1.20.0"
-  - "@varlock/native-helper-linux-arm64@1.20.0"
-  - "@varlock/native-helper-linux-x64@1.20.0"
-  - "@varlock/native-helper-win32-x64@1.20.0"
-  - svelte@5.57.1
-  - varlock@1.20.0
-  # Requested Node.js 24 types release; published 2026-09-19 and within the age window.
-  - "@types/node@24.13.6"
 overrides:
   vite: "catalog:"
   vitest: "catalog:"
