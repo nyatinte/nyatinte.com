@@ -8,18 +8,20 @@
   },
   "type": "module",
   "scripts": {
-    "dev": "vp dev",
-    "check": "wrangler types && svelte-kit sync && vp check && pnpm run lint:svelte && svelte-check --tsconfig ./tsconfig.json",
-    "lint:svelte": "eslint \"src/**/*.{svelte,svelte.js,svelte.ts}\"",
-    "test": "vp test --run",
     "build": "wrangler types && svelte-kit sync && vp build",
-    "preview": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --port 4173",
-    "dev:worker": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --local --port 8787",
-    "types": "wrangler types",
+    "check": "wrangler types && svelte-kit sync && ultracite check && pnpm run lint:svelte && vp check --no-fmt --no-lint && svelte-check --tsconfig ./tsconfig.json",
     "deploy": "pnpm build && varlock-wrangler deploy",
-    "prepare": "svelte-kit sync && vp config --no-agent --hooks"
+    "dev": "vp dev",
+    "dev:worker": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --local --port 8787",
+    "fix": "ultracite fix",
+    "lint:svelte": "eslint \"src/**/*.{svelte,svelte.js,svelte.ts}\"",
+    "prepare": "svelte-kit sync && vp config --no-agent --hooks",
+    "preview": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --port 4173",
+    "test": "vp test --run",
+    "types": "wrangler types"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.14",
     "@sveltejs/adapter-cloudflare": "8.0.0-next.7",
     "@sveltejs/kit": "3.0.0-next.27",
     "@sveltejs/vite-plugin-svelte": "7.3.0",
@@ -34,14 +36,15 @@
     "svelte-check": "4.7.6",
     "tailwindcss": "4.3.3",
     "typescript": "6.0.3",
+    "ultracite": "7.12.0",
     "varlock": "1.20.0",
     "vite": "catalog:",
     "vite-plus": "catalog:",
     "vitest": "catalog:",
     "wrangler": "4.135.0"
   },
+  "packageManager": "pnpm@12.4.2",
   "engines": {
     "node": "24.21.0"
-  },
-  "packageManager": "pnpm@12.4.2"
+  }
 }

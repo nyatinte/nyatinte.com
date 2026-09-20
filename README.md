@@ -11,14 +11,15 @@ pnpm install
 pnpm dev
 ```
 
-`pnpm install` は SvelteKit の同期と Vite+ の pre-commit hook の設定も行います。手元の hook を無効化する場合は `pnpm exec vp hooks disable` を実行してください。hook は `vp staged` の後に Svelte 専用 lint を実行します。
+`pnpm install` は SvelteKit の同期と Vite+ の pre-commit hook の設定も行います。手元の hook を無効化する場合は `pnpm exec vp hooks disable` を実行してください。hook はステージ済みファイルを Biome と ESLint で検査します。ファイルの修正は `pnpm run fix` で明示的に行います。
 
 主なコマンド:
 
 | コマンド | 内容 |
 | --- | --- |
-| `pnpm check` | Wrangler 型生成、Oxfmt、Oxlint、Svelte lint、型チェック |
+| `pnpm check` | Wrangler 型生成、Ultracite/Biome、Svelte lint、Vite+ の型チェック、Svelte の型チェック |
 | `pnpm run lint:svelte` | `eslint-plugin-svelte` による `.svelte` と runes module の lint |
+| `pnpm run fix` | Ultracite/Biome による JS/TS/JSON/CSS/Svelte の修正 |
 | `pnpm test` | HTTP テストを実行 |
 | `pnpm build` | Cloudflare Workers 用にビルド |
 | `pnpm preview` | ビルド済み Worker を `:4173` で確認 |
@@ -43,13 +44,13 @@ pnpm test
 
 ## デプロイ
 
-デプロイ先は既存の Custom Domain `https://nyatinte.com` です。Custom Domain は `nyatinte-com` Worker に紐付いており、DNS 変更は必要ありません。デプロイすると、現在の Next.js/OpenNext の応答を Hello World に置き換えます。`wrangler.jsonc` の `keep_vars: true` により、既存の Cloudflare vars を保持したまま、`.env.schema` に定義した vars を更新します。Varlock が渡す secrets は追加扱いで、既存の secrets は削除されません。`workers.dev` と Preview URL は使用しません。
+デプロイ先は既存の Custom Domain `https://nyatinte.com` です。Custom Domain は `nyatinte-com` Worker に紐付いており、DNS 変更は必要ありません。デプロイでは既存の `nyatinte-com` Worker と Hello World の応答を更新します。`wrangler.jsonc` の `keep_vars: true` により、既存の Cloudflare vars を保持したまま、`.env.schema` に定義した vars を更新します。Varlock が渡す secrets は追加扱いで、既存の secrets は削除されません。`workers.dev` と Preview URL は使用しません。
 
 GitHub Actions は pull request と `main` への push で検証を実行します。`main` への push のみ、検証成功後に `varlock-wrangler deploy` を実行し、`https://nyatinte.com` への HTTP smoke test を行います。`main` の新しい実行が始まると古い実行はキャンセルされます。Actions には `CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` の Secrets が必要です。
 
 Worker 名は `nyatinte-com` です。
 
-`vp check` は Oxfmt、Oxlint、型チェックをまとめて実行します。Oxfmt の Svelte 対応は `vite.config.ts` の `fmt.svelte: true` で有効化しています。Svelte のテンプレートと `.svelte.ts`/`.svelte.js` の runes module は、`pnpm run lint:svelte` の ESLint 設定で確認します。
+Ultracite/Biome が JS/TS/JSON/CSS と Svelte の format と lint を担当します。Svelte 対応は公式 preset が有効にする Biome の実験的機能です。ESLint は Biome にない Svelte 固有ルールを補完します。`vp check --no-fmt --no-lint` は Vite+ の TypeScript 型チェックだけを残すために使い、Oxfmt/Oxlint は現時点の品質チェックでは実行しません。
 
 ## 構成
 
