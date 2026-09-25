@@ -1,10 +1,11 @@
 import { type ChildProcess, execFileSync, spawn } from "node:child_process";
+import { createServer } from "node:net";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, test } from "vite-plus/test";
 
 const HOST = "127.0.0.1";
-const PORT = 8788;
-const BASE_URL = `http://${HOST}:${PORT}`;
+let PORT = 0;
+let BASE_URL = "";
 const READY_PATH = "/";
 const READY_STATUS = 404;
 const READY_BODY = "Takumi Workers PoC";
@@ -17,6 +18,29 @@ const MIN_IMAGE_BYTES = 1024;
 
 let workerProcess: ChildProcess | undefined;
 let workerOutput = "";
+
+async function getAvailablePort() {
+  const server = createServer();
+
+  await new Promise<void>((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(0, HOST, resolve);
+  });
+
+  const address = server.address();
+  if (!address || typeof address === "string") {
+    await new Promise<void>((resolve, reject) => {
+      server.close((error) => (error ? reject(error) : resolve()));
+    });
+    throw new Error("Could not determine an available local port");
+  }
+
+  const { port } = address;
+  await new Promise<void>((resolve, reject) => {
+    server.close((error) => (error ? reject(error) : resolve()));
+  });
+  return port;
+}
 
 function buildWorker() {
   execFileSync(
@@ -123,6 +147,8 @@ function assertPng(bytes: Uint8Array) {
 describe("Takumi Workers PoC", () => {
   beforeAll(async () => {
     buildWorker();
+    PORT = await getAvailablePort();
+    BASE_URL = `http://${HOST}:${PORT}`;
     startWorker();
     await waitForWorker();
   }, 90_000);
