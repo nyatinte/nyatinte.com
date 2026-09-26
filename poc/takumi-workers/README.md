@@ -2,7 +2,7 @@
 
 Takumi 2.14.0 と BudouX で、日本語実績カードの動的な文字組みをローカル検証します。実績データはソース内の固定フィクスチャだけです。実際の `/done`、D1、Cache API には接続しません。
 
-以前 Cloudflare 上で検証した PoC Worker は 2026-09-26 に削除済みです。現在はローカルのみで検証します。
+以前の `nyatinte-takumi-poc` Worker は 2026-09-26 に削除済みです。固定フィクスチャの動的レンダリングは、別名の `nyatinte-ogp-preview-20260926` でも確認しました。ただし Tail ログの CPU 時間は short 87 ms、long 807 ms で、Workers Free の公称 10 ms を超えています。リクエスト時生成は採用しません。事前生成方式は[別の PoC](../ogp-static/README.md)を参照してください。
 
 ## 実行
 
@@ -57,4 +57,4 @@ python3 poc/takumi-workers/fonts/subset_mplus.py /path/to/MPLUS1p-Bold.ttf
 - Wrangler 4.135.0 の dry-run: Total Upload は 4,255.72 KiB/gzip: 2,018.51 KiB
 - `pnpm run poc:takumi:test` はローカル workerd で 4 種を生成し、PNG signature、IHDR、1200×630 を検証します。保存した複数サンプルも目視確認します。
 - 動的レイアウト・禁則・2 行省略・タグ上限・欠字置換の単体テストは `src/layout.test.ts` にあります。
-- Workers 上の CPU 時間、本番環境の生成時間、実 `/done` との接続、Cache API は未検証です。
+- 別名の確認用 Worker の Tail ログでは short が 87 ms、long が 807 ms でした。4 種とも 200 で返りましたが、Workers Free での安定運用は未確認です。実 `/done` との接続と Cache API は未実装です。

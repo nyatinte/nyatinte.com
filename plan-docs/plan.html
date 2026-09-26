@@ -651,10 +651,9 @@
           <div class="zone">
             <div class="zlabel">OGP 画像</div>
             <div class="row">
-              <div class="node"><b>OG Worker</b><span><code>/og/&lt;slug&gt;.png?v=&lt;rev&gt;</code></span></div>
-              <div class="node"><b>Takumi (WASM)</b><span>1200×630 を描画</span></div>
-              <div class="node"><b>Cache API</b><span>rev 単位で固定キャッシュ</span></div>
-              <div class="node"><b>D1</b><span>実績を読むだけ</span></div>
+              <div class="node"><b>画像配信</b><span>slug + revision の不変 PNG</span></div>
+              <div class="node"><b>事前生成</b><span>Takumi は閲覧リクエストの外で実行</span></div>
+              <div class="node"><b>保存先</b><span>Static Assets / D1 を投稿経路とともに決定</span></div>
             </div>
           </div>
           <div class="arrow">▲ MCP（Streamable HTTP）</div>
@@ -671,8 +670,8 @@
         <h3>Worker の分け方</h3>
         <ul>
           <li><b>本体 Worker</b>（SvelteKit）: 公開ページと <code>/mcp</code>。</li>
-          <li><b>OG Worker</b>: <code>/og/*</code> のみ。Takumi の WASM とフォントでバンドルが膨らむので、本体のデプロイに巻き込まない。<span class="badge check">要確認</span></li>
-          <li>両者は Workerd のルーティングで同じドメインに同居させ、D1 は同じデータベースをバインドする。</li>
+          <li><b>画像配信</b>: Takumi とフォントを閲覧経路に含めない。固定サンプルは別 Worker の Static Assets で検証し、実績ごとの保存先は投稿経路の実装時に決める。<span class="badge check">要確認</span></li>
+          <li>実績固有の画像 URL は PNG の準備ができてから公開する。古い revision の URL は再利用しない。</li>
         </ul>
 
         <h3>環境</h3>
@@ -759,7 +758,7 @@ CREATE UNIQUE INDEX idx_achievement_slug ON achievement(slug);</code></pre>
           <tr><td class="nowrap"><code>/</code></td><td>プロフィール</td><td>対象外。普通のページ</td></tr>
           <tr><td class="nowrap"><code>/done</code></td><td>実績一覧</td><td>実施日降順。タグ絞り込み。20件 + 「もっと見る」</td></tr>
           <tr><td class="nowrap"><code>/done/&lt;slug&gt;</code></td><td>実績詳細</td><td>Markdown 本文。前後の実績への移動</td></tr>
-          <tr><td class="nowrap"><code>/og/&lt;slug&gt;.png</code></td><td>OGP 画像</td><td><code>?v=&lt;revision&gt;</code></td></tr>
+          <tr><td class="nowrap"><code>/og/&lt;slug&gt;/&lt;revision&gt;.png</code></td><td>OGP 画像</td><td>画像ごとに不変 URL</td></tr>
           <tr><td class="nowrap"><code>/mcp</code></td><td>MCP サーバー</td><td>Access 保護。Streamable HTTP</td></tr>
           <tr><td class="nowrap"><code>/privacy</code></td><td>プライバシーポリシー</td><td>静的</td></tr>
           <tr><td class="nowrap">その他</td><td>404 / 410 / 500</td><td>410 は削除済み実績の専用表示</td></tr>
@@ -776,7 +775,7 @@ CREATE UNIQUE INDEX idx_achievement_slug ON achievement(slug);</code></pre>
         <h3>SEO / 共有メタデータ</h3>
         <ul>
           <li>各実績ページに <code>og:title</code> / <code>og:description</code> / <code>og:url</code> / <code>og:type=article</code> / <code>twitter:card=summary_large_image</code>。</li>
-          <li><code>og:image</code> は <code>/og/&lt;slug&gt;.png?v=&lt;revision&gt;</code> の絶対URL ＋ <code>og:image:width</code> / <code>height</code> / <code>alt</code>。</li>
+          <li><code>og:image</code> は生成済みの <code>/og/&lt;slug&gt;/&lt;revision&gt;.png</code> の絶対URL ＋ <code>og:image:width</code> / <code>height</code> / <code>alt</code>。画像が未完成の revision は公開しない。</li>
           <li>一覧ページにも静的OGPを付ける。</li>
           <li>sitemap と RSS は MVP 外（後回し）。</li>
         </ul>
@@ -875,13 +874,13 @@ CREATE UNIQUE INDEX idx_achievement_slug ON achievement(slug);</code></pre>
           <tr><td>カード種別</td><td><code>summary_large_image</code></td></tr>
           <tr><td>構図</td><td>左端の縦線 / サイト名（左上）/ 日付（右上）/ タイトル / 一言 / タグ（左下）/ ハンドル（右下）</td></tr>
           <tr><td>エンブレム</td><td>使わない</td></tr>
-          <tr><td>レンダラ</td><td>Takumi（WASM / Workers 上）</td></tr>
+          <tr><td>レンダラ</td><td>Takumi（閲覧リクエストの外で事前生成）</td></tr>
           <tr><td>フォント</td><td>M PLUS 1p の <b>700 のみ</b>をサブセット同梱</td></tr>
           <tr><td>文字サイズ</td><td>タイトル 76 / 68 / 58 / 48 / 40px の5段階。最大3行。超過は末尾省略</td></tr>
           <tr><td>一言</td><td>26px。最大2行</td></tr>
           <tr><td>タグ</td><td>最大3個。超えたら <code>+N</code></td></tr>
           <tr><td>詳細なし</td><td>「詳細はまだありません。」を一言の位置に置く</td></tr>
-          <tr><td>キャッシュ</td><td>Cache API。キーは slug + revision。<code>immutable</code>、1年</td></tr>
+          <tr><td>配信</td><td>slug + revision の不変 PNG。保存先は投稿経路の実装時に決める。Cache API の miss 時生成は行わない</td></tr>
           <tr><td>生成失敗時</td><td>同梱の汎用カード PNG を 200 で返す</td></tr>
           <tr><td>削除済み</td><td>汎用カードにフォールバック（画像を欠けさせない）</td></tr>
         </table>
@@ -895,17 +894,17 @@ CREATE UNIQUE INDEX idx_achievement_slug ON achievement(slug);</code></pre>
           <li>収まらなければ文字サイズを1段落として再試行する。</li>
         </ol>
 
-        <h3>サイズの見積もり</h3>
+        <h3>事前生成 PoC の計測</h3>
         <table>
-          <tr><th>要素</th><th>gzip</th></tr>
-          <tr><td>Takumi WASM</td><td>約 1.5 MiB</td></tr>
-          <tr><td>M PLUS 1p 700 サブセット</td><td>未計測（JIS第1水準＋かな＋記号で 0.7 MiB 前後を想定）</td></tr>
-          <tr><td>Workers 無料枠</td><td>3 MiB</td></tr>
+          <tr><th>項目</th><th>結果</th></tr>
+          <tr><td>動的生成の CPU 時間</td><td>確認用 Worker の Tail ログで short 87 ms、long 807 ms。Free 公称 10 ms を超過</td></tr>
+          <tr><td>事前生成</td><td>ローカル workerd で 4 種の PNG を生成・検証し、Static Assets に配置</td></tr>
+          <tr><td>Workers の現行サイズ制限</td><td>非圧縮 64 MiB。gzip 3 MiB という旧見積もりは使わない</td></tr>
         </table>
         <div class="callout warn">
-          <div class="t">要実測<span class="badge check">要確認</span></div>
+          <div class="t">投稿経路は要検証<span class="badge check">要確認</span></div>
           <p>
-            合計が 3 MiB を超える場合は、収録する漢字の範囲を落とします。第2水準を削ると「曖昧」のような語が豆腐になる可能性があるので、削る順番は 記号 → 第2水準 の順にします。
+            Static Assets はデプロイ時に固定される。MCP 投稿時の外部生成と保存先、画像が完成するまでの公開順序は P3/P4 で検証する。生成を Workers Free のリクエスト内へ移すだけでは CPU 問題は解消しない。
           </p>
         </div>
 
@@ -995,7 +994,7 @@ CREATE UNIQUE INDEX idx_achievement_slug ON achievement(slug);</code></pre>
         <ul>
           <li>フォントのサブセット作成とサイズ実測。</li>
           <li>BudouX の組版ロジックとテスト。</li>
-          <li>Takumi での描画、OG Worker、Cache API。</li>
+          <li>Takumi での事前生成、画像の保存と不変 URL での配信。固定サンプルは Static Assets で検証する。</li>
           <li>X の Card Validator で確認。</li>
         </ul>
         <p><b>完了条件</b>: 実績の URL を X に貼ると、実績カードの画像が出る。</p>
@@ -1060,9 +1059,9 @@ wrangler deploy  # main のみ</code></pre>
             <td>効かなければ oxlint のみで進める</td>
           </tr>
           <tr>
-            <td>OG Worker を分けるか本体に同居させるか</td>
+            <td>事前生成 PNG の保存先と投稿から公開までの順序</td>
             <td>要確認</td>
-            <td>バンドルサイズの実測で決める</td>
+            <td>固定サンプルは Static Assets で検証。MCP 投稿・revision・削除の実装時に決める</td>
           </tr>
           <tr>
             <td>日付を日付のみにするか時刻も持つか</td>
