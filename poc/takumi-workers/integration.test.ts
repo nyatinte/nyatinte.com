@@ -1,5 +1,7 @@
 import { type ChildProcess, execFileSync, spawn } from "node:child_process";
+import { mkdir, writeFile } from "node:fs/promises";
 import { createServer } from "node:net";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, test } from "vite-plus/test";
 
@@ -10,9 +12,11 @@ const READY_PATH = "/";
 const READY_STATUS = 404;
 const READY_BODY = "Takumi Workers PoC";
 const POC_PATH = "/__poc/takumi";
+const FIXTURE_NAMES = ["short", "long", "brackets", "fallback"] as const;
 const CONFIG_FILE = "poc/takumi-workers/wrangler.jsonc";
 const OUTPUT_DIR = ".wrangler/takumi-workers-poc";
 const ROOT_DIR = fileURLToPath(new URL("../../", import.meta.url));
+const IMAGE_OUTPUT_DIR = process.env.TAKUMI_POC_IMAGE_DIR;
 const PNG_SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10];
 const MIN_IMAGE_BYTES = 1024;
 
@@ -147,6 +151,9 @@ function assertPng(bytes: Uint8Array) {
 describe("Takumi Workers PoC", () => {
   beforeAll(async () => {
     buildWorker();
+    if (IMAGE_OUTPUT_DIR) {
+      await mkdir(IMAGE_OUTPUT_DIR, { recursive: true });
+    }
     PORT = await getAvailablePort();
     BASE_URL = `http://${HOST}:${PORT}`;
     startWorker();
@@ -157,22 +164,29 @@ describe("Takumi Workers PoC", () => {
     await stopWorker();
   }, 10_000);
 
-  test("serves a valid 1200x630 PNG twice", async () => {
-    const responses = await Promise.all([
-      fetch(`${BASE_URL}${POC_PATH}`),
-      fetch(`${BASE_URL}${POC_PATH}`),
-    ]);
-    const images = await Promise.all(
-      responses.map(async (response) => ({
-        bytes: new Uint8Array(await response.arrayBuffer()),
-        response,
-      }))
-    );
+  test.each(FIXTURE_NAMES)(
+    "serves the %s 1200x630 PNG",
+    async (sample) => {
+      const response = await fetch(`${BASE_URL}${POC_PATH}?sample=${sample}`);
+      if (response.status !== 200) {
+        throw new Error(`${await response.text()}\n${workerOutput}`);
+      }
+      const bytes = new Uint8Array(await response.arrayBuffer());
 
-    for (const { bytes, response } of images) {
       expect(response.status).toBe(200);
       expect(response.headers.get("content-type")).toBe("image/png");
       assertPng(bytes);
-    }
-  }, 30_000);
+      if (IMAGE_OUTPUT_DIR) {
+        await writeFile(join(IMAGE_OUTPUT_DIR, `takumi-${sample}.png`), bytes);
+      }
+    },
+    30_000
+  );
+
+  test("does not accept arbitrary sample text", async () => {
+    const response = await fetch(
+      `${BASE_URL}${POC_PATH}?sample=%3Cscript%3Ealert(1)%3C%2Fscript%3E`
+    );
+    expect(response.status).toBe(404);
+  });
 });
