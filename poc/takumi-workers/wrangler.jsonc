@@ -4,6 +4,7 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-09-25",
   "workers_dev": false,
+  "rules": [{ "type": "Data", "globs": ["**/*.woff2"], "fallthrough": true }],
   "observability": {
     "enabled": true,
     "logs": {
