@@ -7,6 +7,8 @@ pnpm run poc:ogp-static:build # 4 枚の生成・検証と Wrangler dry-run。�
 pnpm run poc:ogp-static:test  # Static Assets のローカル配信を検証
 ```
 
+GitHub Actions の `verify` でも上記の生成・dry-run・配信テストを実行します。失敗すると本体 Worker の `deploy` は始まりません。生成した固定サンプルは GHA から公開デプロイせず、実サイトの画像にも使いません。
+
 成果物は `.wrangler/ogp-static-assets/` に作られます。`manifest.json` にサンプル名と画像パスを記録します。画像が変わればパスも変わり、古い画像は削除しません。生成テストや PNG 検査が失敗するとビルドを中断し、成果物を書き換えません。
 
 `wrangler.jsonc` は専用名 `nyatinte-ogp-static-poc`、`workers_dev: false`、プレビュー URL なし、route・domain・D1 binding なしです。実サイトへのデプロイはこの手順に含めません。以前公開した動的確認用 Worker はこの変更では削除・更新しません。

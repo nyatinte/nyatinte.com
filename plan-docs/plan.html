@@ -652,8 +652,8 @@
             <div class="zlabel">OGP 画像</div>
             <div class="row">
               <div class="node"><b>画像配信</b><span>slug + revision の不変 PNG</span></div>
-              <div class="node"><b>事前生成</b><span>Takumi は閲覧リクエストの外で実行</span></div>
-              <div class="node"><b>保存先</b><span>Static Assets / D1 を投稿経路とともに決定</span></div>
+              <div class="node"><b>ビルド時生成</b><span>Takumi は閲覧リクエストの外で実行</span></div>
+              <div class="node"><b>Static Assets</b><span>生成済み PNG を配信</span></div>
             </div>
           </div>
           <div class="arrow">▲ MCP（Streamable HTTP）</div>
@@ -670,8 +670,8 @@
         <h3>Worker の分け方</h3>
         <ul>
           <li><b>本体 Worker</b>（SvelteKit）: 公開ページと <code>/mcp</code>。</li>
-          <li><b>画像配信</b>: Takumi とフォントを閲覧経路に含めない。固定サンプルは別 Worker の Static Assets で検証し、実績ごとの保存先は投稿経路の実装時に決める。<span class="badge check">要確認</span></li>
-          <li>実績固有の画像 URL は PNG の準備ができてから公開する。古い revision の URL は再利用しない。</li>
+          <li><b>画像配信</b>: ビルド時に Takumi で生成し、Static Assets から配信する。固定サンプルは別 Worker で検証済み。実績データをビルドへ渡す経路と自動デプロイは要実装。<span class="badge check">要確認</span></li>
+          <li>新規実績は PNG のデプロイと配信確認後に公開する。編集時も新 revision の画像が用意できるまで旧 revision を公開し、古い画像 URL は再利用しない。生成・デプロイに失敗したら切り替えず再試行できるようにする。</li>
         </ul>
 
         <h3>環境</h3>
@@ -880,8 +880,8 @@ CREATE UNIQUE INDEX idx_achievement_slug ON achievement(slug);</code></pre>
           <tr><td>一言</td><td>26px。最大2行</td></tr>
           <tr><td>タグ</td><td>最大3個。超えたら <code>+N</code></td></tr>
           <tr><td>詳細なし</td><td>「詳細はまだありません。」を一言の位置に置く</td></tr>
-          <tr><td>配信</td><td>slug + revision の不変 PNG。保存先は投稿経路の実装時に決める。Cache API の miss 時生成は行わない</td></tr>
-          <tr><td>生成失敗時</td><td>同梱の汎用カード PNG を 200 で返す</td></tr>
+          <tr><td>配信</td><td>ビルド時に実績ごとの PNG と画像 URL の対応表を生成し、Static Assets から slug + revision の不変 URL で配信。Cache API の miss 時生成は行わない</td></tr>
+          <tr><td>生成失敗時</td><td>ビルド・公開切り替えを中止する。新規実績は未公開のまま、編集済み実績は旧 revision を公開し続ける</td></tr>
           <tr><td>削除済み</td><td>汎用カードにフォールバック（画像を欠けさせない）</td></tr>
         </table>
 
@@ -904,7 +904,7 @@ CREATE UNIQUE INDEX idx_achievement_slug ON achievement(slug);</code></pre>
         <div class="callout warn">
           <div class="t">投稿経路は要検証<span class="badge check">要確認</span></div>
           <p>
-            Static Assets はデプロイ時に固定される。MCP 投稿時の外部生成と保存先、画像が完成するまでの公開順序は P3/P4 で検証する。生成を Workers Free のリクエスト内へ移すだけでは CPU 問題は解消しない。
+            Static Assets はデプロイ時に固定される。MCP 投稿後、ビルド時に実績データから画像を生成し、デプロイと配信確認が済んでから公開版を切り替える。所要時間は未測定。D1 からビルドへの読み取り経路、ビルド起動方法、公開版の管理は P3/P4 で検証する。生成を Workers Free のリクエスト内へ移すだけでは CPU 問題は解消しない。
           </p>
         </div>
 
@@ -1059,9 +1059,9 @@ wrangler deploy  # main のみ</code></pre>
             <td>効かなければ oxlint のみで進める</td>
           </tr>
           <tr>
-            <td>事前生成 PNG の保存先と投稿から公開までの順序</td>
+            <td>MCP 投稿からビルド・デプロイ・公開切り替えまでの連携</td>
             <td>要確認</td>
-            <td>固定サンプルは Static Assets で検証。MCP 投稿・revision・削除の実装時に決める</td>
+            <td>画像はビルド時生成し Static Assets に配置。D1 の公開版の管理と失敗時の再試行を P3/P4 で検証</td>
           </tr>
           <tr>
             <td>日付を日付のみにするか時刻も持つか</td>
@@ -1073,7 +1073,7 @@ wrangler deploy  # main のみ</code></pre>
         <!-- ============================================================ -->
         <h2 id="s13"><span class="num">13</span>受け入れ条件</h2>
         <ul>
-          <li>MCP からタイトルと一言だけで実績を作成でき、即時公開される。</li>
+          <li>MCP からタイトルと一言だけで実績を作成でき、OGP 画像の生成・デプロイ・配信確認後に公開される。</li>
           <li>任意でリンク・代表画像・複数タグ・詳細 Markdown を付けられる。</li>
           <li>一覧を実施日順で眺められ、タグで絞り込める。</li>
           <li>詳細 Markdown を後から追加・編集でき、見出し・リスト・コード・リンク・画像が表示される。</li>
