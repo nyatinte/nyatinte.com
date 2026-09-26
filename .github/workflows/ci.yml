@@ -74,6 +74,7 @@ jobs:
           fi
 
           VITE_HELLO_WORLD_URL=http://127.0.0.1:8787 pnpm test
+          pnpm test:d1
 
   deploy:
     name: Deploy

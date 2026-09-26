@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "types": ["@cloudflare/vitest-plugin/types"]
+  },
+  "include": [
+    "./**/*.ts",
+    "../../src/lib/server/**/*.ts",
+    "../../worker-configuration.d.ts"
+  ],
+  "exclude": ["../../.svelte-kit", "../../node_modules"]
+}
