@@ -52,7 +52,7 @@ python3 poc/takumi-workers/fonts/subset_mplus.py /path/to/MPLUS1p-Bold.ttf
 
 - `workers_dev: false`。本番ドメイン、route、D1、Cache API は設定しません。`poc:takumi:build` は `wrangler deploy --dry-run` だけです。
 - 現在の[Cloudflare Workers limits](https://developers.cloudflare.com/workers/platform/limits/)は Worker の非圧縮サイズ 64 MiB、gzip サイズ上限なしです。計画書の gzip 3 MiB は現行上限ではありません。
-- Wrangler 4.135.0 の dry-run: Total Upload は 4,255.21 KiB/gzip: 2,018.34 KiB
+- Wrangler 4.135.0 の dry-run: Total Upload は 4,255.72 KiB/gzip: 2,018.51 KiB
 - `pnpm run poc:takumi:test` はローカル workerd で 4 種を生成し、PNG signature、IHDR、1200×630 を検証します。保存した複数サンプルも目視確認します。
 - 動的レイアウト・禁則・2 行省略・タグ上限・欠字置換の単体テストは `src/layout.test.ts` にあります。
 - Workers 上の CPU 時間、本番環境の生成時間、実 `/done` との接続、Cache API は未検証です。
