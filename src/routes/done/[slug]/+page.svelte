@@ -26,12 +26,20 @@
   <meta content={data.entry.summary} property="og:description">
   <meta content={data.canonicalUrl} property="og:url">
   <meta content="article" property="og:type">
-  <meta content={data.ogImageUrl} property="og:image">
-  <meta content="1200" property="og:image:width">
-  <meta content="630" property="og:image:height">
-  <meta content={`${data.entry.title} — nyatinte.com`} property="og:image:alt">
+  {#if data.ogImageUrl}
+    <meta content={data.ogImageUrl} property="og:image">
+    <meta content="1200" property="og:image:width">
+    <meta content="630" property="og:image:height">
+    <meta
+      content={`${data.entry.title} — nyatinte.com`}
+      property="og:image:alt"
+    >
+  {/if}
   <meta content={data.entry.publishedAt} property="article:published_time">
-  <meta content="summary_large_image" name="twitter:card">
+  <meta
+    content={data.ogImageUrl ? "summary_large_image" : "summary"}
+    name="twitter:card"
+  >
 </svelte:head>
 
 <div class="site-shell">
