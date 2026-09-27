@@ -36,6 +36,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Install Chromium for browser tests
+        run: pnpm exec playwright install --with-deps chromium
+
       - name: Check source
         run: pnpm check
 
@@ -74,6 +77,7 @@ jobs:
           fi
 
           VITE_HELLO_WORLD_URL=http://127.0.0.1:8787 pnpm test
+          pnpm test:browser
           pnpm test:d1
 
   deploy:
