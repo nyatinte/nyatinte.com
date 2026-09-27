@@ -4,6 +4,13 @@ import { createServer } from "node:net";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, test } from "vite-plus/test";
+import achievementSnapshot from "./achievements.snapshot.json";
+import {
+  createLocalWorkerEnv,
+  OUTPUT_RELATIVE_PATH,
+  validatePng,
+  writeAssetsAtomically,
+} from "./build-assets.mjs";
 
 const HOST = "127.0.0.1";
 let PORT = 0;
@@ -12,14 +19,13 @@ const READY_PATH = "/";
 const READY_STATUS = 404;
 const READY_BODY = "Takumi Workers PoC";
 const POC_PATH = "/__poc/takumi";
-const FIXTURE_NAMES = ["short", "long", "brackets", "fallback"] as const;
+const FIXTURE_NAMES = achievementSnapshot.records.map(({ sample }) => sample);
 const CONFIG_FILE = "poc/takumi-workers/wrangler.jsonc";
 const OUTPUT_DIR = ".wrangler/takumi-workers-poc";
 const ROOT_DIR = fileURLToPath(new URL("../../", import.meta.url));
 const IMAGE_OUTPUT_DIR = process.env.TAKUMI_POC_IMAGE_DIR;
-const PNG_SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10];
-const MIN_IMAGE_BYTES = 1024;
-
+const BUILD_ASSETS = process.env.TAKUMI_POC_BUILD_ASSETS === "1";
+const ASSET_OUTPUT_DIR = join(ROOT_DIR, OUTPUT_RELATIVE_PATH);
 let workerProcess: ChildProcess | undefined;
 let workerOutput = "";
 
@@ -59,7 +65,12 @@ function buildWorker() {
       "--outdir",
       OUTPUT_DIR,
     ],
-    { cwd: ROOT_DIR, encoding: "utf8", stdio: "pipe" }
+    {
+      cwd: ROOT_DIR,
+      encoding: "utf8",
+      env: createLocalWorkerEnv(process.env),
+      stdio: "pipe",
+    }
   );
 }
 
@@ -80,7 +91,7 @@ function startWorker() {
     ],
     {
       cwd: ROOT_DIR,
-      env: { ...process.env, CI: "1" },
+      env: createLocalWorkerEnv(process.env),
       stdio: ["ignore", "pipe", "pipe"],
     }
   );
@@ -136,18 +147,6 @@ async function waitForWorker() {
   throw new Error(`${lastError}\n${workerOutput}`);
 }
 
-function assertPng(bytes: Uint8Array) {
-  expect(Array.from(bytes.subarray(0, PNG_SIGNATURE.length))).toEqual(
-    PNG_SIGNATURE
-  );
-  expect(bytes.byteLength).toBeGreaterThan(MIN_IMAGE_BYTES);
-
-  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-  expect(view.getUint32(8)).toBe(13);
-  expect(view.getUint32(16)).toBe(1200);
-  expect(view.getUint32(20)).toBe(630);
-}
-
 describe("Takumi Workers PoC", () => {
   beforeAll(async () => {
     buildWorker();
@@ -164,24 +163,49 @@ describe("Takumi Workers PoC", () => {
     await stopWorker();
   }, 10_000);
 
-  test.each(FIXTURE_NAMES)(
-    "serves the %s 1200x630 PNG",
-    async (sample) => {
-      const response = await fetch(`${BASE_URL}${POC_PATH}?sample=${sample}`);
-      if (response.status !== 200) {
-        throw new Error(`${await response.text()}\n${workerOutput}`);
-      }
-      const bytes = new Uint8Array(await response.arrayBuffer());
+  if (BUILD_ASSETS) {
+    test("renders the snapshot and atomically writes isolated OGP assets", async () => {
+      await writeAssetsAtomically(
+        achievementSnapshot,
+        ASSET_OUTPUT_DIR,
+        async (record: (typeof achievementSnapshot.records)[number]) => {
+          const response = await fetch(
+            `${BASE_URL}${POC_PATH}?sample=${record.sample}`
+          );
+          if (response.status !== 200) {
+            throw new Error(`${await response.text()}\n${workerOutput}`);
+          }
 
-      expect(response.status).toBe(200);
-      expect(response.headers.get("content-type")).toBe("image/png");
-      assertPng(bytes);
-      if (IMAGE_OUTPUT_DIR) {
-        await writeFile(join(IMAGE_OUTPUT_DIR, `takumi-${sample}.png`), bytes);
-      }
-    },
-    30_000
-  );
+          const bytes = new Uint8Array(await response.arrayBuffer());
+          expect(response.headers.get("content-type")).toBe("image/png");
+          expect(validatePng(bytes)).toEqual({ height: 630, width: 1200 });
+          return bytes;
+        }
+      );
+    }, 120_000);
+  } else {
+    test.each(FIXTURE_NAMES)(
+      "serves the %s 1200x630 PNG",
+      async (sample) => {
+        const response = await fetch(`${BASE_URL}${POC_PATH}?sample=${sample}`);
+        if (response.status !== 200) {
+          throw new Error(`${await response.text()}\n${workerOutput}`);
+        }
+        const bytes = new Uint8Array(await response.arrayBuffer());
+
+        expect(response.status).toBe(200);
+        expect(response.headers.get("content-type")).toBe("image/png");
+        expect(validatePng(bytes)).toEqual({ height: 630, width: 1200 });
+        if (IMAGE_OUTPUT_DIR) {
+          await writeFile(
+            join(IMAGE_OUTPUT_DIR, `takumi-${sample}.png`),
+            bytes
+          );
+        }
+      },
+      30_000
+    );
+  }
 
   test("does not accept arbitrary sample text", async () => {
     const response = await fetch(

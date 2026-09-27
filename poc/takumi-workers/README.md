@@ -1,6 +1,6 @@
 # Takumi Workers PoC
 
-Takumi 2.14.0 と BudouX で、日本語実績カードの動的な文字組みをローカル検証します。実績データはソース内の固定フィクスチャだけです。実際の `/done`、D1、Cache API には接続しません。
+Takumi 2.14.0 と BudouX で、日本語実績カードの動的な文字組みをローカル検証します。実績データは固定スナップショット JSON のみです。実際の `/done`、D1、Cache API には接続しません。
 
 以前 Cloudflare 上で検証した PoC Worker は 2026-09-26 に削除済みです。現在はローカルのみで検証します。
 
@@ -58,3 +58,11 @@ python3 poc/takumi-workers/fonts/subset_mplus.py /path/to/MPLUS1p-Bold.ttf
 - `pnpm run poc:takumi:test` はローカル workerd で 4 種を生成し、PNG signature、IHDR、1200×630 を検証します。保存した複数サンプルも目視確認します。
 - 動的レイアウト・禁則・2 行省略・タグ上限・欠字置換の単体テストは `src/layout.test.ts` にあります。
 - Workers 上の CPU 時間、本番環境の生成時間、実 `/done` との接続、Cache API は未検証です。
+
+## PoC 用の静的画像生成
+
+`pnpm run poc:takumi:build-assets` は固定スナップショット `achievements.snapshot.json` の各 slug／revision を、`wrangler dev --local` の Takumi Worker で PNG にし、`.wrangler/ogp-build-assets/og/<slug>/r<revision>.png` と `manifest.json` に出力します。生成時は `127.0.0.1` のみで待ち受け、Cloudflare の認証情報を子プロセスに渡さず、D1 やリモート Worker には接続しません。PNG の signature、IHDR、サイズ、1200×630 の寸法を検査し、全件成功した場合だけ生成先を置き換えます。
+
+これは PoC 専用コマンドです。CI Verify job では単独の検証として実行しますが、通常の `pnpm build`、`pnpm deploy`、CI Deploy job からは呼び出しません。出力先も Wrangler の Static Assets ディレクトリ外に置き、Deploy job へ渡しません。コマンドが失敗した場合はエラー終了し、ステージング中の PNG で既存の PoC 出力を置き換えません。
+
+このスナップショットは合成フィクスチャで、ローカル D1 の取得処理ではありません。manifest はまだページの OGP URL から参照されず、実績ページへの接続、公開ゲート、自動トリガー、デプロイ順序の保証もありません。本番データを用いた生成・公開の仕組みとしては扱いません。

@@ -18,6 +18,7 @@
     "fix": "ultracite fix",
     "lint:svelte": "eslint \"src/**/*.{svelte,svelte.js,svelte.ts}\"",
     "poc:takumi:build": "wrangler deploy --config poc/takumi-workers/wrangler.jsonc --dry-run --outdir .wrangler/takumi-workers-poc",
+    "poc:takumi:build-assets": "TAKUMI_POC_BUILD_ASSETS=1 pnpm run poc:takumi:test",
     "poc:takumi:dev": "wrangler dev --config poc/takumi-workers/wrangler.jsonc --local --ip 127.0.0.1 --port 8788",
     "poc:takumi:test": "vp test --run poc/takumi-workers/integration.test.ts",
     "poc:takumi:typecheck": "tsc -p poc/takumi-workers/tsconfig.json --noEmit",

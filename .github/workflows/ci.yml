@@ -45,6 +45,9 @@ jobs:
       - name: Build Worker
         run: pnpm build
 
+      - name: Generate isolated OGP PoC assets
+        run: pnpm run poc:takumi:build-assets
+
       - name: Test built Worker over HTTP
         shell: bash
         run: |

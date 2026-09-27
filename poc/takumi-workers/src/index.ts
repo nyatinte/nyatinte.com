@@ -1,6 +1,7 @@
 import { jaModel, Parser } from "budoux";
 import { ImageResponse } from "takumi-js/response";
 import wasmModule, { init as initializeTakumi, Renderer } from "takumi-js/wasm";
+import achievementSnapshot from "../achievements.snapshot.json";
 import mplus1pBold from "../fonts/MPLUS1p-700-jis1.woff2";
 import { createImageHtml, OGP_FONT_FAMILY } from "./card";
 import {
@@ -22,42 +23,7 @@ const TITLE_WIDTH = 1040;
 const SUMMARY_WIDTH = 1040;
 const parser = new Parser(jaModel);
 
-const FIXTURES = {
-  brackets: {
-    occurredAt: "2026-09-24",
-    summary: "開き括弧と閉じ括弧が行の端に残らないよう調整。",
-    tags: ["日本語", "組版", "テスト", "BudouX"],
-    title: "「日本語カード」の禁則処理を確かめる",
-  },
-  fallback: {
-    occurredAt: "2026-09-25",
-    summary: "第1水準外の文字と絵文字は、白い四角に置き換えて描画する。",
-    tags: ["フォント", "代替", "M PLUS"],
-    title: "絵文字 😀 とJIS第2水準外の𠮷を代替記号に置き換える",
-  },
-  long: {
-    occurredAt: "2026-09-26",
-    summary:
-      "JIS第1水準の漢字を含むM PLUS 1pを使い、BudouXの文節とTakumiの実測幅で3行以内へ組版する。",
-    tags: [
-      "これは極端に長い日本語のタグ名です",
-      "abcdefghijklmnop",
-      "日本語",
-      "組版",
-      "計測",
-    ],
-    title:
-      "Workers の日本語実績カードで、可変長タイトルとフォント計測を検証した",
-  },
-  short: {
-    occurredAt: "2026-09-27",
-    summary: "積読を一冊読み終え、記録を残した。",
-    tags: ["読書", "記録"],
-    title: "読書記録を公開した",
-  },
-} as const;
-
-type FixtureName = keyof typeof FIXTURES;
+type AchievementFixture = (typeof achievementSnapshot.records)[number];
 type TakumiRenderer = InstanceType<typeof Renderer>;
 
 let rendererPromise: Promise<TakumiRenderer> | undefined;
@@ -130,16 +96,10 @@ async function getMeasurements(
   return measurements;
 }
 
-function selectFixture(
-  value: string | null
-): (typeof FIXTURES)[FixtureName] | undefined {
-  if (value === null) {
-    return FIXTURES.long;
-  }
-  if (Object.hasOwn(FIXTURES, value)) {
-    return FIXTURES[value as FixtureName];
-  }
-  return undefined;
+function selectFixture(value: string | null): AchievementFixture | undefined {
+  return achievementSnapshot.records.find(
+    ({ sample }) => sample === (value ?? "long")
+  );
 }
 
 export default {
