@@ -50,6 +50,14 @@ GitHub Actions は pull request と `main` への push で検証を実行しま�
 
 Worker 名は `nyatinte-com` です。
 
+## MCP 管理 API
+
+`/mcp` は Streamable HTTP の管理用エンドポイントです。有効化する前に、Cloudflare Access で `nyatinte.com/mcp` を保護し、サービス トークンを許可するポリシーを設定します。Worker も `Cf-Access-Jwt-Assertion` の署名、Issuer、Audience を検証します。
+
+Worker の変数には Access のチームドメイン（例: `https://<team>.cloudflareaccess.com`）とアプリケーションの Audience Tag を `ACCESS_TEAM_DOMAIN`、`ACCESS_AUDIENCE` として設定します。どちらも公開情報です。MCP クライアントには `CF-Access-Client-Id` と `CF-Access-Client-Secret` をヘッダーとして登録し、Client Secret はリポジトリに保存しないでください。
+
+管理 API の利用には Worker の `DB` バインディングも必要です。ローカルの D1 結合テストは `pnpm test:d1` で実行できます。本番 D1 の作成・適用や Cloudflare Access の実環境での認証確認は、このリポジトリのテスト対象外です。
+
 Ultracite/Biome が JS/TS/JSON/CSS と Svelte の format と lint を担当します。Svelte 対応は公式 preset が有効にする Biome の実験的機能です。ESLint は Biome にない Svelte 固有ルールを補完します。`vp check --no-fmt --no-lint` は Vite+ の TypeScript 型チェックだけを残すために使い、Oxfmt/Oxlint は現時点の品質チェックでは実行しません。
 
 ## 構成

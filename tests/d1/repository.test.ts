@@ -157,6 +157,11 @@ test("soft-deletes, hides, and restores an achievement", async () => {
   ).resolves.toMatchObject({
     deletedAt: deleted.deletedAt,
   });
+  await expect(
+    repository.list({ includeDeleted: true, tags: ["restore-test"] })
+  ).resolves.toMatchObject({
+    items: [{ deletedAt: deleted.deletedAt, id: created.id }],
+  });
 
   const restored = await repository.restore(created.id);
   expect(restored).toMatchObject({ deletedAt: null, revision: 3 });

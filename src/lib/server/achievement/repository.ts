@@ -280,7 +280,9 @@ export function createAchievementRepository(client: AnyD1Database) {
       .limit(limit + 1);
     const hasMore = rows.length > limit;
     const page = rows.slice(0, limit);
-    const items = await Promise.all(page.map(({ id }) => get(id)));
+    const items = await Promise.all(
+      page.map(({ id }) => get(id, { includeDeleted: options.includeDeleted }))
+    );
     const last = page.at(-1);
     return {
       items: items.filter((item): item is AchievementRecord => item !== null),
