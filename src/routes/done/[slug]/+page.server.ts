@@ -24,18 +24,14 @@ export const load: PageServerLoad = async ({ params, platform, url }) => {
     `/done/${encodeURIComponent(entry.slug)}`,
     url.origin
   );
-  const fallbackImage = new URL(
-    `/og/${encodeURIComponent(entry.slug)}.png`,
-    url.origin
-  );
-  fallbackImage.searchParams.set("v", String(entry.revision));
+  const ogImageUrl = new URL("/og/done.png", url.origin);
 
   return {
     bodyHtml: renderMarkdown(entry.bodyMarkdown ?? ""),
     canonicalUrl: canonicalUrl.href,
     entry,
     next: adjacent.next,
-    ogImageUrl: entry.coverImageUrl ?? fallbackImage.href,
+    ogImageUrl: ogImageUrl.href,
     previous: adjacent.previous,
   };
 };

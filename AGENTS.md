@@ -7,6 +7,7 @@
 `nyatinte.com` の個人サイト。`/done` に「やったこと（実績）」を短く蓄積・公開する。
 
 - 投稿者は本人1名のみ。投稿は MCP 経由
+- MCP から登録した実績は保存後すぐ公開する。下書き状態を持たない
 - 閲覧は誰でも、ログイン不要
 - 実績はタイトルと一言だけで成立し、後から Markdown の詳細を足せる
 - X に貼ったときの OGP を重視する
@@ -26,7 +27,7 @@
 | DB | D1 + Drizzle ORM |
 | 環境変数 | varlock |
 | 認証 | Cloudflare Access（`/mcp` のみ） |
-| OGP 画像 | Takumi (WASM) + BudouX、M PLUS 1p 700 サブセット |
+| OGP 画像 | Static Assets から配信する共通の固定 PNG |
 | テスト | Vitest |
 | CI/CD | GitHub Actions + wrangler |
 | パッケージ管理 | pnpm |
@@ -42,6 +43,11 @@ pnpm test     # Vitest
 pnpm build    # ビルド
 pnpm deploy   # ビルドしてデプロイ
 ```
+
+## OGP の本番経路
+
+- 実績と実績ごとの共有メタデータは D1 を正本とする。`static/og/done.png` は共通画像として配信し、実績データをビルド時に複製しない。
+- `poc/` 以下の個別 OGP 生成 PoC は検証用に保持し、本番のページ・画像配信には接続しない。
 
 ## スキル
 
@@ -95,8 +101,6 @@ pnpm deploy   # ビルドしてデプロイ
 
 着手前に PoC で確認するもの。壊れていたら計画書の代替案に切り替える。
 
-- Takumi の WASM が Workers 上で動くか
-- M PLUS 1p 700 のサブセットが Workers 無料枠（gzip 3MiB）に収まるか
 - Cloudflare Access のサービス トークンを MCP クライアントが送れるか
 - `@shadcn/lint` が Svelte で機能するか
 - SvelteKit 3 の next prerelease と Vite+ beta が実用に耐えるか

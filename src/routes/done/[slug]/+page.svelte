@@ -1,7 +1,19 @@
 <script lang="ts">
+  import {
+    createXIntentUrl,
+    createXPostDraft,
+  } from "../../../lib/share/x-post";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
+  let xPostDraft = $derived(
+    createXPostDraft({
+      summary: data.entry.summary,
+      title: data.entry.title,
+      url: data.canonicalUrl,
+    })
+  );
+  let xIntentUrl = $derived(createXIntentUrl(xPostDraft));
 
   const dateFormatter = new Intl.DateTimeFormat("ja-JP", {
     dateStyle: "long",
@@ -29,7 +41,7 @@
   <meta content={data.ogImageUrl} property="og:image">
   <meta content="1200" property="og:image:width">
   <meta content="630" property="og:image:height">
-  <meta content={`${data.entry.title} — nyatinte.com`} property="og:image:alt">
+  <meta content="nyatinte.com の実績記録" property="og:image:alt">
   <meta content={data.entry.publishedAt} property="article:published_time">
   <meta content="summary_large_image" name="twitter:card">
 </svelte:head>
@@ -71,6 +83,14 @@
         <!-- `bodyHtml` is rendered server-side and sanitized with sanitize-html. -->
         <div class="markdown">{@html data.bodyHtml}</div>
       {/if}
+
+      <section aria-labelledby="share-title" class="share-panel">
+        <h2 id="share-title">Xへの投稿文面案</h2>
+        <p class="share-draft">{xPostDraft}</p>
+        <a href={xIntentUrl} rel="noopener noreferrer" target="_blank">
+          この文面でXを開く
+        </a>
+      </section>
 
       {#if data.entry.links.length > 0}
         <section aria-labelledby="links-title" class="related-links">
@@ -168,6 +188,36 @@
   h2,
   p {
     margin-top: 0;
+  }
+
+  .share-panel {
+    padding: 20px;
+    margin-top: 42px;
+    background: #f7f8f4;
+    border: 1px solid #deded6;
+    border-radius: 8px;
+  }
+
+  .share-panel h2 {
+    margin: 0 0 10px;
+    font-size: 15px;
+    color: #24352e;
+  }
+
+  .share-draft {
+    margin: 0 0 14px;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #3c463f;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+
+  .share-panel a {
+    font-size: 13px;
+    font-weight: 650;
+    color: #176c57;
+    text-underline-offset: 3px;
   }
 
   h1 {
