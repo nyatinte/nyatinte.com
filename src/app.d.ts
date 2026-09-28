@@ -8,7 +8,11 @@ declare global {
     }
 
     interface Platform {
-      env: { DB?: AnyD1Database };
+      env: {
+        ACCESS_AUDIENCE?: string;
+        ACCESS_TEAM_DOMAIN?: string;
+        DB?: AnyD1Database;
+      };
     }
   }
 }

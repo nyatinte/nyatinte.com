@@ -1,0 +1,138 @@
+import { exportJWK, generateKeyPair, SignJWT } from "jose";
+import { afterEach, expect, test, vi } from "vite-plus/test";
+import { authenticateAccessRequest } from "./access";
+import { handleMcpRequest } from "./endpoint";
+
+const AUDIENCE = "mcp-app-audience";
+
+afterEach(() => vi.unstubAllGlobals());
+
+async function signedToken(options: {
+  audience?: string;
+  issuer: string;
+  subject?: string;
+}) {
+  const { privateKey, publicKey } = await generateKeyPair("ES256");
+  const jwk = await exportJWK(publicKey);
+  Object.assign(jwk, { alg: "ES256", kid: "test-key", use: "sig" });
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(() =>
+      Promise.resolve(
+        Response.json(
+          { keys: [jwk] },
+          { headers: { "cache-control": "public, max-age=60" } }
+        )
+      )
+    )
+  );
+
+  const token = await new SignJWT({ email: "owner@example.com" })
+    .setProtectedHeader({ alg: "ES256", kid: "test-key" })
+    .setIssuer(options.issuer)
+    .setAudience(options.audience ?? AUDIENCE)
+    .setSubject(options.subject ?? "access-user-123")
+    .setIssuedAt()
+    .setExpirationTime("5m")
+    .sign(privateKey);
+  return token;
+}
+
+function requestWithToken(token?: string) {
+  return new Request("https://nyatinte.com/mcp", {
+    headers: {
+      Host: "nyatinte.com",
+      ...(token && { "Cf-Access-Jwt-Assertion": token }),
+    },
+    method: "POST",
+  });
+}
+
+test("rejects requests without an Access JWT", async () => {
+  const result = await authenticateAccessRequest(requestWithToken(), {
+    ACCESS_AUDIENCE: AUDIENCE,
+    ACCESS_TEAM_DOMAIN: "https://unit-test.cloudflareaccess.com",
+  });
+
+  expect(result).toBeInstanceOf(Response);
+  expect((result as Response).status).toBe(401);
+  expect((result as Response).headers.get("cache-control")).toBe("no-store");
+});
+
+test("accepts a signed Access JWT for the configured issuer and audience", async () => {
+  const issuer = `https://valid-${crypto.randomUUID()}.cloudflareaccess.com`;
+  const token = await signedToken({ issuer });
+
+  const result = await authenticateAccessRequest(requestWithToken(token), {
+    ACCESS_AUDIENCE: AUDIENCE,
+    ACCESS_TEAM_DOMAIN: issuer,
+  });
+
+  expect(result).toMatchObject({
+    clientId: "access-user-123",
+    scopes: [],
+    token,
+  });
+  expect(result).not.toBeInstanceOf(Response);
+});
+
+test.each([
+  ["issuer", "https://wrong-issuer.cloudflareaccess.com", AUDIENCE],
+  ["audience", "https://valid.cloudflareaccess.com", "wrong-audience"],
+])("rejects a token with the wrong %s", async (_claim, issuer, audience) => {
+  const teamDomain = `https://test-${crypto.randomUUID()}.cloudflareaccess.com`;
+  const token = await signedToken({ audience, issuer });
+
+  const result = await authenticateAccessRequest(requestWithToken(token), {
+    ACCESS_AUDIENCE: AUDIENCE,
+    ACCESS_TEAM_DOMAIN: teamDomain,
+  });
+
+  expect(result).toBeInstanceOf(Response);
+  expect((result as Response).status).toBe(401);
+});
+
+test("fails closed when Access configuration is missing", async () => {
+  const result = await authenticateAccessRequest(
+    requestWithToken("not-a-jwt"),
+    {}
+  );
+
+  expect(result).toBeInstanceOf(Response);
+  expect((result as Response).status).toBe(503);
+});
+
+test("rejects requests from untrusted hosts before authenticating", async () => {
+  const request = new Request("https://attacker.example/mcp", {
+    headers: { Origin: "https://attacker.example" },
+    method: "POST",
+  });
+
+  const result = await handleMcpRequest(request, {});
+
+  expect(result.status).toBe(403);
+});
+
+test("rejects missing Access credentials at the endpoint", async () => {
+  const result = await handleMcpRequest(requestWithToken(), {
+    ACCESS_AUDIENCE: AUDIENCE,
+    ACCESS_TEAM_DOMAIN: "https://unit-test.cloudflareaccess.com",
+  });
+
+  expect(result.status).toBe(401);
+});
+
+test("requires a D1 binding after successful Access authentication", async () => {
+  const issuer = `https://database-${crypto.randomUUID()}.cloudflareaccess.com`;
+  const token = await signedToken({ issuer });
+
+  const result = await handleMcpRequest(requestWithToken(token), {
+    ACCESS_AUDIENCE: AUDIENCE,
+    ACCESS_TEAM_DOMAIN: issuer,
+  });
+
+  expect(result.status).toBe(503);
+  expect(await result.json()).toEqual({
+    error: "The MCP database is unavailable.",
+  });
+});

@@ -28,14 +28,18 @@
     "types": "wrangler types"
   },
   "dependencies": {
+    "@modelcontextprotocol/server": "2.1.0",
     "drizzle-orm": "0.45.3",
+    "jose": "6.2.12",
     "marked": "18.0.14",
     "sanitize-html": "2.17.7",
-    "valibot": "1.5.0"
+    "valibot": "1.5.0",
+    "zod": "4.6.5"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",
     "@cloudflare/vitest-plugin": "1.2.8",
+    "@modelcontextprotocol/client": "2.1.0",
     "@sveltejs/adapter-cloudflare": "8.0.0-next.7",
     "@sveltejs/kit": "3.0.0-next.27",
     "@sveltejs/vite-plugin-svelte": "7.3.0",
