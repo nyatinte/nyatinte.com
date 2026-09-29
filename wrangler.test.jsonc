@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "nyatinte-com-d1-test",
+  "main": "./tests/d1/worker.ts",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "nyatinte-com-test",
+      "database_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ]
+}

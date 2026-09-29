@@ -9,7 +9,8 @@
   "type": "module",
   "scripts": {
     "build": "wrangler types && svelte-kit sync && vp build",
-    "check": "wrangler types && svelte-kit sync && ultracite check && pnpm run lint:svelte && vp check --no-fmt --no-lint && svelte-check --tsconfig ./tsconfig.json && pnpm run poc:takumi:typecheck",
+    "check": "wrangler types && svelte-kit sync && ultracite check && pnpm run lint:svelte && vp check --no-fmt --no-lint && svelte-check --tsconfig ./tsconfig.json && pnpm run poc:takumi:typecheck && pnpm run check:d1",
+    "check:d1": "tsc --project tests/d1/tsconfig.json --noEmit",
     "db:generate": "drizzle-kit generate",
     "deploy": "pnpm build && varlock-wrangler deploy",
     "dev": "vp dev",
@@ -23,13 +24,16 @@
     "prepare": "svelte-kit sync && vp config --no-agent --hooks",
     "preview": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --port 4173",
     "test": "vp test --run",
+    "test:d1": "vp test --config vite.d1.config.ts --run",
     "types": "wrangler types"
   },
   "dependencies": {
-    "drizzle-orm": "0.45.3"
+    "drizzle-orm": "0.45.3",
+    "valibot": "1.5.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",
+    "@cloudflare/vitest-plugin": "1.2.8",
     "@sveltejs/adapter-cloudflare": "8.0.0-next.7",
     "@sveltejs/kit": "3.0.0-next.27",
     "@sveltejs/vite-plugin-svelte": "7.3.0",
