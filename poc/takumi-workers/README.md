@@ -2,7 +2,7 @@
 
 Takumi 2.14.0 と BudouX で、日本語実績カードの動的な文字組みをローカル検証します。実績データはソース内の固定フィクスチャだけです。実際の `/done`、D1、Cache API には接続しません。
 
-以前の `nyatinte-takumi-poc` Worker は 2026-09-26 に削除済みです。固定フィクスチャの動的レンダリングは、別名の `nyatinte-ogp-preview-20260926` でも確認しました。ただし Tail ログの CPU 時間は short 87 ms、long 807 ms で、Workers Free の公称 10 ms を超えています。リクエスト時生成は採用しません。事前生成方式は[別の PoC](../ogp-static/README.md)を参照してください。
+以前の `nyatinte-takumi-poc` Worker は 2026-09-26 に削除済みです。固定フィクスチャの動的レンダリングは、別名の `nyatinte-ogp-preview-20260926` でも確認しました。ただし Tail ログの CPU 時間は short 87 ms、long 807 ms で、Workers Free の公称 10 ms を超えています。MVP は共通の固定 OGP 画像を使うため、この描画 PoC と実績ごとの事前生成は採用しません。
 
 ## 実行
 

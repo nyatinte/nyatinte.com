@@ -10,6 +10,7 @@
 - 閲覧は誰でも、ログイン不要
 - 実績はタイトルと一言だけで成立し、後から Markdown の詳細を足せる
 - X に貼ったときの OGP を重視する
+- OGP 画像は全実績で共通の固定画像。実績ごとに変えるのは title / description
 
 詳細は `plan-docs/plan.html`（実装計画書）。矛盾したら計画書を正とする。
 
@@ -26,7 +27,7 @@
 | DB | D1 + Drizzle ORM |
 | 環境変数 | varlock |
 | 認証 | Cloudflare Access（`/mcp` のみ） |
-| OGP 画像 | Takumi (WASM) + BudouX、M PLUS 1p 700 サブセット |
+| OGP 画像 | 共通の固定画像を Static Assets から配信 |
 | テスト | Vitest |
 | CI/CD | GitHub Actions + wrangler |
 | パッケージ管理 | pnpm |
@@ -95,8 +96,6 @@ pnpm deploy   # ビルドしてデプロイ
 
 着手前に PoC で確認するもの。壊れていたら計画書の代替案に切り替える。
 
-- Takumi の WASM が Workers 上で動くか
-- M PLUS 1p 700 のサブセットが Workers 無料枠（gzip 3MiB）に収まるか
 - Cloudflare Access のサービス トークンを MCP クライアントが送れるか
 - `@shadcn/lint` が Svelte で機能するか
 - SvelteKit 3 の next prerelease と Vite+ beta が実用に耐えるか

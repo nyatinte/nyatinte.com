@@ -42,11 +42,6 @@ jobs:
       - name: Build Worker
         run: pnpm build
 
-      - name: Generate and verify OGP static assets
-        run: |
-          pnpm run poc:ogp-static:build
-          pnpm run poc:ogp-static:test
-
       - name: Test built Worker over HTTP
         shell: bash
         run: |
