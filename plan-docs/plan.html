@@ -960,7 +960,7 @@ CREATE UNIQUE INDEX idx_achievement_slug ON achievement(slug);</code></pre>
           <tr><th>種類</th><th>対象</th><th>道具</th></tr>
           <tr><td>単体</td><td>組版ロジック、タグ正規化、slug 生成、valibot スキーマ</td><td>Vitest</td></tr>
           <tr><td>結合</td><td>リポジトリ層（ローカル D1）</td><td>Vitest</td></tr>
-          <tr><td>OGP メタデータ</td><td>詳細ページごとの title / description と共通画像 URL</td><td>Vitest / Worker 結合テスト</td></tr>
+          <tr><td>OGP メタデータ</td><td>詳細ページごとの title / description と共通画像 URL</td><td>Vitest / ブラウザ確認</td></tr>
         </table>
         <p>E2E（Playwright）は MVP では入れない。共通 PNG は静的アセットとして管理し、個別画像の組版スナップショットは作らない。</p>
 
