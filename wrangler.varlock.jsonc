@@ -1,3 +1,5 @@
+// Compatibility config for adapter-cloudflare and Varlock's Wrangler deploy.
+// Keep Worker metadata aligned with cloudflare.config.ts until Varlock supports cf deploy.
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "nyatinte-com",

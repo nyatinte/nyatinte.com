@@ -9,3 +9,5 @@ catalog:
 overrides:
   vite: "catalog:"
   vitest: "catalog:"
+minimumReleaseAgeExclude:
+  - cf@1.0.0-beta.12

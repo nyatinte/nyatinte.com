@@ -17,17 +17,17 @@ pnpm dev
 
 | コマンド | 内容 |
 | --- | --- |
-| `pnpm check` | Wrangler 型生成、Ultracite/Biome、Svelte lint、Vite+ の型チェック、Svelte の型チェック |
+| `pnpm check` | `cf workers types`、Ultracite/Biome、Svelte lint、Vite+ の型チェック、Svelte の型チェック |
 | `pnpm run lint:svelte` | `eslint-plugin-svelte` による `.svelte` と runes module の lint |
 | `pnpm run fix` | Ultracite/Biome による JS/TS/JSON/CSS/Svelte の修正 |
 | `pnpm test` | HTTP テストを実行 |
-| `pnpm build` | Cloudflare Workers 用にビルド |
+| `pnpm build` | `cf workers types` を生成し、SvelteKit Worker を Vite+ でビルド |
 | `pnpm preview` | ビルド済み Worker を `:4173` で確認 |
 | `pnpm dev:worker` | ビルド済み Worker を `:8787` で起動 |
 
 ### ローカル Worker の HTTP テスト
 
-ビルド済み Worker を 2 つのターミナルで確認します。`wrangler dev` ではなく `varlock-wrangler dev` を使うのは、Varlock のランタイム初期化に必要なためです。
+ビルド済み Worker を 2 つのターミナルで確認します。`varlock-wrangler dev` が `.env.schema` の値をローカル Worker に渡します。
 
 ターミナル 1:
 ```sh
@@ -44,9 +44,15 @@ pnpm test
 
 ## デプロイ
 
-デプロイ先は既存の Custom Domain `https://nyatinte.com` です。Custom Domain は `nyatinte-com` Worker に紐付いており、DNS 変更は必要ありません。デプロイでは既存の `nyatinte-com` Worker と Hello World の応答を更新します。`wrangler.jsonc` の `keep_vars: true` により、既存の Cloudflare vars を保持したまま、`.env.schema` に定義した vars を更新します。Varlock が渡す secrets は追加扱いで、既存の secrets は削除されません。`workers.dev` と Preview URL は使用しません。
+デプロイ先は既存の Custom Domain `https://nyatinte.com` です。Custom Domain は `nyatinte-com` Worker に紐付いており、DNS 変更は必要ありません。`pnpm deploy` は `varlock-wrangler` を通じて既存 Worker を更新します。互換設定 `wrangler.varlock.jsonc` の `keep_vars: true` は、既存の Cloudflare vars を保持します。Varlock が渡す secrets は追加扱いで、既存の secrets は削除されません。`workers.dev` と Preview URL は使用しません。
 
-GitHub Actions は pull request と `main` への push で検証を実行します。`main` への push のみ、検証成功後に `varlock-wrangler deploy` を実行し、`https://nyatinte.com` への HTTP smoke test を行います。`main` の新しい実行が始まると古い実行はキャンセルされます。Actions には `CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` の Secrets が必要です。
+`cloudflare.config.ts` は `cf` の Worker 設定と型生成に使います。
+
+現行の SvelteKit + `adapter-cloudflare` 構成では `cf build` は SvelteKit の `vite build` を実行しますが、`.cloudflare/output` を生成せず、bundler を選ぶオプションもありません。Wrangler 4.147.0 の隠し実験フラグ `wrangler build --experimental-new-config --experimental-cf-build-output` で同形式の出力を生成できることは確認しましたが、通常のビルド・deploy 経路には採用していません。また、Varlock は `cf deploy` をサポートしておらず、`cf` に `keep_vars` 相当の機能もありません。そのため、本番 deploy は `varlock-wrangler` 経由のままです。
+
+Cloudflare 上の既存変数を棚卸しし、SvelteKit 対応のビルド経路と Varlock 連携を検証した後に、`cf build` または `cf deploy` への切り替えを検討します。
+
+GitHub Actions は pull request と `main` への push で検証を実行します。`main` から手動で Deploy を選んだ場合だけ、検証成功後に `varlock-wrangler deploy` を実行し、`https://nyatinte.com` への HTTP smoke test を行います。Actions には `CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` の Secrets が必要です。
 
 Worker 名は `nyatinte-com` です。
 
@@ -64,5 +70,7 @@ Ultracite/Biome が JS/TS/JSON/CSS と Svelte の format と lint を担当し�
 
 - `src/routes/+page.svelte`: Hello World ページ
 - `src/routes/hello-world.test.ts`: 実際の Worker に対する HTTP テスト
-- `wrangler.jsonc`: Worker、静的アセット、Observability の設定
+- `cloudflare.config.ts`: `cf` 用の Worker、route、asset、Observability 設定
+- `wrangler.config.ts`: Wrangler の隠し実験フラグによる Build Output 生成設定（通常のビルドでは未使用）
+- `wrangler.varlock.jsonc`: SvelteKit adapter と Varlock deploy の互換設定
 - `.env.schema`: Varlock の環境変数スキーマ

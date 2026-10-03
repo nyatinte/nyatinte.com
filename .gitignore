@@ -7,6 +7,7 @@ dist/
 .vite/
 
 # cloudflare
+.cloudflare/
 .wrangler/
 .dev.vars
 .env

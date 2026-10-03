@@ -677,7 +677,7 @@
         <h3>環境</h3>
         <table>
           <tr><th>環境</th><th>用途</th><th>DB</th></tr>
-          <tr><td>local</td><td><code>wrangler dev</code> ＋ ローカル D1</td><td>ローカル SQLite</td></tr>
+          <tr><td>local</td><td><code>varlock-wrangler dev</code> ＋ ローカル D1</td><td>ローカル SQLite</td></tr>
           <tr><td>preview</td><td>PR ごとのプレビュー</td><td>本番 D1 を読み取り専用で使う<span class="badge check">要確認</span></td></tr>
           <tr><td>production</td><td><code>nyatinte.com</code></td><td>本番 D1</td></tr>
         </table>
@@ -908,7 +908,7 @@ CREATE UNIQUE INDEX idx_achievement_slug ON achievement(slug);</code></pre>
         <ul>
           <li>SvelteKit 3 + Vite+ + TypeScript 6 + Tailwind v4 + shadcn-svelte の初期化。</li>
           <li>lint / fmt / typecheck のスクリプトと GitHub Actions。</li>
-          <li>varlock の設定、<code>wrangler.jsonc</code>、Cloudflare への接続。</li>
+          <li>varlock の設定、<code>cloudflare.config.ts</code>、Cloudflare への接続。</li>
         </ul>
         <p><b>完了条件</b>: <code>vp check</code> と <code>vp build</code> が通り、空のページが Workers にデプロイできる。</p>
 

@@ -8,13 +8,13 @@
   },
   "type": "module",
   "scripts": {
-    "build": "wrangler types && svelte-kit sync && vp build",
-    "check": "wrangler types && svelte-kit sync && ultracite check && pnpm run lint:svelte && vp check --no-fmt --no-lint && svelte-check --tsconfig ./tsconfig.json && pnpm run poc:takumi:typecheck && pnpm run check:d1",
+    "build": "cf workers types && svelte-kit sync && vp build",
+    "check": "cf workers types && svelte-kit sync && ultracite check && pnpm run lint:svelte && vp check --no-fmt --no-lint && svelte-check --tsconfig ./tsconfig.json && pnpm run poc:takumi:typecheck && pnpm run check:d1",
     "check:d1": "tsc --project tests/d1/tsconfig.json --noEmit",
     "db:generate": "drizzle-kit generate",
-    "deploy": "pnpm build && varlock-wrangler deploy",
+    "deploy": "pnpm build && varlock-wrangler deploy --config wrangler.varlock.jsonc",
     "dev": "vp dev",
-    "dev:worker": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --local --port 8787",
+    "dev:worker": "varlock-wrangler dev --config wrangler.varlock.jsonc .svelte-kit/cloudflare/_worker.js --local --port 8787",
     "fix": "ultracite fix",
     "lint:svelte": "eslint \"src/**/*.{svelte,svelte.js,svelte.ts}\"",
     "poc:takumi:build": "wrangler deploy --config poc/takumi-workers/wrangler.jsonc --dry-run --outdir .wrangler/takumi-workers-poc",
@@ -22,10 +22,10 @@
     "poc:takumi:test": "vp test --run poc/takumi-workers/integration.test.ts",
     "poc:takumi:typecheck": "tsc -p poc/takumi-workers/tsconfig.json --noEmit",
     "prepare": "svelte-kit sync && vp config --no-agent --hooks",
-    "preview": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --port 4173",
+    "preview": "varlock-wrangler dev --config wrangler.varlock.jsonc .svelte-kit/cloudflare/_worker.js --port 4173",
     "test": "vp test --run",
     "test:d1": "vp test --config vite.d1.config.ts --run",
-    "types": "wrangler types"
+    "types": "cf workers types"
   },
   "dependencies": {
     "@modelcontextprotocol/server": "2.1.0",
@@ -50,6 +50,7 @@
     "@varlock/cloudflare-integration": "1.6.0",
     "@varlock/vite-integration": "1.5.2",
     "budoux": "0.9.2",
+    "cf": "1.0.0-beta.12",
     "drizzle-kit": "0.31.11",
     "eslint": "10.11.0",
     "eslint-plugin-svelte": "3.23.0",
@@ -63,7 +64,7 @@
     "vite": "catalog:",
     "vite-plus": "catalog:",
     "vitest": "catalog:",
-    "wrangler": "4.135.0"
+    "wrangler": "4.147.0"
   },
   "packageManager": "pnpm@12.4.2",
   "engines": {
