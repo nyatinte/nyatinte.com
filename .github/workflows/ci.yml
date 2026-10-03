@@ -5,6 +5,16 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      production_deploy:
+        description: 本番Deployを実行するときだけ deploy を選択
+        required: true
+        default: skip
+        type: choice
+        options:
+          - skip
+          - deploy
 
 concurrency:
   group: nyatinte-com-${{ github.ref }}
@@ -78,7 +88,8 @@ jobs:
 
   deploy:
     name: Deploy
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.production_deploy == 'deploy'
+    environment: production
     needs: verify
     runs-on: ubuntu-latest
     env:
