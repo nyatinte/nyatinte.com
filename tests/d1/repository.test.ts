@@ -170,7 +170,6 @@ test("soft-deletes, hides, and restores an achievement", async () => {
     revision: 3,
   });
 });
-
 test("lists only public tags and finds adjacent achievements", async () => {
   const repository = createAchievementRepository(env.DB);
   const testRun = crypto.randomUUID().slice(0, 8);
