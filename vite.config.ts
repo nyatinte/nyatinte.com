@@ -29,6 +29,7 @@ export default defineConfig(({ mode }) => ({
           tailwindcss(),
           sveltekit({
             adapter: adapter({
+              config: "./wrangler.varlock.jsonc",
               platformProxy: { configPath: "./wrangler.local.jsonc" },
             }),
             compilerOptions: {
