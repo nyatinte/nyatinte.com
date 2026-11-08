@@ -1,4 +1,5 @@
 <script lang="ts">
+  import SiteHeader from "../../lib/components/site-header.svelte";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
@@ -46,10 +47,9 @@
 </svelte:head>
 
 <div class="site-shell">
-  <header class="site-header">
-    <a class="wordmark" href="/done">nyatinte.com</a>
+  <SiteHeader>
     <span class="header-label">やったこと</span>
-  </header>
+  </SiteHeader>
 
   <main>
     <section aria-labelledby="page-title" class="intro">
@@ -157,22 +157,6 @@
   .site-shell {
     width: min(100% - 40px, 760px);
     margin: 0 auto;
-  }
-
-  .site-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 72px;
-    border-bottom: 1px solid #deded6;
-  }
-
-  .wordmark {
-    font-size: 15px;
-    font-weight: 750;
-    color: #24352e;
-    letter-spacing: -0.03em;
-    text-decoration: none;
   }
 
   .header-label,
@@ -486,10 +470,6 @@
   @media (max-width: 560px) {
     .site-shell {
       width: min(100% - 32px, 760px);
-    }
-
-    .site-header {
-      height: 62px;
     }
 
     .intro {
