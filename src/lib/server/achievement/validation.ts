@@ -1,6 +1,8 @@
 import {
   array,
   check,
+  description,
+  examples,
   type InferOutput,
   maxLength,
   minLength,
@@ -16,7 +18,7 @@ import {
   url,
 } from "valibot";
 
-const dateOnly = pipe(
+export const dateOnly = pipe(
   string(),
   regex(/^\d{4}-\d{2}-\d{2}$/, "Expected YYYY-MM-DD"),
   check((value) => {
@@ -27,7 +29,7 @@ const dateOnly = pipe(
   }, "Expected a real calendar date")
 );
 
-const httpUrl = pipe(
+export const httpUrl = pipe(
   string(),
   url(),
   check(
@@ -39,23 +41,69 @@ const httpUrl = pipe(
 const tagName = pipe(string(), trim(), minLength(1));
 
 export const createAchievementInputSchema = strictObject({
-  bodyMarkdown: optional(nullable(pipe(string(), maxLength(20_000)))),
-  coverImageUrl: optional(nullable(httpUrl)),
-  links: optional(
-    array(
-      strictObject({
-        label: optional(pipe(string(), trim(), maxLength(120))),
-        url: httpUrl,
-      })
-    )
+  bodyMarkdown: pipe(
+    optional(nullable(pipe(string(), maxLength(20_000)))),
+    description("Markdown の詳細"),
+    examples(["## 詳細\n\n記録の本文", null])
   ),
-  occurredAt: optional(dateOnly),
-  slug: optional(
-    pipe(string(), regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/), maxLength(120))
+  coverImageUrl: pipe(
+    optional(nullable(httpUrl)),
+    description("カバー画像の URL"),
+    examples(["https://example.com/image.png", null])
   ),
-  summary: pipe(string(), trim(), minLength(1), maxLength(200)),
-  tags: optional(array(tagName)),
-  title: pipe(string(), trim(), minLength(1), maxLength(120)),
+  links: pipe(
+    optional(
+      array(
+        strictObject({
+          label: pipe(
+            optional(pipe(string(), trim(), maxLength(120))),
+            description("リンクの表示名"),
+            examples(["ソース"])
+          ),
+          url: pipe(
+            httpUrl,
+            description("リンク先 URL"),
+            examples(["https://example.com/"])
+          ),
+        })
+      )
+    ),
+    description("関連リンク"),
+    examples([[{ label: "ソース", url: "https://example.com/" }]])
+  ),
+  occurredAt: pipe(
+    optional(dateOnly),
+    description("実績の日付"),
+    examples(["2026-01-01"])
+  ),
+  slug: pipe(
+    optional(
+      pipe(string(), regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/), maxLength(120))
+    ),
+    description("詳細ページの識別子"),
+    examples(["first-achievement"])
+  ),
+  summary: pipe(
+    string(),
+    trim(),
+    minLength(1),
+    maxLength(200),
+    description("短い説明"),
+    examples(["サイトを公開した"])
+  ),
+  tags: pipe(
+    optional(array(tagName)),
+    description("実績のタグ"),
+    examples([["Git"]])
+  ),
+  title: pipe(
+    string(),
+    trim(),
+    minLength(1),
+    maxLength(120),
+    description("実績のタイトル"),
+    examples(["サイトを公開"])
+  ),
 });
 
 export const updateAchievementInputSchema = pipe(

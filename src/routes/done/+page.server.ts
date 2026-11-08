@@ -3,19 +3,13 @@ import { createAchievementRepository } from "../../lib/server/achievement/reposi
 import { normalizeTag } from "../../lib/server/achievement/validation";
 import type { PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({ platform, url }) => {
-  const database =
-    platform?.env.DB ?? (await import("cloudflare:workers")).env.DB;
-  if (!database) {
-    error(503, "データベースに接続できません。");
-  }
-
+export const load: PageServerLoad = async ({ url }) => {
   const selectedTags = [
     ...new Set(
       url.searchParams.getAll("tag").map(normalizeTag).filter(Boolean)
     ),
   ].slice(0, 20);
-  const repository = createAchievementRepository(database);
+  const repository = createAchievementRepository();
 
   try {
     const [page, tags] = await Promise.all([

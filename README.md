@@ -62,13 +62,13 @@ Worker 名は `nyatinte-com` です。
 
 Worker の変数には Access のチームドメイン（例: `https://<team>.cloudflareaccess.com`）とアプリケーションの Audience Tag を `ACCESS_TEAM_DOMAIN`、`ACCESS_AUDIENCE` として設定します。どちらも公開情報です。MCP クライアントには `CF-Access-Client-Id` と `CF-Access-Client-Secret` をヘッダーとして登録し、Client Secret はリポジトリに保存しないでください。
 
-管理 API の利用には Worker の `DB` バインディングも必要です。ローカルの D1 結合テストは `pnpm test:d1` で実行できます。本番 D1 の作成・適用や Cloudflare Access の実環境での認証確認は、このリポジトリのテスト対象外です。
+実績は `src/lib/achievements/` の Markdown として Git で管理します。MCP は `ACHIEVEMENT_GITHUB_TOKEN` を使って実績変更の PR を作成し、マージ後に手動デプロイすると公開されます。GitHub トークンは対象リポジトリの Contents と Pull requests に必要な権限だけを付与し、シークレットとして設定してください。
 
 Ultracite/Biome が JS/TS/JSON/CSS と Svelte の format と lint を担当します。Svelte 対応は公式 preset が有効にする Biome の実験的機能です。ESLint は Biome にない Svelte 固有ルールを補完します。`vp check --no-fmt --no-lint` は Vite+ の TypeScript 型チェックだけを残すために使い、Oxfmt/Oxlint は現時点の品質チェックでは実行しません。
 
 ## 構成
 
-- `src/routes/+page.svelte`: Hello World ページ
+- `src/routes/+page.svelte`: トップページ
 - `src/routes/hello-world.test.ts`: 実際の Worker に対する HTTP テスト
 - `cloudflare.config.ts`: `cf` 用の Worker、route、asset、Observability 設定
 - `wrangler.config.ts`: Wrangler の隠し実験フラグによる Build Output 生成設定（通常のビルドでは未使用）

@@ -1,12 +1,12 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts for information about these interfaces.
-import type { AnyD1Database } from "drizzle-orm/d1";
+export {};
 
 declare global {
   namespace Cloudflare {
     interface Env {
       ACCESS_AUDIENCE?: string;
       ACCESS_TEAM_DOMAIN?: string;
-      DB?: AnyD1Database;
+      ACHIEVEMENT_GITHUB_TOKEN?: string;
     }
   }
 

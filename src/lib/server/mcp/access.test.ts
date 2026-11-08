@@ -122,7 +122,7 @@ test("rejects missing Access credentials at the endpoint", async () => {
   expect(result.status).toBe(401);
 });
 
-test("requires a D1 binding after successful Access authentication", async () => {
+test("requires a GitHub token after successful Access authentication", async () => {
   const issuer = `https://database-${crypto.randomUUID()}.cloudflareaccess.com`;
   const token = await signedToken({ issuer });
 
@@ -133,6 +133,6 @@ test("requires a D1 binding after successful Access authentication", async () =>
 
   expect(result.status).toBe(503);
   expect(await result.json()).toEqual({
-    error: "The MCP database is unavailable.",
+    error: "GitHub is not configured for this MCP service.",
   });
 });

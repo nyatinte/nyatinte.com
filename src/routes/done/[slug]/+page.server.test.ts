@@ -10,7 +10,6 @@ const fixtures = vi.hoisted(() => ({
     id: "01998f36-8980-7a64-bd0d-70bb30c7d901",
     links: [],
     occurredAt: "2026-09-28",
-    publishedAt: "2026-09-28T00:00:00.000Z",
     revision: 2,
     slug: "one-record",
     summary: "一言の説明",
