@@ -9,8 +9,6 @@ catalog:
 overrides:
   vite@*: 'catalog:'
   vitest@*: 'catalog:'
-minimumReleaseAgeExclude:
-  - cf@1.0.0-beta.12
 peerDependencyRules:
   allowedVersions:
     vite: 1.5.0
