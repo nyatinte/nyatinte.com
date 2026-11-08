@@ -4,6 +4,7 @@ import {
   desc,
   eq,
   gt,
+  inArray,
   isNull,
   lt,
   or,
@@ -291,12 +292,49 @@ export function createAchievementRepository(client: AnyD1Database) {
       .limit(limit + 1);
     const hasMore = rows.length > limit;
     const page = rows.slice(0, limit);
-    const items = await Promise.all(
-      page.map(({ id }) => get(id, { includeDeleted: options.includeDeleted }))
-    );
+    if (page.length === 0) {
+      return { items: [], nextCursor: null };
+    }
+    const ids = page.map(({ id }) => id);
+    const [tags, links] = await Promise.all([
+      db
+        .select({
+          achievementId: achievementTag.achievementId,
+          name: tag.name,
+          normalized: tag.normalized,
+        })
+        .from(achievementTag)
+        .innerJoin(tag, eq(tag.id, achievementTag.tagId))
+        .where(inArray(achievementTag.achievementId, ids))
+        .orderBy(asc(tag.normalized)),
+      db
+        .select({
+          achievementId: link.achievementId,
+          id: link.id,
+          label: link.label,
+          position: link.position,
+          url: link.url,
+        })
+        .from(link)
+        .where(inArray(link.achievementId, ids))
+        .orderBy(asc(link.position)),
+    ]);
     const last = page.at(-1);
     return {
-      items: items.filter((item): item is AchievementRecord => item !== null),
+      items: page.map((row) => ({
+        ...row,
+        links: links
+          .filter((item) => item.achievementId === row.id)
+          .map(({ id, label, position, url }) => ({
+            id,
+            label,
+            position,
+            url,
+          })),
+        tags: tags
+          .filter((item) => item.achievementId === row.id)
+          .map(({ name, normalized }) => ({ name, normalized })),
+      })),
       nextCursor: hasMore && last ? `${last.occurredAt}~${last.id}` : null,
     };
   }

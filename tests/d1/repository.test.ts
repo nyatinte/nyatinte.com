@@ -44,6 +44,8 @@ test("reuses normalized tags and preserves links in display order", async () => 
     ["https://example.com/second", 1],
   ]);
   await expect(repository.get(created.slug)).resolves.toMatchObject(created);
+  const page = await repository.list({ tags: ["cloudflare", "workers"] });
+  expect(page.items).toContainEqual(created);
 });
 
 test("filters by every tag and paginates in date order", async () => {

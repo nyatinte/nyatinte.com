@@ -20,3 +20,4 @@ worker-configuration.d.ts
 # misc
 .DS_Store
 *.log
+.vitest/

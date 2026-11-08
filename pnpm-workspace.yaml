@@ -3,11 +3,14 @@ allowBuilds:
   workerd: true
 engineStrict: true
 catalog:
-  vite: npm:@voidzero-dev/vite-plus-core@0.3.3
-  vite-plus: 0.3.3
-  vitest: 4.1.11
+  vite: npm:@voidzero-dev/vite-plus-core@1.5.0
+  vite-plus: 1.5.0
+  vitest: 5.1.0
 overrides:
-  vite: "catalog:"
-  vitest: "catalog:"
+  vite@*: 'catalog:'
+  vitest@*: 'catalog:'
 minimumReleaseAgeExclude:
   - cf@1.0.0-beta.12
+peerDependencyRules:
+  allowedVersions:
+    vite: 1.5.0
