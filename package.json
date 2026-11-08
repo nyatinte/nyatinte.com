@@ -47,7 +47,7 @@
     "eslint": "10.11.0",
     "eslint-plugin-svelte": "3.23.0",
     "svelte": "5.57.1",
-    "svelte-check": "4.7.6",
+    "svelte-check": "4.7.8",
     "tailwindcss": "4.3.3",
     "takumi-js": "2.14.0",
     "typescript": "6.0.3",
