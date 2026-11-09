@@ -3,14 +3,8 @@ import { renderMarkdown } from "../../../lib/server/achievement/markdown";
 import { createAchievementRepository } from "../../../lib/server/achievement/repository";
 import type { PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({ params, platform, url }) => {
-  const database =
-    platform?.env.DB ?? (await import("cloudflare:workers")).env.DB;
-  if (!database) {
-    error(503, "データベースに接続できません。");
-  }
-
-  const repository = createAchievementRepository(database);
+export const load: PageServerLoad = async ({ params, url }) => {
+  const repository = createAchievementRepository();
   const entry = await repository.get(params.slug, { includeDeleted: true });
   if (!entry) {
     error(404, "実績が見つかりません。", { code: "NOT_FOUND" });

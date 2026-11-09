@@ -2,12 +2,11 @@ import {
   hostHeaderValidationResponse,
   originValidationResponse,
 } from "@modelcontextprotocol/server";
-import type { AnyD1Database } from "drizzle-orm/d1";
 import { type AccessEnvironment, authenticateAccessRequest } from "./access";
 import { handleAchievementMcpRequest } from "./server";
 
 export interface McpEnvironment extends AccessEnvironment {
-  DB?: AnyD1Database;
+  ACHIEVEMENT_GITHUB_TOKEN?: string;
 }
 
 const allowedHostnames = ["nyatinte.com", "localhost", "127.0.0.1"];
@@ -27,12 +26,16 @@ export async function handleMcpRequest(
   if (authInfo instanceof Response) {
     return authInfo;
   }
-  if (!environment.DB) {
+  if (!environment.ACHIEVEMENT_GITHUB_TOKEN) {
     return Response.json(
-      { error: "The MCP database is unavailable." },
+      { error: "GitHub is not configured for this MCP service." },
       { headers: { "cache-control": "no-store" }, status: 503 }
     );
   }
 
-  return handleAchievementMcpRequest(request, environment.DB, authInfo);
+  return handleAchievementMcpRequest(
+    request,
+    environment.ACHIEVEMENT_GITHUB_TOKEN,
+    authInfo
+  );
 }

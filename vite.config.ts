@@ -1,6 +1,5 @@
 import adapter from "@sveltejs/adapter-cloudflare";
 import { sveltekit } from "@sveltejs/kit/vite";
-import tailwindcss from "@tailwindcss/vite";
 import { varlockVitePlugin } from "@varlock/vite-integration";
 import { defineConfig } from "vite-plus";
 
@@ -26,7 +25,6 @@ export default defineConfig(({ mode }) => ({
       ? []
       : [
           varlockVitePlugin(),
-          tailwindcss(),
           sveltekit({
             adapter: adapter({
               config: "./wrangler.varlock.jsonc",
