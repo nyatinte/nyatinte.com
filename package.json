@@ -28,7 +28,7 @@
     "types": "wrangler types"
   },
   "dependencies": {
-    "drizzle-orm": "0.45.3",
+    "drizzle-orm": "0.45.4",
     "marked": "18.0.14",
     "sanitize-html": "2.17.7",
     "valibot": "1.5.0"
