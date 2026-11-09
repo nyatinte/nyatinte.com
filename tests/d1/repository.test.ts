@@ -165,3 +165,64 @@ test("soft-deletes, hides, and restores an achievement", async () => {
     revision: 3,
   });
 });
+test("lists only public tags and finds adjacent achievements", async () => {
+  const repository = createAchievementRepository(env.DB);
+  const testRun = crypto.randomUUID().slice(0, 8);
+  const offset = Number.parseInt(crypto.randomUUID().slice(0, 8), 16) % 30_000;
+  const baseDate = Date.UTC(2100, 0, 1) + offset * 24 * 60 * 60 * 1000;
+  const dateAt = (day: number) =>
+    new Date(baseDate + day * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const older = await repository.create({
+    occurredAt: dateAt(0),
+    summary: "Older entry.",
+    tags: [`${testRun}-zebra`, `${testRun}-shared`],
+    title: "Older entry",
+  });
+  const current = await repository.create({
+    occurredAt: dateAt(1),
+    summary: "Current entry.",
+    tags: [`${testRun}-shared`, `${testRun}-alpha`],
+    title: "Current entry",
+  });
+  const newerFirst = await repository.create({
+    occurredAt: dateAt(2),
+    summary: "Newer first entry.",
+    tags: [`${testRun}-newer`],
+    title: "Newer first entry",
+  });
+  const newerSecond = await repository.create({
+    occurredAt: dateAt(2),
+    summary: "Newer second entry.",
+    tags: [`${testRun}-newer`],
+    title: "Newer second entry",
+  });
+  const deleted = await repository.create({
+    occurredAt: dateAt(3),
+    summary: "Deleted entry.",
+    tags: [`${testRun}-hidden`],
+    title: "Deleted entry",
+  });
+  await repository.delete(deleted.id, 1);
+
+  const tags = await repository.listTags();
+  expect(tags).toEqual(
+    expect.arrayContaining([
+      { name: `${testRun}-alpha`, normalized: `${testRun}-alpha` },
+      { name: `${testRun}-shared`, normalized: `${testRun}-shared` },
+      { name: `${testRun}-zebra`, normalized: `${testRun}-zebra` },
+    ])
+  );
+  expect(tags.map(({ normalized }) => normalized)).not.toContain(
+    `${testRun}-hidden`
+  );
+  const [lastInNewerDate] = [newerFirst, newerSecond].sort((left, right) =>
+    right.id.localeCompare(left.id)
+  );
+  await expect(repository.getAdjacent(current.id)).resolves.toMatchObject({
+    next: { id: older.id },
+    previous: { id: lastInNewerDate.id },
+  });
+  await expect(repository.getAdjacent(older.id)).resolves.toMatchObject({
+    previous: { id: current.id },
+  });
+});

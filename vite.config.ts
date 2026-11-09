@@ -28,7 +28,9 @@ export default defineConfig(({ mode }) => ({
           varlockVitePlugin(),
           tailwindcss(),
           sveltekit({
-            adapter: adapter(),
+            adapter: adapter({
+              platformProxy: { configPath: "./wrangler.local.jsonc" },
+            }),
             compilerOptions: {
               runes: ({ filename }) =>
                 filename.split(pathSeparatorPattern).includes("node_modules")

@@ -1,0 +1,41 @@
+import { error } from "@sveltejs/kit";
+import { renderMarkdown } from "../../../lib/server/achievement/markdown";
+import { createAchievementRepository } from "../../../lib/server/achievement/repository";
+import type { PageServerLoad } from "./$types";
+
+export const load: PageServerLoad = async ({ params, platform, url }) => {
+  const database =
+    platform?.env.DB ?? (await import("cloudflare:workers")).env.DB;
+  if (!database) {
+    error(503, "データベースに接続できません。");
+  }
+
+  const repository = createAchievementRepository(database);
+  const entry = await repository.get(params.slug, { includeDeleted: true });
+  if (!entry) {
+    error(404, "実績が見つかりません。", { code: "NOT_FOUND" });
+  }
+  if (entry.deletedAt) {
+    error(410, "この実績は削除されています。", { code: "GONE" });
+  }
+
+  const adjacent = await repository.getAdjacent(entry.id);
+  const canonicalUrl = new URL(
+    `/done/${encodeURIComponent(entry.slug)}`,
+    url.origin
+  );
+  const fallbackImage = new URL(
+    `/og/${encodeURIComponent(entry.slug)}.png`,
+    url.origin
+  );
+  fallbackImage.searchParams.set("v", String(entry.revision));
+
+  return {
+    bodyHtml: renderMarkdown(entry.bodyMarkdown ?? ""),
+    canonicalUrl: canonicalUrl.href,
+    entry,
+    next: adjacent.next,
+    ogImageUrl: entry.coverImageUrl ?? fallbackImage.href,
+    previous: adjacent.previous,
+  };
+};

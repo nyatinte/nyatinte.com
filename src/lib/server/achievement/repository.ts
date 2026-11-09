@@ -1,4 +1,15 @@
-import { and, asc, desc, eq, isNull, or, type SQL, sql } from "drizzle-orm";
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  gt,
+  isNull,
+  lt,
+  or,
+  type SQL,
+  sql,
+} from "drizzle-orm";
 import type { BatchItem } from "drizzle-orm/batch";
 import { type AnyD1Database, drizzle } from "drizzle-orm/d1";
 import { parse } from "valibot";
@@ -288,6 +299,70 @@ export function createAchievementRepository(client: AnyD1Database) {
     };
   }
 
+  function listTags() {
+    return db
+      .selectDistinct({ name: tag.name, normalized: tag.normalized })
+      .from(tag)
+      .innerJoin(achievementTag, eq(achievementTag.tagId, tag.id))
+      .innerJoin(achievement, eq(achievement.id, achievementTag.achievementId))
+      .where(isNull(achievement.deletedAt))
+      .orderBy(asc(tag.normalized));
+  }
+
+  async function getAdjacent(id: string) {
+    const [current] = await db
+      .select({ id: achievement.id, occurredAt: achievement.occurredAt })
+      .from(achievement)
+      .where(and(eq(achievement.id, id), isNull(achievement.deletedAt)))
+      .limit(1);
+    if (!current) {
+      return { next: null, previous: null };
+    }
+
+    const [previous, next] = await Promise.all([
+      db
+        .select({ id: achievement.id })
+        .from(achievement)
+        .where(
+          and(
+            isNull(achievement.deletedAt),
+            or(
+              gt(achievement.occurredAt, current.occurredAt),
+              and(
+                eq(achievement.occurredAt, current.occurredAt),
+                lt(achievement.id, current.id)
+              )
+            )
+          )
+        )
+        .orderBy(asc(achievement.occurredAt), desc(achievement.id))
+        .limit(1),
+      db
+        .select({ id: achievement.id })
+        .from(achievement)
+        .where(
+          and(
+            isNull(achievement.deletedAt),
+            or(
+              lt(achievement.occurredAt, current.occurredAt),
+              and(
+                eq(achievement.occurredAt, current.occurredAt),
+                gt(achievement.id, current.id)
+              )
+            )
+          )
+        )
+        .orderBy(desc(achievement.occurredAt), asc(achievement.id))
+        .limit(1),
+    ]);
+
+    const [previousRecord, nextRecord] = await Promise.all([
+      previous[0] ? get(previous[0].id) : null,
+      next[0] ? get(next[0].id) : null,
+    ]);
+    return { next: nextRecord, previous: previousRecord };
+  }
+
   async function commitChange(
     current: AchievementRecord,
     changes: Partial<Achievement>,
@@ -448,5 +523,14 @@ export function createAchievementRepository(client: AnyD1Database) {
     );
   }
 
-  return { create, delete: remove, get, list, restore, update };
+  return {
+    create,
+    delete: remove,
+    get,
+    getAdjacent,
+    list,
+    listTags,
+    restore,
+    update,
+  };
 }
