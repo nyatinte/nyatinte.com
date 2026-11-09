@@ -484,7 +484,7 @@
         <a href="#s5">5. データモデル</a>
         <a href="#s6">6. ルーティング / 画面</a>
         <a href="#s7">7. 管理 API / MCP</a>
-        <a href="#s8">8. OGP 生成</a>
+        <a href="#s8">8. 共通 OGP 画像</a>
         <a href="#s9">9. 非機能</a>
         <a href="#s10">10. 実装フェーズ</a>
         <a href="#s11">11. テスト / CI</a>
@@ -677,7 +677,7 @@
         <h3>環境</h3>
         <table>
           <tr><th>環境</th><th>用途</th><th>DB</th></tr>
-          <tr><td>local</td><td><code>wrangler dev</code> ＋ ローカル D1</td><td>ローカル SQLite</td></tr>
+          <tr><td>local</td><td><code>varlock-wrangler dev</code> ＋ ローカル D1</td><td>ローカル SQLite</td></tr>
           <tr><td>preview</td><td>PR ごとのプレビュー</td><td>本番 D1 を読み取り専用で使う<span class="badge check">要確認</span></td></tr>
           <tr><td>production</td><td><code>nyatinte.com</code></td><td>本番 D1</td></tr>
         </table>
@@ -908,7 +908,7 @@ CREATE UNIQUE INDEX idx_achievement_slug ON achievement(slug);</code></pre>
         <ul>
           <li>SvelteKit 3 + Vite+ + TypeScript 6 + Tailwind v4 + shadcn-svelte の初期化。</li>
           <li>lint / fmt / typecheck のスクリプトと GitHub Actions。</li>
-          <li>varlock の設定、<code>wrangler.jsonc</code>、Cloudflare への接続。</li>
+          <li>varlock の設定、<code>cloudflare.config.ts</code>、Cloudflare への接続。</li>
         </ul>
         <p><b>完了条件</b>: <code>vp check</code> と <code>vp build</code> が通り、空のページが Workers にデプロイできる。</p>
 
@@ -960,15 +960,16 @@ CREATE UNIQUE INDEX idx_achievement_slug ON achievement(slug);</code></pre>
           <tr><th>種類</th><th>対象</th><th>道具</th></tr>
           <tr><td>単体</td><td>組版ロジック、タグ正規化、slug 生成、valibot スキーマ</td><td>Vitest</td></tr>
           <tr><td>結合</td><td>リポジトリ層（ローカル D1）</td><td>Vitest</td></tr>
-          <tr><td>OGP スナップショット</td><td>長い・短い・英語混在・詳細なしの4種を PNG で比較</td><td>Vitest</td></tr>
+          <tr><td>OGP メタデータ</td><td>詳細ページごとの title / description と共通画像 URL</td><td>Vitest / ブラウザ確認</td></tr>
         </table>
-        <p>E2E（Playwright）は MVP では入れない。OGP の見た目は PNG のスナップショットで守る。</p>
+        <p>E2E（Playwright）は MVP では入れない。共通 PNG は静的アセットとして管理し、個別画像の組版スナップショットは作らない。</p>
 
         <h4>CI</h4>
-        <pre><code>vp check   # fmt + lint + typecheck
-vp test
-vp build
-wrangler deploy  # main のみ</code></pre>
+        <pre><code>pnpm check
+pnpm build
+pnpm test       # ローカル Worker を起動して実行
+pnpm test:d1
+# Deploy は main から手動実行し、production_deploy=deploy を選択</code></pre>
 
         <!-- ============================================================ -->
         <h2 id="s12"><span class="num">12</span>未決とリスク</h2>
@@ -1025,7 +1026,7 @@ wrangler deploy  # main のみ</code></pre>
           <li>P0〜P5 の順番と粒度は、1人で回せる大きさか。</li>
           <li>「MVP でやらないこと」に、実は必要なものが混ざっていないか。</li>
           <li>データモデルに、後から足すと痛い制約が残っていないか（特に slug の不変化）。</li>
-          <li>OGP のサイズ見積もりが破綻したときの代替案（PNG をやめる、フォントを削る）で足りるか。</li>
+          <li>共通 OGP PNG のデザインと、実績ごとの SSR メタデータが共有時に意図どおり表示されるか。</li>
         </ul>
 
         <h2 id="s15"><span class="num">15</span>モック一覧</h2>
@@ -1033,8 +1034,8 @@ wrangler deploy  # main のみ</code></pre>
         <div class="mocks">
           <a href="grill-check.html"><b>grill-check.html</b><span>要件のすり合わせ用チェックリスト</span></a>
           <a href="card-patterns.html"><b>card-patterns.html</b><span>実績カード3案（X風プレビュー）</span></a>
-          <a href="ogp-patterns.html"><b>ogp-patterns.html</b><span>OGP画像3案（タイポ中心）</span></a>
-          <a href="ogp-done-style.html"><b>ogp-done-style.html</b><span>OGP 実績カード風（採用案）</span></a>
+          <a href="ogp-patterns.html"><b>ogp-patterns.html</b><span>OGP画像3案（初期検討記録）</span></a>
+          <a href="ogp-done-style.html"><b>ogp-done-style.html</b><span>共通OGPのデザイン案（採用）</span></a>
           <a href="done-ui-mock.html"><b>done-ui-mock.html</b><span>ゲーム実績風UI（不採用・記録用）</span></a>
         </div>
 

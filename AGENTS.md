@@ -6,7 +6,7 @@
 
 `nyatinte.com` の個人サイト。`/done` に「やったこと（実績）」を短く蓄積・公開する。
 
-- 投稿者は本人1名のみ。投稿は MCP 経由
+- 投稿者は本人 1 名のみ。投稿は MCP 経由
 - MCP から登録した実績は保存後すぐ公開する。下書き状態を持たない
 - 閲覧は誰でも、ログイン不要
 - 実績はタイトルと一言だけで成立し、後から Markdown の詳細を足せる
@@ -29,7 +29,7 @@
 | 認証 | Cloudflare Access（`/mcp` のみ） |
 | OGP 画像 | Static Assets から配信する共通の固定 PNG |
 | テスト | Vitest |
-| CI/CD | GitHub Actions + wrangler |
+| CI/CD | GitHub Actions + `cf` (build/check) + Varlock Wrangler (deploy) |
 | パッケージ管理 | pnpm |
 
 ## コマンド
@@ -47,7 +47,14 @@ pnpm deploy   # ビルドしてデプロイ
 ## OGP の本番経路
 
 - 実績と実績ごとの共有メタデータは D1 を正本とする。`static/og/done.png` は共通画像として配信し、実績データをビルド時に複製しない。
-- `poc/` 以下の個別 OGP 生成 PoC は検証用に保持し、本番のページ・画像配信には接続しない。
+- Takumi のレンダリングとフォント検証は、参考用の PoC として `poc/takumi-workers/` に隔離し、本番のページ・画像配信には接続しない。実績ごとの PNG の生成・保存は行わない。
+
+## Cloudflare CLI
+
+- `cloudflare.config.ts` を `cf` の Worker 設定と型生成の正本にする。`cf build` は SvelteKit の `vite build` を実行するが Build Output を生成しない。Wrangler 4.147.0 の隠し実験フラグでは生成できるものの、通常のビルド・deploy 経路には採用せず、ビルドは Vite+、deploy は Varlock 互換経路を使う。
+- `wrangler.varlock.jsonc` は SvelteKit adapter-cloudflare と Varlock の `dev` と `deploy` 用互換設定。両設定で Worker 名・compatibility・routes・assets を揃える。
+- 本番 deploy は `varlock-wrangler` のみを使う。`cf` に `keep_vars` 相当がなく、Varlock は `cf deploy` をサポートしていないため、置換前に Cloudflare 上の変数を棚卸しし、Varlock 対応を確認する。
+- Takumi PoC と D1 結合テストの明示的な Wrangler 設定は、各スクリプトが指定する。
 
 ## スキル
 
@@ -63,7 +70,7 @@ pnpm deploy   # ビルドしてデプロイ
 | `tailwind-4-docs` | Tailwind v4 のユーティリティ選択・設定・移行 |
 | `cloudflare` | Cloudflare 製品の選定・構成の相談 |
 | `workers-best-practices` | Workers を書く / レビューする / 設定するとき |
-| `wrangler` | Wrangler の実行・トラブルシュート |
+| `wrangler` | Varlock互換 deploy、Takumi PoC、D1テストでWranglerを使うとき |
 | `cloudflare-one` | Cloudflare Access / Zero Trust の設定 |
 | `d1-drizzle-schema` | D1 のスキーマ作成・テーブル追加 |
 | `d1-migration` | マイグレーションの生成・適用・失敗の復旧 |
@@ -79,20 +86,20 @@ pnpm deploy   # ビルドしてデプロイ
 
 ## 守ること（権利まわり）
 
-ゲームの実績UIに寄せた見た目を採用しているが、以下は禁止。
+ゲームの実績 UI に寄せた見た目を採用しているが、以下は禁止。
 
-- PlayStation / Xbox / Steam のロゴ、トロフィー画像、達成率バーの流用
+- PlayStation、Xbox、Steam のロゴ、トロフィー画像、達成率バーの流用
 - 実在ゲームの名称・アイコン・スクリーンショットの利用
-- 特定プラットフォームのUIを1対1で再現すること
+- 特定プラットフォームの UI を 1 対 1 で再現すること
 
-自作の図形とタイポグラフィだけで表現する。フォントは M PLUS 1p (OFL)、アイコンを使う場合は MIT / ISC のものに限る。
+自作の図形とタイポグラフィだけで表現する。フォントは M PLUS 1p (OFL)、アイコンを使う場合は MIT または ISC のものに限る。
 
 ## やらないこと（MVP 外）
 
 - プッシュ（匿名リアクション）、リアクション集計
 - やる宣言（未達成フラグ）
 - 下書き・非公開状態
-- 階級（GOLD / SILVER / BRONZE）、レア度、達成率
+- 階級（GOLD、SILVER、BRONZE）、レア度、達成率
 - 投稿用 Web 管理画面
 - 閲覧者アカウント、フォロー、コメント
 - 全文検索、画像アップロード、RSS、sitemap
