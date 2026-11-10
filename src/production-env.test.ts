@@ -32,6 +32,11 @@ test("production deployment requires Access configuration and a GitHub token", (
       expect(() => load(partial)).toThrow();
     }
     expect(() => load(complete)).not.toThrow();
+    copyFileSync(resolve(".env.production"), join(cwd, ".env.production"));
+    expect(() => load({})).toThrow();
+    expect(() =>
+      load({ ACHIEVEMENT_GITHUB_TOKEN: "synthetic-test-token" })
+    ).not.toThrow();
   } finally {
     rmSync(cwd, { force: true, recursive: true });
   }
