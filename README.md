@@ -44,7 +44,7 @@ pnpm test
 
 ## デプロイ
 
-デプロイ先は既存の Custom Domain `https://nyatinte.com` です。Custom Domain は `nyatinte-com` Worker に紐付いており、DNS 変更は必要ありません。`pnpm deploy` は `varlock-wrangler versions upload --keep-vars=true` で既存の vars と secrets を保持して新しいバージョンをアップロードし、そのバージョンをデプロイします。ルートなどのトリガー設定を変更した場合は別途適用が必要です。`workers.dev` と Preview URL は使用しません。
+デプロイ先は既存の Custom Domain `https://nyatinte.com` です。Custom Domain は `nyatinte-com` Worker に紐付いており、DNS 変更は必要ありません。`pnpm run deploy` は `varlock-wrangler versions upload --keep-vars=true` で既存の vars と secrets を保持して新しいバージョンをアップロードし、そのバージョンをデプロイします。ルートなどのトリガー設定を変更した場合は別途適用が必要です。`workers.dev` と Preview URL は使用しません。
 
 `cloudflare.config.ts` は `cf` の Worker 設定と型生成に使います。
 
@@ -52,7 +52,7 @@ pnpm test
 
 Cloudflare 上の既存変数を棚卸しし、SvelteKit 対応のビルド経路と Varlock 連携を検証した後に、`cf build` または `cf deploy` への切り替えを検討します。
 
-GitHub Actions は pull request と `main` への push で検証を実行します。`main` から手動で Deploy を選んだ場合だけ、検証成功後に `pnpm deploy` を実行し、`https://nyatinte.com` への HTTP smoke test を行います。Actions の production environment には `ACCESS_TEAM_DOMAIN` と `ACCESS_AUDIENCE` の Variables、および `ACHIEVEMENT_GITHUB_TOKEN`、`CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` の Secrets が必要です。
+GitHub Actions は pull request と `main` への push で検証を実行します。`main` から手動で Deploy を選んだ場合だけ、検証成功後に `pnpm run deploy` を実行し、`https://nyatinte.com` への HTTP smoke test を行います。Actions の production environment には `ACCESS_TEAM_DOMAIN` と `ACCESS_AUDIENCE` の Variables、および `ACHIEVEMENT_GITHUB_TOKEN`、`CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` の Secrets が必要です。
 
 Worker 名は `nyatinte-com` です。
 
