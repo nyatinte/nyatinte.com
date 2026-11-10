@@ -11,6 +11,8 @@ async function signedToken(options: {
   audience?: string;
   issuer: string;
   subject?: string;
+  commonName?: unknown;
+  type?: string;
 }) {
   const { privateKey, publicKey } = await generateKeyPair("ES256");
   const jwk = await exportJWK(publicKey);
@@ -27,7 +29,13 @@ async function signedToken(options: {
     )
   );
 
-  const token = await new SignJWT({ email: "owner@example.com" })
+  const token = await new SignJWT({
+    email: "owner@example.com",
+    ...(options.commonName !== undefined && {
+      common_name: options.commonName,
+    }),
+    ...(options.type !== undefined && { type: options.type }),
+  })
     .setProtectedHeader({ alg: "ES256", kid: "test-key" })
     .setIssuer(options.issuer)
     .setAudience(options.audience ?? AUDIENCE)
@@ -75,6 +83,40 @@ test("accepts a signed Access JWT for the configured issuer and audience", async
   });
   expect(result).not.toBeInstanceOf(Response);
 });
+
+test("accepts a signed service token with an empty subject and client ID", async () => {
+  const issuer = `https://service-${crypto.randomUUID()}.cloudflareaccess.com`;
+  const token = await signedToken({
+    commonName: "service-client.access",
+    issuer,
+    subject: "",
+    type: "app",
+  });
+  const result = await authenticateAccessRequest(requestWithToken(token), {
+    ACCESS_AUDIENCE: AUDIENCE,
+    ACCESS_TEAM_DOMAIN: issuer,
+  });
+  expect(result).toMatchObject({ clientId: "service-client.access", token });
+});
+
+test.each([
+  [undefined, "app"],
+  ["", "app"],
+  [123, "app"],
+  ["service-client.access", "org"],
+])(
+  "rejects a service token without a valid client ID and type",
+  async (commonName, type) => {
+    const issuer = `https://invalid-service-${crypto.randomUUID()}.cloudflareaccess.com`;
+    const token = await signedToken({ commonName, issuer, subject: "", type });
+    const result = await authenticateAccessRequest(requestWithToken(token), {
+      ACCESS_AUDIENCE: AUDIENCE,
+      ACCESS_TEAM_DOMAIN: issuer,
+    });
+    expect(result).toBeInstanceOf(Response);
+    expect((result as Response).status).toBe(401);
+  }
+);
 
 test.each([
   ["issuer", "https://wrong-issuer.cloudflareaccess.com", AUDIENCE],

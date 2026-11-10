@@ -76,7 +76,13 @@ export async function authenticateAccessRequest(
       issuer,
       requiredClaims: ["aud", "exp", "iss", "sub"],
     });
-    const clientId = payload.sub;
+    const clientId =
+      payload.sub ||
+      (payload.sub === "" &&
+      payload.type === "app" &&
+      typeof payload.common_name === "string"
+        ? payload.common_name
+        : undefined);
     if (!(clientId && payload.exp)) {
       return response(401, "Cloudflare Access authentication failed.");
     }
