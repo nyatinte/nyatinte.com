@@ -192,8 +192,8 @@ importers:
         specifier: 6.2.17
         version: 6.2.17
       marked:
-        specifier: 18.0.14
-        version: 18.0.14
+        specifier: 18.2.0
+        version: 18.2.0
       sanitize-html:
         specifier: 2.18.1
         version: 2.18.1
@@ -2284,8 +2284,8 @@ packages:
   magicast@0.5.5:
     resolution: {integrity: sha512-UicdXN8zQ3JHlxVq+28afMXPr1z7WNY6+7EJnzTdQWkTAlMLF5fNCCKxJHBQwGaNGR11581EiQmQzx73+MvszA==}
 
-  marked@18.0.14:
-    resolution: {integrity: sha512-mBHK6FBHuBAlhgRe88w9F0O1AbwwXJUcQibUbC/QcdTbVGAD7aWza+xt3N6oT/jCZx3/OMeS+8rnuiHZcQ9s7A==}
+  marked@18.2.0:
+    resolution: {integrity: sha512-KaeL+tAbtvI930q7HE2PN5lYXYdT8EiSmxHlN6F3rsfb57wd5mp5W5TLazpdj4inTQBJdgjYwbs40W/0VUGU+Q==}
     engines: {node: '>= 20'}
     hasBin: true
 
@@ -4433,7 +4433,7 @@ snapshots:
       '@babel/types': 7.29.11
       source-map-js: 1.2.2
 
-  marked@18.0.14: {}
+  marked@18.2.0: {}
 
   merge2@1.4.1: {}
 
