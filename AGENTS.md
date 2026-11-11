@@ -1,74 +1,33 @@
 # AGENTS.md
 
-このリポジトリでの作業ルール。エージェントは作業前に必ず読むこと。
-
 ## プロダクト
 
-`nyatinte.com` の個人サイト。`/done` に「やったこと（実績）」を短く蓄積・公開する。
+`nyatinte.com` の個人サイト。`/done` で本人の実績を公開する。閲覧はログイン不要。実績はタイトルと一言で成立し、Markdown の詳細を後から追加できる。X での OGP を重視する。
 
-- 投稿者は本人 1 名のみ。投稿は MCP 経由
-- MCP から登録した実績は保存後すぐ公開する。下書き状態を持たない
-- 閲覧は誰でも、ログイン不要
-- 実績はタイトルと一言だけで成立し、後から Markdown の詳細を足せる
-- X に貼ったときの OGP を重視する
+実績は `src/lib/achievements/` の Markdown を正本とする。MCP は変更の PR を作成し、マージ後の手動デプロイで公開ページに反映する。下書きは設けない。公開ページはビルド時のデータを読み、MCP は GitHub の現行データを読む。
 
-詳細は `plan-docs/plan.html`（実装計画書）。実績の保存・公開方法は本ファイルを優先する。
+開発・デプロイ方法は [README.md](README.md) を参照。
 
-## 技術スタック
+## 実装上の決定
 
-| 領域 | 採用 |
-| --- | --- |
-| フレームワーク | SvelteKit 3.0.0-next.27 + Svelte 5 |
-| 言語 | TypeScript 6 |
-| ツールチェーン | Vite+ (`vp`) |
-| バリデーション | valibot |
-| スタイル | Svelte の `<style>` ブロックとモダン CSS |
-| 実行環境 | Cloudflare Workers (`adapter-cloudflare`) |
-| 実績の保存 | Git 管理の Markdown。MCP が PR を作成し、マージ後に手動デプロイ |
-| 環境変数 | varlock |
-| 認証 | Cloudflare Access（`/mcp` のみ） |
-| OGP 画像 | Static Assets から配信する共通の固定 PNG |
-| テスト | Vitest |
-| CI/CD | GitHub Actions + `cf` (build/check) + Varlock Wrangler (deploy) |
-| パッケージ管理 | pnpm |
-
-## コマンド
-
-実装が進んだら確定させる。現時点の想定:
-
-```sh
-pnpm dev      # 開発サーバー
-pnpm check    # fmt + lint + typecheck
-pnpm test     # Vitest
-pnpm build    # ビルド
-pnpm deploy   # ビルドしてデプロイ
-```
-
-## OGP の本番経路
-
-- 実績と実績ごとの共有メタデータは D1 を正本とする。`static/og/done.png` は共通画像として配信し、実績データをビルド時に複製しない。
-- Takumi のレンダリングとフォント検証は、参考用の PoC として `poc/takumi-workers/` に隔離し、本番のページ・画像配信には接続しない。実績ごとの PNG の生成・保存は行わない。
-
-## Cloudflare CLI
-
-- `cloudflare.config.ts` を `cf` の Worker 設定と型生成の正本にする。`cf build` は SvelteKit の `vite build` を実行するが Build Output を生成しない。Wrangler 4.147.0 の隠し実験フラグでは生成できるものの、通常のビルド・deploy 経路には採用せず、ビルドは Vite+、deploy は Varlock 互換経路を使う。
-- `wrangler.varlock.jsonc` は SvelteKit adapter-cloudflare と Varlock の `dev` と `deploy` 用互換設定。両設定で Worker 名・compatibility・routes・assets を揃える。
-- 本番 deploy は `varlock-wrangler` のみを使う。`cf` に `keep_vars` 相当がなく、Varlock は `cf deploy` をサポートしていないため、置換前に Cloudflare 上の変数を棚卸しし、Varlock 対応を確認する。
-- Takumi PoC と D1 結合テストの明示的な Wrangler 設定は、各スクリプトが指定する。
+- SvelteKit + Svelte 5、TypeScript、Vite+、pnpm、Cloudflare Workers を使う。バージョンとコマンドは `package.json` を参照する。
+- `/mcp` は Cloudflare Access で保護し、Worker でも Access JWT を検証する。
+- OGP は `static/og/home.png` と共通の `static/og/done.png` を使う。実績ごとのメタデータは公開ページから生成する。Takumi は `poc/takumi-workers/` に隔離し、本番に接続しない。
+- Cloudflare の設定変更時は `cloudflare.config.ts` と `wrangler.varlock.jsonc` の Worker 名・compatibility・routes・assets を揃える。`cf` に `keep_vars` 相当がなく Varlock が `cf deploy` をサポートしないため、本番デプロイは README の経路を使う。移行前には既存変数と Varlock 対応を確認する。
 
 ## スキル
 
-`.agents/skills/` に導入済み。該当作業では必ず先に読むこと。
+該当する作業では `.agents/skills/` のスキルを先に読む。
 
 | スキル | 使う場面 |
 | --- | --- |
-| `svelte-core-bestpractices` | Svelte のコンポーネント・モジュールを書く / 直す / 読むとき |
-| `svelte-code-writer` | `.svelte` / `.svelte.ts` を作成・編集・解析するとき |
-| `vite-plus` | Vite+ の初期化・移行・`vp` コマンド・チェック・テスト・CI の設定 |
-| `varlock` | 環境変数・シークレット・`.env.schema` の読み書き |
-| `cloudflare` | Cloudflare 製品の選定・構成の相談 |
-| `workers-best-practices` | Workers を書く / レビューする / 設定するとき |
-| `wrangler` | Varlock互換 deploy、Takumi PoC、D1テストでWranglerを使うとき |
+| `svelte-core-bestpractices` | Svelte のコンポーネント・モジュールの作成・編集・解析 |
+| `svelte-code-writer` | `.svelte` / `.svelte.ts` の作成・編集・解析 |
+| `vite-plus` | Vite+ の設定・コマンド・チェック・テスト・CI |
+| `varlock` | 環境変数・シークレット・`.env.schema` |
+| `cloudflare` | Cloudflare 製品の選定・構成 |
+| `workers-best-practices` | Workers の実装・レビュー・設定 |
+| `wrangler` | Wrangler の利用・設定 |
 | `cloudflare-one` | Cloudflare Access / Zero Trust の設定 |
 | `mcp-builder` | MCP サーバーとツールの実装 |
 | `vitest` | テストの作成・モック・カバレッジ |
@@ -80,32 +39,11 @@ pnpm deploy   # ビルドしてデプロイ
 - 破壊的な操作（削除・履歴改変・force push）は先に確認を取る。
 - TypeScript は関数と値で構成し、class 宣言は使わない。
 - Valibot の各項目に `description` と `examples` を付ける。
-- 300行を超えるファイルは役割に沿って分割を検討する。
-- 判断に迷ったら計画書と本ファイルの決定事項に戻る。無ければ勝手に決めず確認する。
+- 300 行を超えるファイルは役割に沿って分割を検討する。
+- 判断に迷ったら本ファイルの決定事項を確認し、決定がなければ相談する。
 
-## 守ること（権利まわり）
+## 権利と MVP の範囲
 
-ゲームの実績 UI に寄せた見た目を採用しているが、以下は禁止。
+ゲームの実績 UI を参考にする場合も、自作の図形とタイポグラフィで表現する。PlayStation、Xbox、Steam のロゴ・トロフィー画像・達成率バー、実在ゲームの名称・アイコン・スクリーンショット、特定プラットフォーム UI の 1 対 1 の再現は禁止。フォントは M PLUS 1p (OFL)、アイコンを使う場合は MIT または ISC のものに限る。
 
-- PlayStation、Xbox、Steam のロゴ、トロフィー画像、達成率バーの流用
-- 実在ゲームの名称・アイコン・スクリーンショットの利用
-- 特定プラットフォームの UI を 1 対 1 で再現すること
-
-自作の図形とタイポグラフィだけで表現する。フォントは M PLUS 1p (OFL)、アイコンを使う場合は MIT または ISC のものに限る。
-
-## やらないこと（MVP 外）
-
-- プッシュ（匿名リアクション）、リアクション集計
-- やる宣言（未達成フラグ）
-- 下書き・非公開状態
-- 階級（GOLD、SILVER、BRONZE）、レア度、達成率
-- 投稿用 Web 管理画面
-- 閲覧者アカウント、フォロー、コメント
-- 全文検索、画像アップロード、RSS、sitemap
-
-## 未検証の前提
-
-着手前に PoC で確認するもの。壊れていたら計画書の代替案に切り替える。
-
-- Cloudflare Access のサービス トークンを MCP クライアントが送れるか
-- SvelteKit 3 の next prerelease と Vite+ beta が実用に耐えるか
+MVP には匿名リアクション・集計、やる宣言、下書き・非公開状態、階級・レア度・達成率、投稿用 Web 管理画面、閲覧者アカウント・フォロー・コメント、全文検索、画像アップロード、RSS、sitemap を含めない。

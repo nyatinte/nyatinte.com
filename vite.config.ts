@@ -13,7 +13,6 @@ export default defineConfig(({ mode }) => ({
   lint: {
     ignorePatterns: [
       ".agents/**",
-      "plan-docs/**",
       "AGENTS.md",
       "README.md",
       "skills-lock.json",
