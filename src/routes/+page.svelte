@@ -1,181 +1,143 @@
+<script lang="ts">
+  import { onMount } from "svelte";
+  import HomeNavigation from "../lib/components/home-navigation.svelte";
+  import IcebergScene from "../lib/components/iceberg-scene.svelte";
+  import "../lib/styles/home-tokens.css";
+
+  let theme = $state<"light" | "dark" | null>(null);
+  let themeMessage = $state("");
+  let orbitTurn = $state<number | null>(null);
+
+  onMount(() => {
+    const savedTheme = document.documentElement.dataset.homeTheme;
+    if (savedTheme === "light" || savedTheme === "dark") {
+      theme = savedTheme;
+    }
+  });
+
+  function toggleTheme() {
+    const dark = theme
+      ? theme === "dark"
+      : matchMedia("(prefers-color-scheme: dark)").matches;
+    orbitTurn = (orbitTurn ?? (dark ? 180 : 0)) + 180;
+    theme = dark ? "light" : "dark";
+    themeMessage = `${theme === "dark" ? "ダーク" : "ライト"}モードに切り替えました`;
+    document.documentElement.dataset.homeTheme = theme;
+    try {
+      localStorage.setItem("nyatinte-home-theme", theme);
+    } catch {
+      // The current page remains usable when storage is unavailable.
+    }
+  }
+</script>
+
 <svelte:head>
-  <title>nyatinte.com</title>
-  <meta content="nyatinte の、やったことを記録する場所。" name="description">
+  <title>nyatinte</title>
+  <meta content="nyatinte のパーソナルサイト" name="description">
+  <meta content="light dark" name="color-scheme">
+  <link
+    as="image"
+    fetchpriority="high"
+    href="/images/adult-penguin.png"
+    rel="preload"
+  >
+  <link as="image" href="/images/chick-penguin.png" rel="preload">
+  <link
+    as="font"
+    crossorigin="anonymous"
+    href="/fonts/mplus1p-regular-latin.woff2"
+    rel="preload"
+    type="font/woff2"
+  >
+  <link
+    as="font"
+    crossorigin="anonymous"
+    href="/fonts/mplus1p-bold-latin.woff2"
+    rel="preload"
+    type="font/woff2"
+  >
 </svelte:head>
 
-<div class="page">
-  <header>
-    <a class="site-name" href="/">nyatinte.com</a>
-    <a class="header-link" href="/done"
-      >やったこと <span aria-hidden="true">↗</span></a
-    >
-  </header>
-
-  <main>
-    <div class="intro">
-      <p class="eyebrow">nyatinte の記録</p>
-      <h1>やったことを、<br>ひとつずつ。</h1>
-      <p class="description">
-        つくったもの、試したこと、できるようになったこと。<br>日々の小さな実績をここに残しています。
-      </p>
-      <a class="action" href="/done"
-        >やったことを見る <span aria-hidden="true">→</span></a
-      >
-    </div>
-    <div aria-hidden="true" class="mark">
-      <div class="mark-inner">
-        <span>やったこと</span><span class="mark-check">✓</span
-        ><span>記録して、つづける</span>
-      </div>
-    </div>
-  </main>
-
-  <footer><span>nyatinte.com</span><span>記録は、ここから</span></footer>
-</div>
+<main
+  class="home"
+  style:--orbit-turn={orbitTurn === null ? undefined : `${orbitTurn}deg`}
+  class:day={theme === "light"}
+  class:night={theme === "dark"}
+>
+  <IcebergScene />
+  <HomeNavigation {toggleTheme} />
+  <span aria-live="polite" class="theme-announcement">{themeMessage}</span>
+  <h1>
+    Hello<span class="dot">.</span><span class="intro">I'm nyatinte</span>
+  </h1>
+</main>
 
 <style>
   @layer components {
-    @scope (.page) {
+    :global(html:has(.home)) {
+      background: var(--home-background);
+    }
+    @scope (.home) {
       :scope {
-        display: flex;
-        flex-direction: column;
-        min-block-size: 100svh;
-        container-type: inline-size;
-        font-family: "M PLUS 1p", sans-serif;
-        color: oklch(28% 0.01 150);
-        background: oklch(96% 0.01 100);
+        --orbit-turn: var(--home-initial-orbit, 0deg);
+        --aurora-opacity: var(--home-initial-aurora-opacity, 0);
+        position: relative;
+        min-block-size: max(100svh, 32rem);
+        overflow: hidden;
+        color: var(--home-foreground);
+        color-scheme: var(--home-scheme, light dark);
+        background: var(--home-background);
+        isolation: isolate;
+        transition:
+          color 1.5s ease-in-out,
+          background-color 1.5s ease-in-out;
       }
-      header,
-      footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        inline-size: min(100% - 4rem, 75rem);
-        margin-inline: auto;
+      :scope.day {
+        --orbit-turn: 0deg;
+        color-scheme: light;
       }
-      header {
-        block-size: 5.5rem;
-        border-block-end: 1px solid oklch(86% 0.01 100);
-      }
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-      a:focus-visible {
-        outline: 2px solid oklch(44% 0.08 155);
-        outline-offset: 5px;
-      }
-      .site-name {
-        font-size: 18px;
-        font-weight: 600;
-      }
-      .header-link {
-        font-size: 14px;
-      }
-      .header-link span {
-        margin-left: 8px;
-      }
-      main {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 64px;
-        align-items: center;
-        inline-size: min(100% - 4rem, 75rem);
-        padding-block: clamp(4.5rem, 2rem + 5cqi, 6rem);
-        margin: auto;
-      }
-      .eyebrow {
-        margin: 0 0 28px;
-        font-size: 14px;
-        color: oklch(49% 0.02 150);
+      :scope.night {
+        --orbit-turn: 180deg;
+        --aurora-opacity: 0.22;
+        color-scheme: dark;
       }
       h1 {
+        position: absolute;
+        inset-block-start: 30%;
+        inset-inline-start: clamp(2rem, 8vw, 8rem);
         margin: 0;
-        font-size: clamp(2.5rem, 1.5rem + 4cqi, 4.25rem);
-        font-weight: 500;
-        line-height: 1.45;
-        letter-spacing: -0.04em;
-        text-wrap: balance;
-      }
-      .description {
-        margin: 28px 0 36px;
-        font-size: 15px;
-        line-height: 2;
-        color: oklch(49% 0.02 150);
-        text-wrap: pretty;
-      }
-      .action {
-        display: inline-flex;
-        gap: 56px;
-        align-items: center;
-        justify-content: space-between;
-        padding: 16px 20px;
-        font-size: 14px;
-        color: oklch(100% 0 0);
-        background: oklch(43% 0.07 155);
-      }
-      .action:hover {
-        background: oklch(35% 0.06 155);
-      }
-      .mark {
-        display: grid;
-        place-items: center;
-        justify-self: end;
-        inline-size: 100%;
-        max-inline-size: 27.5rem;
-        aspect-ratio: 1;
-        background: oklch(93% 0.015 120);
-        border: 1px solid oklch(86% 0.01 100);
-      }
-      .mark-inner {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        align-items: center;
-        justify-content: center;
-        inline-size: 68%;
-        aspect-ratio: 1;
-        font-size: 13px;
-        color: oklch(43% 0.07 155);
-        border: 1px solid oklch(73% 0.03 145);
-      }
-      .mark-check {
-        display: grid;
-        place-items: center;
-        inline-size: 6rem;
-        block-size: 6rem;
-        font-size: 48px;
+        font-size: clamp(4rem, 3rem + 6vw, 9rem);
+        font-weight: 400;
         line-height: 1;
-        color: oklch(96% 0.01 100);
-        background: oklch(43% 0.07 155);
-        border-radius: 50%;
+        letter-spacing: -0.06em;
       }
-      footer {
-        min-block-size: 5rem;
-        font-size: 12px;
-        color: oklch(52% 0.02 150);
-        border-block-start: 1px solid oklch(86% 0.01 100);
+      .theme-announcement {
+        position: absolute;
+        inline-size: 1px;
+        block-size: 1px;
+        overflow: hidden;
+        white-space: nowrap;
+        clip-path: inset(50%);
       }
-      @container (width <= 43.75rem) {
-        header,
-        footer,
-        main {
-          inline-size: calc(100% - 2.5rem);
+      h1 .dot {
+        color: var(--home-accent);
+      }
+      h1 .intro {
+        display: block;
+        margin-block-start: 0.4em;
+        font-size: clamp(1.5rem, 1rem + 2vw, 3rem);
+        letter-spacing: -0.03em;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        :scope {
+          transition: none;
         }
-        header {
-          block-size: 4.5rem;
-        }
-        main {
-          grid-template-columns: 1fr;
-          gap: 48px;
-          padding-block: 72px;
-        }
-        .description br {
-          display: none;
-        }
-        .mark {
-          justify-self: start;
-          max-inline-size: 22.5rem;
+      }
+      @media (width <= 700px) {
+        h1 {
+          inset-block-start: 22%;
+          inset-inline-start: 1.5rem;
+          font-size: clamp(4rem, 2rem + 10vw, 6rem);
         }
       }
     }

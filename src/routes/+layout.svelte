@@ -5,6 +5,38 @@
 {@render children()}
 
 <style>
+  @font-face {
+    font-family: "M PLUS 1p";
+    src: url("/fonts/mplus1p-regular.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 400 500;
+    font-display: swap;
+    unicode-range: U+0100-10FFFF;
+  }
+  @font-face {
+    font-family: "M PLUS 1p";
+    src: url("/fonts/mplus1p-bold.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 600 900;
+    font-display: swap;
+    unicode-range: U+0100-10FFFF;
+  }
+  @font-face {
+    font-family: "M PLUS 1p";
+    src: url("/fonts/mplus1p-regular-latin.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 400 500;
+    font-display: optional;
+    unicode-range: U+0000-00FF;
+  }
+  @font-face {
+    font-family: "M PLUS 1p";
+    src: url("/fonts/mplus1p-bold-latin.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 600 900;
+    font-display: optional;
+    unicode-range: U+0000-00FF;
+  }
   @layer base {
     :global(*) {
       box-sizing: border-box;

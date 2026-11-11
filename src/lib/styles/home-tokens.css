@@ -1,0 +1,94 @@
+html[data-home-theme="light"] {
+  --home-scheme: light;
+}
+
+html[data-home-theme="dark"] {
+  --home-scheme: dark;
+  --home-initial-orbit: 180deg;
+  --home-initial-aurora-opacity: 0.22;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-home-theme]) {
+    --home-initial-orbit: 180deg;
+    --home-initial-aurora-opacity: 0.22;
+  }
+}
+
+html:has(.home) {
+  --home-background: light-dark(
+    oklch(88.02% 0.036 216.59),
+    oklch(23.64% 0.0423 254.98)
+  );
+  --home-foreground: light-dark(
+    oklch(34.54% 0.0403 233.17),
+    oklch(97.25% 0.0113 217.54)
+  );
+  --home-accent: oklch(73.24% 0.1149 34.54);
+  --home-nav-background: light-dark(
+    oklch(97.82% 0.0109 211.04 / 86%),
+    oklch(26.35% 0.0363 241.87 / 88%)
+  );
+  --home-nav-border: light-dark(
+    oklch(37.56% 0.0517 232.15 / 14%),
+    oklch(97.35% 0.0168 225.19 / 20%)
+  );
+  --home-nav-current: light-dark(
+    oklch(40.71% 0.0602 233.23 / 12%),
+    oklch(95.5% 0.0295 223.75 / 16%)
+  );
+  --home-sky: light-dark(
+    oklch(88.02% 0.036 216.59),
+    oklch(28.47% 0.0471 246.62)
+  );
+  --home-cloud: light-dark(
+    oklch(97.47% 0.0106 196.98),
+    oklch(60.69% 0.0453 228.5)
+  );
+  --home-far-ice: light-dark(
+    oklch(78.61% 0.0523 218.45),
+    oklch(45.75% 0.054 230.69)
+  );
+  --home-far-ice-light: light-dark(
+    oklch(89.52% 0.0284 210.53),
+    oklch(56.13% 0.0519 222.41)
+  );
+  --home-sea: light-dark(
+    oklch(74.89% 0.0597 220.17),
+    oklch(39.86% 0.0536 234.63)
+  );
+  --home-distant-ice: light-dark(
+    oklch(90.95% 0.029 207.44),
+    oklch(53.9% 0.0512 225.09)
+  );
+  --home-glacier: light-dark(
+    oklch(95.48% 0.0138 202.46),
+    oklch(85.73% 0.0275 217.17)
+  );
+  --home-glacier-depth: light-dark(
+    oklch(91.9% 0.0239 209.8),
+    oklch(80.48% 0.0359 221.99)
+  );
+  --home-glacier-highlight: light-dark(
+    oklch(98.45% 0.005 165.01),
+    oklch(91.73% 0.0162 206.43)
+  );
+  --home-sun: oklch(67.06% 0.1411 49.61);
+  --home-moon: oklch(96.11% 0.0151 123.04);
+  --home-aurora-base: light-dark(oklch(100% 0 0), oklch(26.99% 0.0441 248.6));
+  --home-aurora-blue: oklch(84.81% 0.0706 217.97);
+  --home-aurora-violet: oklch(81.42% 0.066 300.83);
+  --home-aurora-mint: oklch(86.89% 0.0631 184.8);
+  --home-aurora-mask: oklch(0% 0 0);
+  --home-focus-inner: oklch(100% 0 0);
+  --home-focus-outer: oklch(31.6% 0.0526 240.84);
+  color-scheme: light dark;
+}
+
+html[data-home-theme="light"]:has(.home) {
+  color-scheme: light;
+}
+
+html[data-home-theme="dark"]:has(.home) {
+  color-scheme: dark;
+}
