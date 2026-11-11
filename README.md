@@ -15,7 +15,7 @@ pnpm dev
 
 | コマンド | 内容 |
 | --- | --- |
-| `pnpm check` | 型生成、format・lint・型チェック、Takumi PoC の型チェック |
+| `pnpm check` | 型生成、format・lint・型チェック |
 | `pnpm run fix` | Ultracite/Biome による修正 |
 | `pnpm build` | SvelteKit Worker のビルド |
 | `pnpm dev:worker` | ビルド済み Worker をローカルの `:8787` で起動 |
@@ -53,4 +53,4 @@ GitHub Actions の `CI` は PR と `main` への push で検証します。本�
 
 ## OGP
 
-トップページは `static/og/home.png`、実績一覧・詳細は共通の `static/og/done.png` を使用します。実績ごとのタイトルなどのメタデータは公開ページから生成します。動的画像生成の検証は本番から独立した [Takumi PoC](poc/takumi-workers/README.md) にあります。
+トップページは `static/og/home.png`、実績一覧・詳細は共通の `static/og/done.png` を使用します。実績ごとのタイトルなどのメタデータは公開ページから生成します。
