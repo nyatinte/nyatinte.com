@@ -3,7 +3,7 @@ import { runInNewContext } from "node:vm";
 import { expect, test } from "vite-plus/test";
 
 const html = readFileSync(new URL("./app.html", import.meta.url), "utf8");
-const bootstrap = html.match(/<script>([\s\S]*?)<\/script>/u)?.[1];
+const bootstrap = html.match(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/u)?.[1];
 const layout = readFileSync(
   new URL("./routes/+layout.svelte", import.meta.url),
   "utf8"

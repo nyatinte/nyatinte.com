@@ -3,12 +3,19 @@ import { expect, test } from "vite-plus/test";
 const targetUrl =
   import.meta.env.VITE_HELLO_WORLD_URL ?? "http://127.0.0.1:8787";
 const canonicalPattern = /<link href="([^"]+)" rel="canonical"/;
+const cspNoncePattern = /script-src[^;]*'nonce-([^']+)'/;
 
 test("GET / returns the personal home page", async () => {
   const response = await fetch(new URL("/", targetUrl));
   const body = await response.text();
 
   expect(response.status).toBe(200);
+  const csp = response.headers.get("content-security-policy");
+  expect(csp).toContain("default-src 'self'");
+  expect(csp).toContain("object-src 'none'");
+  const nonce = csp?.match(cspNoncePattern)?.[1];
+  expect(nonce).toBeTruthy();
+  expect(body).toContain(`<script nonce="${nonce}">`);
   expect(body).toContain("Hello");
   expect(body).toContain("I'm nyatinte");
   expect(body).toContain("nyatinte.com");
