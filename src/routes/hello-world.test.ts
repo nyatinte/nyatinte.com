@@ -21,4 +21,19 @@ test("GET / returns the personal home page", async () => {
   expect(body).toContain('href="https://github.com/nyatinte"');
   expect(body).toContain('href="https://x.com/nyatinte"');
   expect(body).toContain("実績");
+  expect(body).toContain(
+    `content="${new URL("/og/home.png", targetUrl).href}" property="og:image"`
+  );
+  expect(body).toContain('content="summary_large_image" name="twitter:card"');
+});
+
+test("GET /og/home.png returns a 1200 × 630 PNG", async () => {
+  const response = await fetch(new URL("/og/home.png", targetUrl));
+  const image = new DataView(await response.arrayBuffer());
+
+  expect(response.status).toBe(200);
+  expect(response.headers.get("content-type")).toContain("image/png");
+  expect(image.getUint32(0)).toBe(0x89_50_4e_47);
+  expect(image.getUint32(16)).toBe(1200);
+  expect(image.getUint32(20)).toBe(630);
 });

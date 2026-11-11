@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { page } from "$app/state";
   import HomeNavigation from "../lib/components/home-navigation.svelte";
   import IcebergScene from "../lib/components/iceberg-scene.svelte";
   import "../lib/styles/home-tokens.css";
@@ -34,6 +35,20 @@
 <svelte:head>
   <title>nyatinte</title>
   <meta content="nyatinte のパーソナルサイト" name="description">
+  <link href={`${page.url.origin}/`} rel="canonical">
+  <meta content="nyatinte.com" property="og:title">
+  <meta content="nyatinte のパーソナルサイト" property="og:description">
+  <meta content={`${page.url.origin}/`} property="og:url">
+  <meta content="website" property="og:type">
+  <meta content={`${page.url.origin}/og/home.png`} property="og:image">
+  <meta content="image/png" property="og:image:type">
+  <meta content="1200" property="og:image:width">
+  <meta content="630" property="og:image:height">
+  <meta
+    content="氷河にいる親子ペンギンと nyatinte.com の文字"
+    property="og:image:alt"
+  >
+  <meta content="summary_large_image" name="twitter:card">
   <meta content="light dark" name="color-scheme">
   <link
     as="image"
