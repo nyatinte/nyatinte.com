@@ -2,6 +2,7 @@ import { expect, test } from "vite-plus/test";
 
 const targetUrl =
   import.meta.env.VITE_HELLO_WORLD_URL ?? "http://127.0.0.1:8787";
+const canonicalPattern = /<link href="([^"]+)" rel="canonical"/;
 
 test("GET / returns the personal home page", async () => {
   const response = await fetch(new URL("/", targetUrl));
@@ -21,9 +22,16 @@ test("GET / returns the personal home page", async () => {
   expect(body).toContain('href="https://github.com/nyatinte"');
   expect(body).toContain('href="https://x.com/nyatinte"');
   expect(body).toContain("実績");
+  const canonical = body.match(canonicalPattern);
+  expect(canonical).not.toBeNull();
+  const canonicalUrl = new URL(canonical?.[1] ?? "");
+  expect(canonicalUrl.pathname).toBe("/");
   expect(body).toContain(
-    `content="${new URL("/og/home.png", targetUrl).href}" property="og:image"`
+    `content="${new URL("/og/home.png", canonicalUrl).href}" property="og:image"`
   );
+  if (new URL(targetUrl).protocol === "https:") {
+    expect(canonicalUrl.href).toBe(new URL("/", targetUrl).href);
+  }
   expect(body).toContain('content="summary_large_image" name="twitter:card"');
 });
 
