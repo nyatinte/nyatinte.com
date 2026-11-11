@@ -13,7 +13,7 @@
 - SvelteKit + Svelte 5、TypeScript、Vite+、pnpm、Cloudflare Workers を使う。バージョンとコマンドは `package.json` を参照する。
 - `/mcp` は Cloudflare Access で保護し、Worker でも Access JWT を検証する。
 - OGP は `static/og/home.png` と共通の `static/og/done.png` を使う。実績ごとのメタデータは公開ページから生成する。Takumi は `poc/takumi-workers/` に隔離し、本番に接続しない。
-- Cloudflare の設定変更時は `cloudflare.config.ts` と `wrangler.varlock.jsonc` の Worker 名・compatibility・routes・assets を揃える。`cf` に `keep_vars` 相当がなく Varlock が `cf deploy` をサポートしないため、本番デプロイは README の経路を使う。移行前には既存変数と Varlock 対応を確認する。
+- `wrangler.jsonc` を Worker 設定と型生成の正本とする。本番デプロイは Varlock Wrangler で既存の変数とシークレットを保持する。
 
 ## スキル
 

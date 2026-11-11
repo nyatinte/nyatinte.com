@@ -49,7 +49,7 @@ GitHub Actions の `CI` は PR と `main` への push で検証します。本�
 
 本番環境の必須変数は `.env.schema` を参照してください。Actions には `ACCESS_TEAM_DOMAIN` と `ACCESS_AUDIENCE` の Variables、`ACHIEVEMENT_GITHUB_TOKEN`、`CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` の Secrets が必要です。Access の設定と認証情報は別途用意します。
 
-`pnpm run deploy` はビルド後、Varlock Wrangler で `versions upload --keep-vars=true` を使って既存の vars と secrets を保持し、アップロードしたバージョンをデプロイします。ルートなどのトリガー設定の変更は別途適用が必要です。`cloudflare.config.ts` は `cf` の設定と型生成、`wrangler.varlock.jsonc` は adapter と Varlock の互換設定です。
+`pnpm run deploy` はビルド後、Varlock Wrangler で `versions upload --keep-vars=true` を使って既存の vars と secrets を保持し、アップロードしたバージョンをデプロイします。ルートなどのトリガー設定の変更は別途適用が必要です。`wrangler.jsonc` は Worker 設定と型生成の正本です。
 
 ## OGP
 

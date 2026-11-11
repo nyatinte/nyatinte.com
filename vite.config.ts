@@ -25,15 +25,28 @@ export default defineConfig(({ mode }) => ({
       : [
           varlockVitePlugin(),
           sveltekit({
-            adapter: adapter({
-              config: "./wrangler.varlock.jsonc",
-              platformProxy: { configPath: "./wrangler.local.jsonc" },
-            }),
+            adapter: adapter(),
             compilerOptions: {
               runes: ({ filename }) =>
                 filename.split(pathSeparatorPattern).includes("node_modules")
                   ? undefined
                   : true,
+            },
+            csp: {
+              directives: {
+                "base-uri": ["self"],
+                "connect-src": ["self"],
+                "default-src": ["self"],
+                "font-src": ["self", "data:"],
+                "form-action": ["self"],
+                "frame-ancestors": ["none"],
+                "img-src": ["self", "https:", "data:"],
+                "object-src": ["none"],
+                "script-src": ["self"],
+                "style-src": ["self"],
+                "style-src-attr": ["unsafe-inline"],
+              },
+              mode: "auto",
             },
           }),
         ],

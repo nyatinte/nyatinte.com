@@ -7,13 +7,16 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <script>
+    <script nonce="%sveltekit.nonce%">
+      let theme;
       try {
-        const theme = localStorage.getItem("nyatinte-home-theme");
-        if (theme === "light" || theme === "dark") {
-          document.documentElement.dataset.homeTheme = theme;
-        }
-      } catch {}
+        theme = localStorage.getItem("nyatinte-home-theme");
+      } catch {
+        // Storage may be unavailable.
+      }
+      if (theme === "light" || theme === "dark") {
+        document.documentElement.dataset.homeTheme = theme;
+      }
     </script>
     %sveltekit.head%
   </head>
