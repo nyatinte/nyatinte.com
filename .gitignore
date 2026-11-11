@@ -14,7 +14,6 @@ dist/
 .env.*
 !.env.example
 !.env.schema
-!.env.production
 env.d.ts
 worker-configuration.d.ts
 
