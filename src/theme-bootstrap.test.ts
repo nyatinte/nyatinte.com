@@ -44,16 +44,27 @@ test("keeps the full and Latin font subsets from overlapping", () => {
   ).toHaveLength(2);
 });
 
-test("renders normally when storage is unavailable", () => {
-  expect(bootstrap).toBeDefined();
-  expect(() =>
-    runInNewContext(bootstrap as string, {
-      document: { documentElement: { dataset: {} } },
-      localStorage: {
-        getItem: () => {
-          throw new Error("Storage blocked");
-        },
+test.each([
+  [
+    "getItem",
+    {
+      getItem: () => {
+        throw new Error("Storage blocked");
       },
-    })
-  ).not.toThrow();
+    },
+  ],
+  ["the storage getter", undefined],
+])("renders normally when %s is unavailable", (_name, storage) => {
+  expect(bootstrap).toBeDefined();
+  const context = { document: { documentElement: { dataset: {} } } };
+  if (storage) {
+    Object.assign(context, { localStorage: storage });
+  } else {
+    Object.defineProperty(context, "localStorage", {
+      get() {
+        throw new Error("Storage blocked");
+      },
+    });
+  }
+  expect(() => runInNewContext(bootstrap as string, context)).not.toThrow();
 });
