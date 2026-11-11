@@ -4,7 +4,7 @@ export const TITLE_FONT_SIZES = [76, 68, 58, 48, 40] as const;
 export const SUMMARY_FONT_SIZE = 26;
 export const MAX_TITLE_LINES = 3;
 export const MAX_SUMMARY_LINES = 2;
-export const MAX_TAGS = 3;
+const MAX_TAGS = 3;
 
 const ELLIPSIS = "…";
 const FALLBACK_GLYPH = "□";
