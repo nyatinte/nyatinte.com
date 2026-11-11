@@ -29,7 +29,7 @@
 | 認証 | Cloudflare Access（`/mcp` のみ） |
 | OGP 画像 | Static Assets から配信する共通の固定 PNG |
 | テスト | Vitest |
-| CI/CD | GitHub Actions + `cf` (build/check) + Varlock Wrangler (deploy) |
+| CI/CD | GitHub Actions + Wrangler (型生成) + Varlock Wrangler (deploy) |
 | パッケージ管理 | pnpm |
 
 ## コマンド
@@ -51,10 +51,8 @@ pnpm deploy   # ビルドしてデプロイ
 
 ## Cloudflare CLI
 
-- `cloudflare.config.ts` を `cf` の Worker 設定と型生成の正本にする。`cf build` は SvelteKit の `vite build` を実行するが Build Output を生成しない。Wrangler 4.147.0 の隠し実験フラグでは生成できるものの、通常のビルド・deploy 経路には採用せず、ビルドは Vite+、deploy は Varlock 互換経路を使う。
-- `wrangler.varlock.jsonc` は SvelteKit adapter-cloudflare と Varlock の `dev` と `deploy` 用互換設定。両設定で Worker 名・compatibility・routes・assets を揃える。
-- 本番 deploy は `varlock-wrangler` のみを使う。`cf` に `keep_vars` 相当がなく、Varlock は `cf deploy` をサポートしていないため、置換前に Cloudflare 上の変数を棚卸しし、Varlock 対応を確認する。
-- Takumi PoC と D1 結合テストの明示的な Wrangler 設定は、各スクリプトが指定する。
+- `wrangler.jsonc` を Worker 設定と型生成の正本にする。SvelteKit のビルドには Vite+、本番 deploy には Varlock Wrangler を使い、既存の変数とシークレットを保持する。
+- Takumi PoC の Wrangler 設定は、各スクリプトが指定する。
 
 ## スキル
 
