@@ -11,7 +11,7 @@ pnpm install
 pnpm dev
 ```
 
-`pnpm install` は SvelteKit の同期と Vite+ の Git hook の設定も行い、pre-commit hook はステージ済みファイルを検査します。pre-push hook は CI の Verify と同じ `pnpm check:ci`（check、build、ビルド済み Worker への HTTP テスト）を走らせ、修正は `pnpm run fix` で行えます。一時的に pre-push を飛ばす方法は `git push --no-verify` です。hook 自体を無効にする場合は `pnpm exec vp hooks disable` を実行してください。
+`pnpm install` は SvelteKit の同期と Vite+ の Git hook の設定も行い、pre-commit hook はステージ済みファイルを検査し、pre-push hook は CI の Verify と同じ `pnpm check:ci`（check、build、ビルド済み Worker への HTTP テスト）を走らせます。CI と同じく、変更がルートの `README.md`・`AGENTS.md`・`CLAUDE.md` と `docs/**`・`.agents/**` だけなら `pnpm check:ci` は走りません。修正は `pnpm run fix` で行えます。一時的に pre-push を飛ばす方法は `git push --no-verify` です。hook 自体を無効にする場合は `pnpm exec vp hooks disable` を実行してください。
 
 | コマンド | 内容 |
 | --- | --- |
