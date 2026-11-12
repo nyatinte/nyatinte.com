@@ -9,6 +9,7 @@ export function createHomeJsonLd() {
       "@context": "https://schema.org",
       "@id": personId,
       "@type": "Person",
+      description: siteIdentity.description,
       name: siteAuthor.name,
       sameAs: [...siteAuthor.sameAs],
       url: siteUrl,

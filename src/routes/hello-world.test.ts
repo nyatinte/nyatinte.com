@@ -1,4 +1,8 @@
 import { expect, test } from "vite-plus/test";
+import {
+  canonicalSiteUrl,
+  siteIdentity,
+} from "../lib/server/agent-ready/constants";
 
 const targetUrl =
   import.meta.env.VITE_HELLO_WORLD_URL ?? "http://127.0.0.1:8787";
@@ -16,6 +20,8 @@ const jsonLdScriptBodyPattern =
   /<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g;
 const publishedAchievementSlugPattern =
   /<loc>https:\/\/nyatinte\.com\/done\/([a-z0-9-]+)<\/loc>/u;
+const metaDescriptionPattern =
+  /<meta content="([^"]*)" name="description"\s*\/?>/u;
 const markdownAlternateHrefPattern =
   /<([^>]+)>;\s*rel="alternate";\s*type="text\/markdown"/;
 
@@ -203,12 +209,35 @@ test("robots.txt advertises the sitemap and content signals", async () => {
 
   expect(response.status).toBe(200);
   expect(body).toContain("Sitemap: https://nyatinte.com/sitemap.xml");
+  expect(body).toContain("# LLMs: https://nyatinte.com/llms.txt");
   expect(body).toContain(
     "Content-Signal: search=yes, ai-input=yes, ai-train=no"
   );
   expect(body.indexOf("Content-Signal")).toBeGreaterThan(
     body.indexOf("User-agent")
   );
+});
+
+test("GET /llms.txt serves markdown with core page links", async () => {
+  const response = await fetch(new URL("/llms.txt", targetUrl));
+  const body = await response.text();
+
+  expect(response.status).toBe(200);
+  expect(response.headers.get("content-type")).toContain("text/markdown");
+  expect(body.startsWith(`# ${siteIdentity.name}`)).toBe(true);
+  expect(body).toContain(`> ${siteIdentity.description}`);
+  expect(body).toContain(`(${canonicalSiteUrl("/")})`);
+  expect(body).toContain(`(${canonicalSiteUrl("/done")})`);
+  expect(body).toContain(`(${canonicalSiteUrl("/sitemap.xml")})`);
+});
+
+test("Accept: text/markdown still negotiates HTML on / without hitting /llms.txt", async () => {
+  const response = await fetch(new URL("/", targetUrl), {
+    headers: { Accept: "text/markdown" },
+  });
+  expect(response.status).toBe(200);
+  expect(response.headers.get("content-type")).toContain("text/markdown");
+  expect(await response.text()).toContain("# nyatinte");
 });
 
 test("home page JSON-LD parses into Person and WebSite graphs", async () => {
@@ -218,6 +247,19 @@ test("home page JSON-LD parses into Person and WebSite graphs", async () => {
   const types = jsonLdGraphs(body).map((graph) => graph["@type"]);
   expect(types).toContain("Person");
   expect(types).toContain("WebSite");
+});
+
+test("home JSON-LD descriptions match the meta description", async () => {
+  const body = await fetch(new URL("/", targetUrl)).then((response) =>
+    response.text()
+  );
+  const metaDescription = body.match(metaDescriptionPattern)?.[1];
+  expect(metaDescription).toBe(siteIdentity.description);
+  const graphs = jsonLdGraphs(body);
+  const person = graphs.find((graph) => graph["@type"] === "Person");
+  const website = graphs.find((graph) => graph["@type"] === "WebSite");
+  expect(person?.description).toBe(metaDescription);
+  expect(website?.description).toBe(metaDescription);
 });
 
 test("published achievement pages expose BlogPosting JSON-LD", async () => {
