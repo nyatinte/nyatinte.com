@@ -16,7 +16,8 @@ test("production deployment requires Access configuration and a GitHub token", (
   const load = (additional: Record<string, string>) =>
     execFileSync(executable, ["load", "--agent"], {
       cwd,
-      env: { ...env, ...additional },
+      // Worker bindings augment ProcessEnv; this subprocess intentionally gets only test variables.
+      env: { ...env, ...additional } as unknown as NodeJS.ProcessEnv,
       stdio: "pipe",
     });
   try {

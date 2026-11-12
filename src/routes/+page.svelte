@@ -1,14 +1,11 @@
 <script lang="ts">
-  import { onMount, tick } from "svelte";
+  import { onMount } from "svelte";
   import latinBold from "../lib/assets/fonts/mplus1p-bold-latin.woff2";
   import latinRegular from "../lib/assets/fonts/mplus1p-regular-latin.woff2";
   import HomeNavigation from "../lib/components/home-navigation.svelte";
   import IcebergScene from "../lib/components/iceberg-scene.svelte";
   import JsonLd from "../lib/components/json-ld.svelte";
-  import {
-    HOME_THEME_COLOR,
-    readHomeBackgroundThemeColor,
-  } from "../lib/home-theme-color";
+  import { HOME_THEME_COLOR } from "../lib/home-theme-color";
   import type { PageProps } from "./$types";
   import "../lib/styles/home-tokens.css";
 
@@ -17,24 +14,14 @@
   let theme = $state<"light" | "dark" | null>(null);
   let themeMessage = $state("");
   let orbitTurn = $state<number | null>(null);
-  let resolvedThemeColor = $state<string | null>(null);
-
-  async function syncThemeColorMeta() {
-    await tick();
-    resolvedThemeColor = readHomeBackgroundThemeColor();
-  }
-
   onMount(() => {
     const savedTheme = document.documentElement.dataset.homeTheme;
     if (savedTheme === "light" || savedTheme === "dark") {
       theme = savedTheme;
     }
-    syncThemeColorMeta().catch(() => {
-      // theme-color sync is cosmetic; the page stays usable on failure.
-    });
   });
 
-  async function toggleTheme() {
+  function toggleTheme() {
     const dark = theme
       ? theme === "dark"
       : matchMedia("(prefers-color-scheme: dark)").matches;
@@ -47,7 +34,6 @@
     } catch {
       // The current page remains usable when storage is unavailable.
     }
-    await syncThemeColorMeta();
   }
 </script>
 
@@ -83,10 +69,7 @@
       name="theme-color"
     >
   {:else}
-    <meta
-      content={resolvedThemeColor ?? HOME_THEME_COLOR[theme]}
-      name="theme-color"
-    >
+    <meta content={HOME_THEME_COLOR[theme]} name="theme-color">
   {/if}
   <link
     as="image"
