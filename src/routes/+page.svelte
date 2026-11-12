@@ -55,10 +55,10 @@
 
 <svelte:head>
   <title>nyatinte</title>
-  <meta content="nyatinte のパーソナルサイト" name="description">
+  <meta content={data.siteDescription} name="description">
   <link href={data.canonicalUrl} rel="canonical">
   <meta content="nyatinte.com" property="og:title">
-  <meta content="nyatinte のパーソナルサイト" property="og:description">
+  <meta content={data.siteDescription} property="og:description">
   <meta content={data.canonicalUrl} property="og:url">
   <meta content="website" property="og:type">
   <meta content={data.ogImageUrl} property="og:image">

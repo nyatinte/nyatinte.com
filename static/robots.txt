@@ -3,3 +3,4 @@ Disallow:
 Content-Signal: search=yes, ai-input=yes, ai-train=no
 
 Sitemap: https://nyatinte.com/sitemap.xml
+# LLMs: https://nyatinte.com/llms.txt

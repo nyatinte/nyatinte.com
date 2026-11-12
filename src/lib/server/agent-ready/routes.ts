@@ -10,6 +10,7 @@ export type AgentRoute =
 function shouldSkipAgentHandling(pathname: string): boolean {
   return (
     pathname.startsWith("/mcp") ||
+    pathname === "/llms.txt" ||
     pathname === "/sitemap.xml" ||
     staticAssetPattern.test(pathname)
   );
