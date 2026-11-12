@@ -17,8 +17,8 @@
   },
   "type": "module",
   "scripts": {
-    "build": "wrangler types && svelte-kit sync && vp build",
-    "check": "wrangler types && svelte-kit sync && ultracite check && pnpm run lint:svelte && vp check --no-fmt --no-lint && svelte-check --tsconfig ./tsconfig.json",
+    "build": "wrangler types --include-main-module=false && svelte-kit sync && vp build",
+    "check": "wrangler types --include-main-module=false && svelte-kit sync && ultracite check && pnpm run lint:svelte && vp check --no-fmt --no-lint && svelte-check --tsconfig ./tsconfig.json",
     "deploy": "APP_ENV=production pnpm build && tag=$(node -p 'crypto.randomUUID()') && APP_ENV=production varlock-wrangler versions upload --keep-vars=true --tag \"$tag\" && wrangler versions deploy --version-tag \"$tag\" --yes",
     "dev": "vp dev",
     "dev:worker": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --local --port 8787",
