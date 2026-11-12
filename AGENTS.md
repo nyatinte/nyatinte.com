@@ -17,20 +17,28 @@
 
 ## スキル
 
-該当する作業では `.agents/skills/` のスキルを先に読む。
+該当する作業では `.agents/skills/` のスキルを先に読む。各 `SKILL.md` の `description` が自動選択の正本。下表はこのリポジトリ向けの補足。
 
 | スキル | 使う場面 |
 | --- | --- |
-| `svelte-core-bestpractices` | Svelte のコンポーネント・モジュールの作成・編集・解析 |
-| `svelte-code-writer` | `.svelte` / `.svelte.ts` の作成・編集・解析 |
-| `vite-plus` | Vite+ の設定・コマンド・チェック・テスト・CI |
-| `varlock` | 環境変数・シークレット・`.env.schema` |
-| `cloudflare` | Cloudflare 製品の選定・構成 |
-| `workers-best-practices` | Workers の実装・レビュー・設定 |
-| `wrangler` | Wrangler の利用・設定 |
-| `cloudflare-one` | Cloudflare Access / Zero Trust の設定 |
-| `mcp-builder` | MCP サーバーとツールの実装 |
-| `vitest` | テストの作成・モック・カバレッジ |
+| `svelte-core-bestpractices` | Svelte コンポーネント・モジュールの実装・レビュー（反応性・イベント等） |
+| `svelte-code-writer` | `@sveltejs/mcp` で公式ドキュメント参照や解析が必要なときのみ（毎回の編集ではない） |
+| `vite-plus` | Vite+ / `vite.config.ts`、チェック・テスト・フック。CI は workflow 編集や `vp` 系ジョブの修正時（`references/ci-cd.md`） |
+| `varlock` | `.env.schema`、Varlock 連携、シークレット・デプロイ用 env |
+| `cloudflare` | 製品選定・アーキテクチャ検討（既存スタック内の通常実装では読まない） |
+| `workers-best-practices` | Worker ランタイムコード・バインディングの実装・レビュー |
+| `wrangler` | Wrangler CLI・`wrangler.jsonc`（パイプラインの wrangler シークレット設定を除き CI 全体には使わない） |
+| `cloudflare-one` | Access / Zero Trust のポリシー・IdP 設定（Worker 内 JWT 検証だけでは不要） |
+| `mcp-builder` | MCP サーバー・ツールの新規実装・設計 |
+| `vitest` | テストコード・モック・カバレッジ・Vitest 設定（workflow 失敗だけでは読まない） |
+
+### CI とスキル
+
+専用の「CI スキル」はない。解釈は次のとおり。
+
+- **Workflow 定義**（`.github/workflows/`、`pnpm check` / `vp` / verify ジョブ）→ `vite-plus`（`references/ci-cd.md`）
+- **落ちたテストの中身** → `vitest` またはアプリコード（workflow  YAML だけでは `vitest` を開かない）
+- **デプロイ job・Cloudflare 認証情報** → `wrangler` / `varlock`（Vite+ の verify 以外）
 
 ## 規約
 

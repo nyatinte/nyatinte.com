@@ -1,6 +1,6 @@
 ---
 name: wrangler
-description: Run or troubleshoot Wrangler CLI commands and configure Worker projects for local development, deployment, and Cloudflare resource management.
+description: Wrangler CLI commands and wrangler.jsonc for local dev, deploy, types generation, and Cloudflare resource management. Use for wrangler-specific work; CI-related guidance applies only when configuring wrangler secrets or versioned deploy steps in pipelines—not for generic failing CI jobs or application test failures.
 ---
 
 # Wrangler CLI

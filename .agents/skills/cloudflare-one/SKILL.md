@@ -1,6 +1,6 @@
 ---
 name: cloudflare-one
-description: Design, configure, troubleshoot, or review Cloudflare One Zero Trust and SASE deployments. Use cloudflare-one-migrations for migration planning from other vendors.
+description: Cloudflare One Zero Trust and SASE (Access, Gateway, WARP, Tunnel). Load when configuring or troubleshooting those products or IdP/device policies—not for in-Worker JWT checks alone (see workers-best-practices and project Access settings) or general Workers API work.
 ---
 
 # Cloudflare One

@@ -2,12 +2,10 @@
 name: varlock
 description: >-
   Secure environment variable management with Varlock.
-  Use when handling secrets, API keys, credentials, or any sensitive configuration.
-  Ensures secrets are never exposed in terminal, logs, or LLM context.
+  Use when editing .env.schema, Varlock plugins/integrations, wrangler/varlock deploy wiring, or handling secrets and credentials that must not appear in logs.
+  Do not load for ordinary public app config, unrelated CI failures, or mentioning "env" in passing.
 
-  Provides guidance around integrating varlock into a project, reading/editing .env.schema and other .env files, using the varlock CLI, adding plugins and framework integrations.
-
-  Trigger phrases include "environment variable", "env var", "secrets", ".env", "API key", "credentials", "sensitive", "varlock"
+  Trigger phrases: ".env.schema", "varlock", "varlock-wrangler", "secrets", "API key", "credentials", "@generate", "sensitive configuration"
 ---
 
 # Varlock

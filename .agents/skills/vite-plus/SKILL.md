@@ -1,6 +1,6 @@
 ---
 name: vite-plus
-description: "Set up, migrate, upgrade, or debug Vite+ tooling and configuration. Use for Vite+ commands, tests, hooks, packaging, and CI; excludes application behavior and release policy."
+description: "Set up, migrate, upgrade, or debug Vite+ tooling and vite.config.ts. Use for Vite+ CLI commands, test/lint/hook configuration, packaging, and workspace boundaries. Load references/ci-cd.md only when editing GitHub Actions or GitLab CI workflows, fixing jobs that invoke vp/pnpm check/build/test, or changing Vite+ setup actions—not for application bugs, unrelated workflow failures, or deploy-only jobs. Excludes application behavior and release policy."
 disable-model-invocation: true
 ---
 

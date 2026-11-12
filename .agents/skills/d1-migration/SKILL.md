@@ -1,6 +1,6 @@
 ---
 name: d1-migration
-description: "Cloudflare D1 migration workflow: generate with Drizzle, inspect SQL for gotchas, apply to local and remote, fix stuck migrations, handle partial failures. Use when running migrations, fixing migration errors, or setting up D1 schemas."
+description: "Cloudflare D1 migration workflow with Drizzle (generate, apply, recover failures). Use only when wrangler D1 migrations or Drizzle SQL for this project's D1 database are in scope—not for unrelated CI or non-D1 data stores."
 compatibility: claude-code-only
 ---
 

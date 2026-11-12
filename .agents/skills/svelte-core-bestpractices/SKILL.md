@@ -1,6 +1,6 @@
 ---
 name: svelte-core-bestpractices
-description: Guidance on writing fast, robust, modern Svelte code. Load this skill whenever in a Svelte project and asked to write/edit or analyze a Svelte component or module. Covers reactivity, event handling, styling, integration with libraries and more.
+description: Svelte 5 guidance for reactivity, events, styling, and library integration. Load when implementing or reviewing Svelte component or module logic (.svelte, .svelte.ts/.js)—not for repo-wide tasks such as CI workflows, Wrangler deploy, MCP servers, or routing-only changes.
 ---
 
 ## `$state`
