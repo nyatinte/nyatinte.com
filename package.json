@@ -41,7 +41,7 @@
     "@varlock/cloudflare-integration": "1.6.3",
     "@varlock/vite-integration": "1.5.2",
     "eslint": "10.14.0",
-    "eslint-plugin-svelte": "3.23.0",
+    "eslint-plugin-svelte": "3.24.1",
     "svelte": "5.57.3",
     "svelte-check": "4.7.8",
     "typescript": "6.0.3",
