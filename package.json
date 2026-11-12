@@ -2,14 +2,23 @@
   "name": "nyatinte-com",
   "version": "0.0.0",
   "private": true,
+  "description": "Personal site for nyatinte.com with public achievement pages and a protected MCP API.",
+  "homepage": "https://nyatinte.com",
+  "bugs": {
+    "url": "https://github.com/nyatinte/nyatinte.com/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nyatinte/nyatinte.com"
+  },
   "author": {
     "name": "nyatinte",
     "url": "https://nyatinte.com"
   },
   "type": "module",
   "scripts": {
-    "build": "wrangler types && svelte-kit sync && vp build",
-    "check": "wrangler types && svelte-kit sync && ultracite check && pnpm run lint:svelte && vp check --no-fmt --no-lint && svelte-check --tsconfig ./tsconfig.json",
+    "build": "wrangler types --include-main-module=false && svelte-kit sync && vp build",
+    "check": "wrangler types --include-main-module=false && svelte-kit sync && ultracite check && pnpm run lint:svelte && vp check --no-fmt --no-lint && svelte-check --tsconfig ./tsconfig.json",
     "deploy": "APP_ENV=production pnpm build && tag=$(node -p 'crypto.randomUUID()') && APP_ENV=production varlock-wrangler versions upload --keep-vars=true --tag \"$tag\" && wrangler versions deploy --version-tag \"$tag\" --yes",
     "dev": "vp dev",
     "dev:worker": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --local --port 8787",
@@ -17,8 +26,7 @@
     "lint:svelte": "eslint \"src/**/*.{svelte,svelte.js,svelte.ts}\"",
     "prepare": "svelte-kit sync && vp config --no-agent --hooks",
     "preview": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --port 4173",
-    "test": "vp test --run",
-    "types": "wrangler types"
+    "test": "vp test --run"
   },
   "dependencies": {
     "@modelcontextprotocol/server": "2.4.0",
@@ -39,7 +47,7 @@
     "@types/sanitize-html": "2.16.2",
     "@typescript-eslint/parser": "8.72.2",
     "@varlock/cloudflare-integration": "1.6.3",
-    "@varlock/vite-integration": "1.5.2",
+    "@varlock/vite-integration": "1.5.5",
     "eslint": "10.14.0",
     "eslint-plugin-svelte": "3.23.0",
     "svelte": "5.57.3",
@@ -50,10 +58,11 @@
     "vite": "catalog:",
     "vite-plus": "catalog:",
     "vitest": "catalog:",
-    "wrangler": "4.158.0"
+    "wrangler": "4.160.0"
   },
   "packageManager": "pnpm@12.18.0",
   "engines": {
-    "node": "26.13.1"
+    "node": "26.13.1",
+    "pnpm": "12.18.0"
   }
 }
