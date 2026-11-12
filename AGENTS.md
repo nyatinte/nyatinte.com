@@ -4,7 +4,7 @@
 
 `nyatinte.com` の個人サイト。`/done` で本人の実績を公開する。閲覧はログイン不要。実績はタイトルと一言で成立し、Markdown の詳細を後から追加できる。X での OGP を重視する。
 
-実績は `src/lib/achievements/` の Markdown を正本とする。MCP は変更の PR を作成し、マージ後の手動デプロイで公開ページに反映する。下書きは設けない。公開ページはビルド時のデータを読み、MCP は GitHub の現行データを読む。
+実績は `src/lib/achievements/` の Markdown を正本とする。MCP は変更を PR として作成し、マージ後の手動デプロイで公開ページに反映する。下書きは設けない。公開ページはビルド時のデータを読み、MCP の一覧・取得は GitHub 上の現行データを参照する。
 
 開発・デプロイ方法は [README.md](README.md) を参照。
 
@@ -31,6 +31,9 @@
 | `cloudflare-one` | Cloudflare Access / Zero Trust の設定 |
 | `mcp-builder` | MCP サーバーとツールの実装 |
 | `vitest` | テストの作成・モック・カバレッジ |
+| `yomiyasu` | 日本語ドキュメントの推敲 |
+
+日本語の README や AGENTS.md、CLAUDE.md などを書く・直すときは、`yomiyasu` スキルに従って推敲する。
 
 ## 規約
 

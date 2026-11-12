@@ -4,14 +4,14 @@
 
 ## 開発
 
-Node.js と pnpm はリポジトリの指定バージョンを使用します。
+Node.js と pnpm はリポジトリの指定バージョンを使います。
 
 ```sh
 pnpm install
 pnpm dev
 ```
 
-`pnpm install` は SvelteKit の同期と Vite+ の pre-commit hook の設定も行います。hook はステージ済みファイルを検査します。修正は `pnpm run fix` で行い、hook を無効化する場合は `pnpm exec vp hooks disable` を実行します。
+`pnpm install` は SvelteKit の同期と Vite+ の pre-commit hook の設定も行います。hook はステージ済みファイルを検査します。修正は `pnpm run fix` で行え、hook を無効にする場合は `pnpm exec vp hooks disable` を実行してください。
 
 | コマンド | 内容 |
 | --- | --- |
@@ -37,20 +37,20 @@ HTTP テストの接続先は `VITE_HELLO_WORLD_URL` で変更できます。そ
 
 ## 実績と MCP
 
-`/done` と `/done/[slug]` はログイン不要で閲覧できます。実績は `src/lib/achievements/` の Markdown で Git 管理し、公開ページはビルド時のデータを読み込みます。
+`/done` と `/done/[slug]` はログイン不要で閲覧できます。実績は `src/lib/achievements/` の Markdown で Git 管理し、公開ページはビルド時にそこから読み込みます。
 
-投稿者は `/mcp` の Streamable HTTP API を使い、実績の作成・更新・削除・復元を PR として提案します。**PR のマージ後、手動デプロイして初めて公開ページに反映されます。** MCP の一覧・取得は GitHub の現在のデータを参照するため、マージ後でもデプロイ前は公開ページと異なる場合があります。更新・削除には競合防止のため現在の revision が必要です。
+投稿者は `/mcp` の Streamable HTTP API で実績の作成・更新・削除・復元を PR として提案します。**PR をマージしたあと、手動デプロイして初めて公開ページに反映されます。** MCP の一覧・取得は GitHub 上の現行データを参照します。マージ直後でもデプロイ前は、公開ページと内容が一致しないことがあります。更新・削除には競合防止のため、現在の revision が必要です。
 
-`/mcp` は Cloudflare Access のサービス トークンで保護し、Worker でも Access JWT の署名・Issuer・Audience を検証します。MCP クライアントに `CF-Access-Client-Id` と `CF-Access-Client-Secret` を設定してください。GitHub の `ACHIEVEMENT_GITHUB_TOKEN` には対象リポジトリの Contents と Pull requests の必要最小限の権限を付与します。シークレットはリポジトリに保存しません。
+`/mcp` は Cloudflare Access のサービス トークンで保護し、Worker でも Access JWT の署名・Issuer・Audience を検証します。MCP クライアントには `CF-Access-Client-Id` と `CF-Access-Client-Secret` を設定してください。GitHub の `ACHIEVEMENT_GITHUB_TOKEN` には対象リポジトリの Contents と Pull requests に必要最小限の権限を付与します。シークレットはリポジトリに保存しません。
 
 ## デプロイ
 
-GitHub Actions の `CI` は PR と `main` への push で検証します。本番デプロイは `main` からワークフローを手動実行し、`production_deploy` に `deploy` を選択します。検証後にデプロイと HTTP smoke test が実行されます。ローカルからは `pnpm run deploy` でも実行できます。
+GitHub Actions の `CI` は PR と `main` への push で検証します。本番デプロイは `main` からワークフローを手動実行し、`production_deploy` に `deploy` を選択します。検証のあと、デプロイと HTTP smoke test を行います。ローカルからは `pnpm run deploy` でも実行可能です。
 
 本番環境の必須変数は `.env.schema` を参照してください。Actions には `ACCESS_TEAM_DOMAIN` と `ACCESS_AUDIENCE` の Variables、`ACHIEVEMENT_GITHUB_TOKEN`、`CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` の Secrets が必要です。Access の設定と認証情報は別途用意します。
 
-`pnpm run deploy` はビルド後、Varlock Wrangler で `versions upload --keep-vars=true` を使って既存の vars と secrets を保持し、アップロードしたバージョンをデプロイします。ルートなどのトリガー設定の変更は別途適用が必要です。`wrangler.jsonc` は Worker 設定と型生成の正本です。
+`pnpm run deploy` はビルド後、Varlock Wrangler の `versions upload --keep-vars=true` で既存の vars と secrets を保ったままバージョンをアップロードし、そのバージョンをデプロイします。ルートなどのトリガー設定を変える場合は別途適用が必要です。`wrangler.jsonc` は Worker 設定と型生成の正本です。
 
 ## OGP
 
-トップページと実績一覧・詳細は `src/routes/og.png` を共通画像として使用します。実績ごとのタイトルなどのメタデータは公開ページから生成します。
+トップページと実績一覧・詳細は `src/routes/og.png` を共通画像として使います。実績ごとのタイトルなどのメタデータは公開ページから生成します。
