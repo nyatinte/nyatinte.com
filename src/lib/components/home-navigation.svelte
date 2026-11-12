@@ -6,6 +6,8 @@
   import notebook from "@tabler/icons/outline/notebook.svg?url";
   import sunIcon from "@tabler/icons/outline/sun.svg?url";
 
+  import { page } from "$app/state";
+
   let { toggleTheme }: { toggleTheme: () => void } = $props();
 </script>
 
@@ -13,11 +15,11 @@
   <a class="wordmark" href="/">nyatinte.com</a>
   <nav aria-label="メインナビゲーション" class="navigation">
     <a
-      aria-current="page"
+      aria-current={page.url.pathname === "/" ? "page" : undefined}
       aria-label="ホーム"
-      class="current"
       href="/"
       title="ホーム"
+      class:current={page.url.pathname === "/"}
     >
       <span
         aria-hidden="true"
@@ -64,7 +66,13 @@
         style:mask-image={`url("${moonIcon}")`}
       ></span>
     </button>
-    <a aria-label="ログ" href="/log" title="ログ">
+    <a
+      aria-current={page.url.pathname === "/log" ? "page" : undefined}
+      aria-label="ログ"
+      href="/log"
+      title="ログ"
+      class:current={page.url.pathname === "/log"}
+    >
       <span
         aria-hidden="true"
         class="icon"
@@ -86,6 +94,7 @@
         align-items: center;
         justify-content: space-between;
         padding: 2rem clamp(2rem, 6vw, 6rem);
+        view-transition-name: site-header;
       }
       .wordmark {
         font-size: 1.125rem;
