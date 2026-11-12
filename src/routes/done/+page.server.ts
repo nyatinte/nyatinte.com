@@ -1,6 +1,7 @@
 import { error } from "@sveltejs/kit";
 import { createAchievementRepository } from "../../lib/server/achievement/repository";
 import { normalizeTag } from "../../lib/server/achievement/validation";
+import { canonicalSiteUrl } from "../../lib/server/agent-ready/constants";
 import ogImage from "../og.png";
 import type { PageServerLoad } from "./$types";
 
@@ -24,10 +25,10 @@ export const load: PageServerLoad = async ({ url }) => {
 
     return {
       availableTags: tags,
-      canonicalUrl: `${url.origin}/done`,
+      canonicalUrl: canonicalSiteUrl("/done"),
       items: page.items,
       nextCursor: page.nextCursor,
-      ogImageUrl: new URL(ogImage, url.origin).href,
+      ogImageUrl: new URL(ogImage, canonicalSiteUrl("/")).href,
       selectedTags,
     };
   } catch (cause) {

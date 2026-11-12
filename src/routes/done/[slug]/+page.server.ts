@@ -1,10 +1,12 @@
 import { error } from "@sveltejs/kit";
 import { renderMarkdown } from "../../../lib/server/achievement/markdown";
 import { createAchievementRepository } from "../../../lib/server/achievement/repository";
+import { canonicalSiteUrl } from "../../../lib/server/agent-ready/constants";
+import { createBlogPostingJsonLd } from "../../../lib/server/agent-ready/json-ld";
 import ogImage from "../../og.png";
 import type { PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({ params, url }) => {
+export const load: PageServerLoad = async ({ params }) => {
   const repository = createAchievementRepository();
   const entry = await repository.get(params.slug, { includeDeleted: true });
   if (!entry) {
@@ -15,16 +17,16 @@ export const load: PageServerLoad = async ({ params, url }) => {
   }
 
   const adjacent = await repository.getAdjacent(entry.id);
-  const canonicalUrl = new URL(
-    `/done/${encodeURIComponent(entry.slug)}`,
-    url.origin
+  const canonicalUrl = canonicalSiteUrl(
+    `/done/${encodeURIComponent(entry.slug)}`
   );
-  const ogImageUrl = new URL(ogImage, url.origin);
+  const ogImageUrl = new URL(ogImage, canonicalSiteUrl("/"));
 
   return {
     bodyHtml: renderMarkdown(entry.bodyMarkdown ?? ""),
-    canonicalUrl: canonicalUrl.href,
+    canonicalUrl,
     entry,
+    jsonLd: createBlogPostingJsonLd(entry),
     next: adjacent.next,
     ogImageUrl: ogImageUrl.href,
     previous: adjacent.previous,

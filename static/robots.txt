@@ -1,2 +1,5 @@
 User-agent: *
 Disallow:
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+Sitemap: https://nyatinte.com/sitemap.xml

@@ -1,16 +1,18 @@
 <script lang="ts">
   import { onMount, tick } from "svelte";
-  import { page } from "$app/state";
   import latinBold from "../lib/assets/fonts/mplus1p-bold-latin.woff2";
   import latinRegular from "../lib/assets/fonts/mplus1p-regular-latin.woff2";
   import HomeNavigation from "../lib/components/home-navigation.svelte";
   import IcebergScene from "../lib/components/iceberg-scene.svelte";
+  import JsonLd from "../lib/components/json-ld.svelte";
   import {
     HOME_THEME_COLOR,
     readHomeBackgroundThemeColor,
   } from "../lib/home-theme-color";
-  import ogImage from "./og.png";
+  import type { PageProps } from "./$types";
   import "../lib/styles/home-tokens.css";
+
+  let { data }: PageProps = $props();
 
   let theme = $state<"light" | "dark" | null>(null);
   let themeMessage = $state("");
@@ -49,15 +51,17 @@
   }
 </script>
 
+<JsonLd graphs={data.jsonLd} />
+
 <svelte:head>
   <title>nyatinte</title>
   <meta content="nyatinte のパーソナルサイト" name="description">
-  <link href={`${page.url.origin}/`} rel="canonical">
+  <link href={data.canonicalUrl} rel="canonical">
   <meta content="nyatinte.com" property="og:title">
   <meta content="nyatinte のパーソナルサイト" property="og:description">
-  <meta content={`${page.url.origin}/`} property="og:url">
+  <meta content={data.canonicalUrl} property="og:url">
   <meta content="website" property="og:type">
-  <meta content={new URL(ogImage, page.url.origin).href} property="og:image">
+  <meta content={data.ogImageUrl} property="og:image">
   <meta content="image/png" property="og:image:type">
   <meta content="1200" property="og:image:width">
   <meta content="630" property="og:image:height">
