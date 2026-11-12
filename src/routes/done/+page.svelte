@@ -35,7 +35,10 @@
   <meta content={data.ogImageUrl} property="og:image">
   <meta content="1200" property="og:image:width">
   <meta content="630" property="og:image:height">
-  <meta content="nyatinte.com の実績一覧" property="og:image:alt">
+  <meta
+    content="氷河にいる親子ペンギンと nyatinte.com の文字"
+    property="og:image:alt"
+  >
   <meta content="summary_large_image" name="twitter:card">
 </svelte:head>
 

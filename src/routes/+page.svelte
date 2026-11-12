@@ -1,12 +1,15 @@
 <script lang="ts">
   import { onMount, tick } from "svelte";
   import { page } from "$app/state";
+  import latinBold from "../lib/assets/fonts/mplus1p-bold-latin.woff2";
+  import latinRegular from "../lib/assets/fonts/mplus1p-regular-latin.woff2";
   import HomeNavigation from "../lib/components/home-navigation.svelte";
   import IcebergScene from "../lib/components/iceberg-scene.svelte";
   import {
     HOME_THEME_COLOR,
     readHomeBackgroundThemeColor,
   } from "../lib/home-theme-color";
+  import ogImage from "./og.png";
   import "../lib/styles/home-tokens.css";
 
   let theme = $state<"light" | "dark" | null>(null);
@@ -54,7 +57,7 @@
   <meta content="nyatinte のパーソナルサイト" property="og:description">
   <meta content={`${page.url.origin}/`} property="og:url">
   <meta content="website" property="og:type">
-  <meta content={`${page.url.origin}/og/home.png`} property="og:image">
+  <meta content={new URL(ogImage, page.url.origin).href} property="og:image">
   <meta content="image/png" property="og:image:type">
   <meta content="1200" property="og:image:width">
   <meta content="630" property="og:image:height">
@@ -91,14 +94,14 @@
   <link
     as="font"
     crossorigin="anonymous"
-    href="/fonts/mplus1p-regular-latin.woff2"
+    href={latinRegular}
     rel="preload"
     type="font/woff2"
   >
   <link
     as="font"
     crossorigin="anonymous"
-    href="/fonts/mplus1p-bold-latin.woff2"
+    href={latinBold}
     rel="preload"
     type="font/woff2"
   >

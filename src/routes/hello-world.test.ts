@@ -3,6 +3,9 @@ import { expect, test } from "vite-plus/test";
 const targetUrl =
   import.meta.env.VITE_HELLO_WORLD_URL ?? "http://127.0.0.1:8787";
 const canonicalPattern = /<link href="([^"]+)" rel="canonical"/;
+const ogImagePattern = /<meta content="([^"]+)" property="og:image"/;
+const latinFontPattern =
+  /href="([^"]+mplus1p-(?:regular|bold)-latin\.[^"]+\.woff2)"/gu;
 const cspScriptSourcePattern = /(?:^|;)\s*script-src\s+([^;]+)/;
 const cspNoncePattern = /'nonce-([^']+)'/;
 const scriptTagPattern = /<script\b[^>]*>/gu;
@@ -64,8 +67,34 @@ test("GET / sends fresh CSP nonces for every inline script", async () => {
   }
 });
 
-test("GET /og/home.png returns a 1200 × 630 PNG", async () => {
-  const response = await fetch(new URL("/og/home.png", targetUrl));
+test("home preloads self-hosted, immutable Latin fonts", async () => {
+  const page = await fetch(new URL("/", targetUrl));
+  const fonts = [...(await page.text()).matchAll(latinFontPattern)];
+  expect(fonts).toHaveLength(2);
+  const responses = await Promise.all(
+    fonts.map(([, path]) => fetch(new URL(path, targetUrl)))
+  );
+  for (const response of responses) {
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("font/woff2");
+    expect(response.headers.get("cache-control")).toContain("immutable");
+  }
+});
+
+test("home and achievements share a 1200 × 630 OGP image", async () => {
+  const home = await fetch(new URL("/", targetUrl));
+  const done = await fetch(new URL("/done", targetUrl));
+  const homeBody = await home.text();
+  const homeImage = homeBody.match(ogImagePattern)?.[1];
+  const doneImage = (await done.text()).match(ogImagePattern)?.[1];
+  expect(homeImage).toBeDefined();
+  expect(doneImage).toBe(homeImage);
+
+  const imageUrl = new URL(homeImage ?? "");
+  expect(imageUrl.origin).toBe(
+    new URL(homeBody.match(canonicalPattern)?.[1] ?? "").origin
+  );
+  const response = await fetch(new URL(imageUrl.pathname, targetUrl));
   const image = new DataView(await response.arrayBuffer());
 
   expect(response.status).toBe(200);

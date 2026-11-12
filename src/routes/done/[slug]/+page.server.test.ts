@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
+import ogImage from "../../og.png";
 import { load } from "./+page.server";
 
 const fixtures = vi.hoisted(() => ({
@@ -44,7 +45,7 @@ describe("achievement page metadata data", () => {
     const data = await load(event);
 
     expect(data).toMatchObject({
-      ogImageUrl: "https://nyatinte.com/og/done.png",
+      ogImageUrl: new URL(ogImage, "https://nyatinte.com").href,
     });
   });
 });

@@ -1,6 +1,7 @@
 import { error } from "@sveltejs/kit";
 import { createAchievementRepository } from "../../lib/server/achievement/repository";
 import { normalizeTag } from "../../lib/server/achievement/validation";
+import ogImage from "../og.png";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ url }) => {
@@ -26,7 +27,7 @@ export const load: PageServerLoad = async ({ url }) => {
       canonicalUrl: `${url.origin}/done`,
       items: page.items,
       nextCursor: page.nextCursor,
-      ogImageUrl: new URL("/og/done.png", url.origin).href,
+      ogImageUrl: new URL(ogImage, url.origin).href,
       selectedTags,
     };
   } catch (cause) {
