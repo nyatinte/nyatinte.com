@@ -3,7 +3,10 @@
   import PageMeta from "../../lib/components/page-meta.svelte";
   import { logDescription, logTitle } from "../../lib/log/constants";
   import { formatLogDate } from "../../lib/log/format-date";
-  import { articleTransitionName } from "../../lib/log/view-transition";
+  import {
+    articleDateTransitionName,
+    articleTransitionName,
+  } from "../../lib/log/view-transition";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
@@ -32,7 +35,11 @@
     <ol role="list">
       {#each data.articles as article (article.slug)}
         <li>
-          <time datetime={article.date}>{formatLogDate(article.date)}</time>
+          <time
+            datetime={article.date}
+            style:view-transition-name={articleDateTransitionName(article.slug)}
+            >{formatLogDate(article.date)}</time
+          >
           <h2 style:view-transition-name={articleTransitionName(article.slug)}>
             <a href={`/log/${article.slug}`}>{article.title}</a>
           </h2>
