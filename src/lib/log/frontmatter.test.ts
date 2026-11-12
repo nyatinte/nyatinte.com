@@ -64,6 +64,11 @@ test.each([
   ["Note.md", valid, "file name"],
   ["note.txt", valid, "file name"],
   ["note.md", "本文だけ", "frontmatter"],
+  [
+    "note.md",
+    "---\ntitle: 題\ndescription: 説明\ndate: 2026-11-12\nupdated: 2026-11-11\n---\n",
+    "updated",
+  ],
 ])("rejects invalid article %s", (filename, source, expected) => {
   expect(() => parseArticleSource(filename, source)).toThrow(expected);
 });

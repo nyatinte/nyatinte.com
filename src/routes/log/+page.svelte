@@ -3,6 +3,7 @@
   import PageMeta from "../../lib/components/page-meta.svelte";
   import { logDescription, logTitle } from "../../lib/log/constants";
   import { formatLogDate } from "../../lib/log/format-date";
+  import { articleTransitionName } from "../../lib/log/view-transition";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
@@ -31,7 +32,7 @@
       {#each data.articles as article (article.slug)}
         <li>
           <time datetime={article.date}>{formatLogDate(article.date)}</time>
-          <h2 style:view-transition-name={`article-${article.slug}`}>
+          <h2 style:view-transition-name={articleTransitionName(article.slug)}>
             <a href={`/log/${article.slug}`}>{article.title}</a>
           </h2>
           <p>{article.description}</p>

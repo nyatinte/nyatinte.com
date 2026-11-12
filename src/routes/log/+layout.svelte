@@ -46,13 +46,13 @@
     background: var(--home-background);
   }
 
-  :global(.log) :global(::view-transition-group(*)) {
+  :global(:root::view-transition-group(*)) {
     animation-duration: 240ms;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    :global(.log) :global(::view-transition-old(*)),
-    :global(.log) :global(::view-transition-new(*)) {
+    :global(:root::view-transition-old(*)),
+    :global(:root::view-transition-new(*)) {
       animation: none;
     }
   }

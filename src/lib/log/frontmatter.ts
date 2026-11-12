@@ -1,5 +1,6 @@
 import { parse } from "yaml";
 import z from "zod/v4";
+import { fileName } from "./file-name";
 
 const datePattern = /^\d{4}-\d{2}-\d{2}$/u;
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
@@ -74,7 +75,14 @@ export const articleFrontmatterSchema = z
     title: singleLine,
     updated: isoDate.optional(),
   })
-  .strict();
+  .strict()
+  .refine(
+    (value) => value.updated === undefined || value.updated >= value.date,
+    {
+      message: "updated must not be earlier than date",
+      path: ["updated"],
+    }
+  );
 
 export interface Article {
   body: string;
@@ -85,15 +93,6 @@ export interface Article {
   source: string;
   title: string;
   updated?: string;
-}
-
-export function fileName(path: string) {
-  const withoutQuery = path.split("?")[0] ?? path;
-  const slash = Math.max(
-    withoutQuery.lastIndexOf("/"),
-    withoutQuery.lastIndexOf("\\")
-  );
-  return withoutQuery.slice(slash + 1);
 }
 
 export function parseArticleSource(filename: string, source: string): Article {

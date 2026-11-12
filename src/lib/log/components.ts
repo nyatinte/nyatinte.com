@@ -1,5 +1,5 @@
 import type { Component } from "svelte";
-import { fileName } from "./frontmatter";
+import { fileName } from "./file-name";
 
 const extensionPattern = /\.(md|svx)$/u;
 

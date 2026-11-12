@@ -4,6 +4,7 @@
   import PageMeta from "../../../lib/components/page-meta.svelte";
   import { articleComponent } from "../../../lib/log/components";
   import { formatLogDate } from "../../../lib/log/format-date";
+  import { articleTransitionName } from "../../../lib/log/view-transition";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
@@ -35,7 +36,7 @@
       >
     </p>
   {/if}
-  <h1 style:view-transition-name={`article-${data.article.slug}`}>
+  <h1 style:view-transition-name={articleTransitionName(data.article.slug)}>
     {data.article.title}
   </h1>
   <p class="description">{data.article.description}</p>
