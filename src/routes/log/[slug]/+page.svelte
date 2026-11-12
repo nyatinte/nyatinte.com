@@ -28,32 +28,36 @@
 
 <div class="layout">
   <main class="article">
-    <p class="back"><a href="/log">ログへ</a></p>
-    <h1 style:view-transition-name={articleTransitionName(data.article.slug)}>
-      {data.article.title}
-    </h1>
-    <div class="article-meta">
-      <div class="dates">
-        <time datetime={data.article.date}
-          >{formatLogDate(data.article.date)}</time
-        >
-        {#if data.article.updated}
-          <p class="updated">
-            更新
-            <time datetime={data.article.updated}
-              >{formatLogDate(data.article.updated)}</time
-            >
-          </p>
-        {/if}
+    <div class="article-header">
+      <p class="back"><a href="/log">ログへ</a></p>
+      <h1 style:view-transition-name={articleTransitionName(data.article.slug)}>
+        {data.article.title}
+      </h1>
+      <div class="article-meta">
+        <div class="dates">
+          <time datetime={data.article.date}
+            >{formatLogDate(data.article.date)}</time
+          >
+          {#if data.article.updated}
+            <p class="updated">
+              更新
+              <time datetime={data.article.updated}
+                >{formatLogDate(data.article.updated)}</time
+              >
+            </p>
+          {/if}
+        </div>
+        <CopyMdxButton source={data.article.source} />
       </div>
-      <CopyMdxButton source={data.article.source} />
     </div>
-    <p class="description">{data.article.description}</p>
-    {#if Body}
-      <div class="prose">
-        <Body />
-      </div>
-    {/if}
+    <div class="article-body">
+      <p class="description">{data.article.description}</p>
+      {#if Body}
+        <div class="prose">
+          <Body />
+        </div>
+      {/if}
+    </div>
   </main>
   {#if data.headings.length}
     <ArticleToc headings={data.headings} />
@@ -65,9 +69,15 @@
     position: relative;
   }
   .article {
-    grid-column: 2;
     width: min(40rem, calc(100vw - 2.5rem));
     padding-block: 0.5rem 4rem;
+    margin-inline: auto;
+  }
+
+  .article-header,
+  .article-body {
+    grid-column: 2;
+    width: min(40rem, calc(100vw - 2.5rem));
     margin-inline: auto;
   }
 
@@ -170,6 +180,20 @@
           14rem
         ) minmax(1rem, 1fr);
       column-gap: 2rem;
+    }
+
+    .article {
+      display: contents;
+    }
+
+    .article-header {
+      grid-row: 1;
+      padding-block-start: 0.5rem;
+    }
+
+    .article-body {
+      grid-row: 2;
+      padding-block-end: 4rem;
     }
   }
 

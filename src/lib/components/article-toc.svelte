@@ -149,7 +149,7 @@
     clip-path: inset(50%);
   }
   .toc h2 {
-    margin: 0 0 0.7rem;
+    margin: 0 0 0.5rem;
     font-size: 0.9rem;
   }
   .toc a {
@@ -208,7 +208,7 @@
       position: sticky;
       top: 2rem;
       display: block;
-      grid-row: 1;
+      grid-row: 2;
       grid-column: 3;
       align-self: start;
       width: auto;
