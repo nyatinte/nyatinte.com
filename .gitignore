@@ -17,6 +17,12 @@ dist/
 env.d.ts
 worker-configuration.d.ts
 
+# local agent config and notes
+.claude/
+.config/
+.pi/
+.slim/
+
 # misc
 .DS_Store
 *.log
