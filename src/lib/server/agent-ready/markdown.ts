@@ -1,7 +1,7 @@
 import type { AchievementRecord } from "../achievement/records";
 import { createAchievementRepository } from "../achievement/repository";
 import { normalizeTag } from "../achievement/validation";
-import { siteIdentity } from "./constants";
+import { canonicalSiteUrl, siteIdentity } from "./constants";
 import type { AgentRoute } from "./routes";
 
 const dateFormatter = new Intl.DateTimeFormat("ja-JP", {
@@ -13,30 +13,23 @@ function formatDate(value: string) {
   return dateFormatter.format(new Date(`${value}T00:00:00.000Z`));
 }
 
-function absoluteUrl(origin: string, pathname: string) {
-  return new URL(pathname, origin).href;
-}
-
 function linkLine(label: string, href: string) {
   return `- [${label}](${href})`;
 }
 
-function renderHomeMarkdown(origin: string): string {
+function renderHomeMarkdown(): string {
   return [
     "# nyatinte",
     "",
     siteIdentity.description,
     "",
-    linkLine("やったこと", absoluteUrl(origin, "/done")),
-    linkLine("サイトマップ", absoluteUrl(origin, "/sitemap.xml")),
+    linkLine("やったこと", canonicalSiteUrl("/done")),
+    linkLine("サイトマップ", canonicalSiteUrl("/sitemap.xml")),
   ].join("\n");
 }
 
-function renderAchievementItem(
-  origin: string,
-  item: AchievementRecord
-): string {
-  const detailUrl = absoluteUrl(origin, `/done/${item.slug}`);
+function renderAchievementItem(item: AchievementRecord): string {
+  const detailUrl = canonicalSiteUrl(`/done/${item.slug}`);
   return [
     `## [${item.title}](${detailUrl})`,
     "",
@@ -51,14 +44,11 @@ function renderAchievementItem(
     .join("\n");
 }
 
-function renderDoneListMarkdown(
-  origin: string,
-  options: {
-    items: AchievementRecord[];
-    nextCursor: string | null;
-    selectedTags: string[];
-  }
-): string {
+function renderDoneListMarkdown(options: {
+  items: AchievementRecord[];
+  nextCursor: string | null;
+  selectedTags: string[];
+}): string {
   const lines = [
     "# やったこと",
     "",
@@ -69,7 +59,7 @@ function renderDoneListMarkdown(
     lines.push(
       `タグ: ${options.selectedTags.join(", ")}`,
       "",
-      linkLine("絞り込みを解除", absoluteUrl(origin, "/done")),
+      linkLine("絞り込みを解除", canonicalSiteUrl("/done")),
       ""
     );
   }
@@ -80,9 +70,7 @@ function renderDoneListMarkdown(
         : "実績はまだありません。"
     );
   } else {
-    lines.push(
-      ...options.items.map((item) => renderAchievementItem(origin, item))
-    );
+    lines.push(...options.items.map((item) => renderAchievementItem(item)));
   }
   if (options.nextCursor) {
     const params = new URLSearchParams();
@@ -92,16 +80,13 @@ function renderDoneListMarkdown(
     params.set("cursor", options.nextCursor);
     lines.push(
       "",
-      linkLine("もっと見る", absoluteUrl(origin, `/done?${params}`))
+      linkLine("もっと見る", canonicalSiteUrl(`/done?${params.toString()}`))
     );
   }
   return lines.join("\n");
 }
 
-function renderAchievementMarkdown(
-  origin: string,
-  entry: AchievementRecord
-): string {
+function renderAchievementMarkdown(entry: AchievementRecord): string {
   const lines = [
     `# ${entry.title}`,
     "",
@@ -115,7 +100,7 @@ function renderAchievementMarkdown(
     for (const tag of entry.tags) {
       const params = new URLSearchParams({ tag: tag.normalized });
       lines.push(
-        linkLine(tag.name, absoluteUrl(origin, `/done?${params.toString()}`))
+        linkLine(tag.name, canonicalSiteUrl(`/done?${params.toString()}`))
       );
     }
   }
@@ -131,32 +116,32 @@ function renderAchievementMarkdown(
   }
   lines.push(
     "",
-    linkLine("実績一覧へ", absoluteUrl(origin, "/done")),
-    linkLine("ホーム", absoluteUrl(origin, "/"))
+    linkLine("実績一覧へ", canonicalSiteUrl("/done")),
+    linkLine("ホーム", canonicalSiteUrl("/"))
   );
   return lines.join("\n");
 }
 
-function renderNotFoundMarkdown(origin: string, message: string): string {
+function renderNotFoundMarkdown(message: string): string {
   return [
     "# ページが見つかりません",
     "",
     message,
     "",
-    linkLine("ホーム", absoluteUrl(origin, "/")),
-    linkLine("やったこと", absoluteUrl(origin, "/done")),
-    linkLine("サイトマップ", absoluteUrl(origin, "/sitemap.xml")),
+    linkLine("ホーム", canonicalSiteUrl("/")),
+    linkLine("やったこと", canonicalSiteUrl("/done")),
+    linkLine("サイトマップ", canonicalSiteUrl("/sitemap.xml")),
   ].join("\n");
 }
 
-function renderGoneMarkdown(origin: string, message: string): string {
+function renderGoneMarkdown(message: string): string {
   return [
     "# この実績は削除されています",
     "",
     message,
     "",
-    linkLine("実績一覧へ", absoluteUrl(origin, "/done")),
-    linkLine("ホーム", absoluteUrl(origin, "/")),
+    linkLine("実績一覧へ", canonicalSiteUrl("/done")),
+    linkLine("ホーム", canonicalSiteUrl("/")),
   ].join("\n");
 }
 
@@ -168,16 +153,15 @@ export interface MarkdownRenderResult {
 
 export async function renderAgentMarkdown(
   route: AgentRoute,
-  origin: string,
   searchParams: URLSearchParams
 ): Promise<MarkdownRenderResult> {
-  const canonicalUrl = new URL(route.canonicalPath, origin).href;
+  const canonicalUrl = canonicalSiteUrl(route.canonicalPath);
   if (route.kind === "home") {
-    return { body: renderHomeMarkdown(origin), canonicalUrl, status: 200 };
+    return { body: renderHomeMarkdown(), canonicalUrl, status: 200 };
   }
   if (route.kind === "not-found") {
     return {
-      body: renderNotFoundMarkdown(origin, "ページが見つかりません。"),
+      body: renderNotFoundMarkdown("ページが見つかりません。"),
       canonicalUrl,
       status: 404,
     };
@@ -195,7 +179,7 @@ export async function renderAgentMarkdown(
         tags: selectedTags,
       });
       return {
-        body: renderDoneListMarkdown(origin, {
+        body: renderDoneListMarkdown({
           items: page.items,
           nextCursor: page.nextCursor,
           selectedTags,
@@ -206,10 +190,7 @@ export async function renderAgentMarkdown(
     } catch (cause) {
       if (cause instanceof TypeError || cause instanceof RangeError) {
         return {
-          body: renderNotFoundMarkdown(
-            origin,
-            "一覧の指定が正しくありません。"
-          ),
+          body: renderNotFoundMarkdown("一覧の指定が正しくありません。"),
           canonicalUrl,
           status: 400,
         };
@@ -221,20 +202,20 @@ export async function renderAgentMarkdown(
   const entry = await repository.get(route.slug, { includeDeleted: true });
   if (!entry) {
     return {
-      body: renderNotFoundMarkdown(origin, "実績が見つかりません。"),
+      body: renderNotFoundMarkdown("実績が見つかりません。"),
       canonicalUrl,
       status: 404,
     };
   }
   if (entry.deletedAt) {
     return {
-      body: renderGoneMarkdown(origin, "この実績は削除されています。"),
+      body: renderGoneMarkdown("この実績は削除されています。"),
       canonicalUrl,
       status: 410,
     };
   }
   return {
-    body: renderAchievementMarkdown(origin, entry),
+    body: renderAchievementMarkdown(entry),
     canonicalUrl,
     status: 200,
   };

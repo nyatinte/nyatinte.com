@@ -36,12 +36,3 @@ export function matchAgentRoute(pathname: string): AgentRoute | null {
   }
   return { canonicalPath: pathname, kind: "not-found" };
 }
-
-export function isAgentReadyHtmlRoute(pathname: string): boolean {
-  const route = matchAgentRoute(pathname);
-  return (
-    route?.kind === "home" ||
-    route?.kind === "done-list" ||
-    route?.kind === "done-detail"
-  );
-}

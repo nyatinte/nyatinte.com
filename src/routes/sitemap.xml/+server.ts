@@ -1,8 +1,8 @@
 import { buildSitemapXml } from "../../lib/server/agent-ready/sitemap";
 import type { RequestHandler } from "./$types";
 
-export const GET: RequestHandler = async ({ url }) => {
-  const body = await buildSitemapXml(url.origin);
+export const GET: RequestHandler = async () => {
+  const body = await buildSitemapXml();
   return new Response(body, {
     headers: {
       "Cache-Control": "public, max-age=3600",

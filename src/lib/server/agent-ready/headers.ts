@@ -32,7 +32,7 @@ export function agentResponseHeaders(options: {
 }
 
 export function markdownResponse(
-  body: string,
+  body: string | null,
   options: {
     canonicalUrl: string;
     status: number;

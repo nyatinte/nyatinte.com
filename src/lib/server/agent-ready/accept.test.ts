@@ -1,11 +1,12 @@
 import { expect, test } from "vite-plus/test";
-import { acceptIncludesMarkdown, wantsMarkdown } from "./accept";
+import { prefersMarkdown, wantsMarkdown } from "./accept";
 
-test("detects text/markdown and */* media ranges", () => {
-  expect(acceptIncludesMarkdown("text/markdown")).toBe(true);
-  expect(acceptIncludesMarkdown("text/markdown, text/html;q=0.9")).toBe(true);
-  expect(acceptIncludesMarkdown("*/*")).toBe(false);
-  expect(acceptIncludesMarkdown("text/html")).toBe(false);
+test("prefers markdown only when its q-value beats text/html", () => {
+  expect(prefersMarkdown("text/markdown")).toBe(true);
+  expect(prefersMarkdown("text/markdown, text/html;q=0.9")).toBe(true);
+  expect(prefersMarkdown("text/html, text/markdown;q=0.1")).toBe(false);
+  expect(prefersMarkdown("text/html")).toBe(false);
+  expect(prefersMarkdown("*/*")).toBe(false);
 });
 
 test("wantsMarkdown reads the Accept request header", () => {
@@ -19,7 +20,7 @@ test("wantsMarkdown reads the Accept request header", () => {
   expect(
     wantsMarkdown(
       new Request("https://example.com/", {
-        headers: { Accept: "text/html" },
+        headers: { Accept: "text/html, text/markdown;q=0.1" },
       })
     )
   ).toBe(false);

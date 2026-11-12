@@ -1,21 +1,20 @@
 import { expect, test } from "vite-plus/test";
+import { canonicalSiteUrl } from "./constants";
 import { renderAgentMarkdown } from "./markdown";
 
 test("renders markdown for the home page", async () => {
   const rendered = await renderAgentMarkdown(
     { canonicalPath: "/", kind: "home" },
-    "https://nyatinte.com",
     new URLSearchParams()
   );
   expect(rendered.status).toBe(200);
   expect(rendered.body).toContain("# nyatinte");
-  expect(rendered.body).toContain("[やったこと](https://nyatinte.com/done)");
+  expect(rendered.body).toContain(`[やったこと](${canonicalSiteUrl("/done")})`);
 });
 
 test("renders markdown for unknown pages with a 404 status", async () => {
   const rendered = await renderAgentMarkdown(
     { canonicalPath: "/missing", kind: "not-found" },
-    "https://nyatinte.com",
     new URLSearchParams()
   );
   expect(rendered.status).toBe(404);
@@ -29,7 +28,6 @@ test("renders markdown for missing achievements with a 404 status", async () => 
       kind: "done-detail",
       slug: "missing",
     },
-    "https://nyatinte.com",
     new URLSearchParams()
   );
   expect(rendered.status).toBe(404);

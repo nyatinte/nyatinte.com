@@ -1,22 +1,52 @@
-import z from "zod/v4";
+import { minLength, pipe, safeParse, string } from "valibot";
 
-export const acceptHeaderSchema = z.string().min(1);
+const acceptHeaderSchema = pipe(string(), minLength(1));
 
-function tokenizeAccept(accept: string) {
-  return accept
-    .split(",")
-    .map((part) => part.trim().split(";")[0]?.trim().toLowerCase() ?? "")
-    .filter(Boolean);
+interface AcceptRange {
+  q: number;
+  type: string;
 }
 
-export function acceptIncludesMarkdown(accept: string): boolean {
-  return tokenizeAccept(accept).some((media) => media === "text/markdown");
+function parseAccept(accept: string): AcceptRange[] {
+  return accept
+    .split(",")
+    .map((part) => {
+      const sections = part
+        .trim()
+        .split(";")
+        .map((segment) => segment.trim());
+      const type = sections[0]?.toLowerCase() ?? "";
+      const qParam = sections.find((segment) => segment.startsWith("q="));
+      const q = qParam ? Number.parseFloat(qParam.slice(2)) : 1;
+      return {
+        q: Number.isFinite(q) ? q : 0,
+        type,
+      };
+    })
+    .filter((range) => range.type && range.q > 0);
+}
+
+function quality(type: string, ranges: AcceptRange[]): number {
+  return ranges.find((range) => range.type === type)?.q ?? 0;
+}
+
+export function prefersMarkdown(accept: string): boolean {
+  const ranges = parseAccept(accept);
+  const markdownQuality = quality("text/markdown", ranges);
+  if (markdownQuality <= 0) {
+    return false;
+  }
+  const htmlQuality = quality("text/html", ranges);
+  if (htmlQuality <= 0) {
+    return true;
+  }
+  return markdownQuality > htmlQuality;
 }
 
 export function wantsMarkdown(request: Request): boolean {
   const accept = request.headers.get("accept");
-  if (!(accept && acceptHeaderSchema.safeParse(accept).success)) {
+  if (!(accept && safeParse(acceptHeaderSchema, accept).success)) {
     return false;
   }
-  return acceptIncludesMarkdown(accept);
+  return prefersMarkdown(accept);
 }

@@ -1,8 +1,8 @@
 import type { AchievementRecord } from "../achievement/records";
-import { siteAuthor, siteIdentity } from "./constants";
+import { canonicalSiteUrl, siteAuthor, siteIdentity } from "./constants";
 
-export function createHomeJsonLd(origin: string) {
-  const siteUrl = new URL("/", origin).href;
+export function createHomeJsonLd() {
+  const siteUrl = canonicalSiteUrl("/");
   const personId = `${siteUrl}#person`;
   return [
     {
@@ -25,11 +25,8 @@ export function createHomeJsonLd(origin: string) {
   ] as const;
 }
 
-export function createBlogPostingJsonLd(
-  origin: string,
-  entry: AchievementRecord
-) {
-  const url = new URL(`/done/${entry.slug}`, origin).href;
+export function createBlogPostingJsonLd(entry: AchievementRecord) {
+  const url = canonicalSiteUrl(`/done/${entry.slug}`);
   return [
     {
       "@context": "https://schema.org",
@@ -37,7 +34,7 @@ export function createBlogPostingJsonLd(
       author: {
         "@type": "Person",
         name: siteAuthor.name,
-        url: new URL("/", origin).href,
+        url: canonicalSiteUrl("/"),
       },
       datePublished: entry.occurredAt,
       description: entry.summary,

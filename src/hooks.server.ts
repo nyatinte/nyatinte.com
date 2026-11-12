@@ -1,5 +1,6 @@
 import type { Handle } from "@sveltejs/kit/hooks";
 import { wantsMarkdown } from "./lib/server/agent-ready/accept";
+import { productionSiteHref } from "./lib/server/agent-ready/constants";
 import {
   agentResponseHeaders,
   markdownResponse,
@@ -9,6 +10,11 @@ import { matchAgentRoute } from "./lib/server/agent-ready/routes";
 
 const jsonLdScriptPattern = /<script type="application\/ld\+json">/gu;
 const cspNoncePattern = /'nonce-([^']+)'/u;
+const agentReadMethods = new Set(["GET", "HEAD"]);
+
+function isAgentReadMethod(method: string) {
+  return agentReadMethods.has(method);
+}
 
 function shouldEnrichResponse(
   route: NonNullable<ReturnType<typeof matchAgentRoute>>,
@@ -37,6 +43,14 @@ async function finalizeHtmlResponse(
     });
   }
 
+  if (response.body === null) {
+    return new Response(null, {
+      headers,
+      status: response.status,
+      statusText: response.statusText,
+    });
+  }
+
   const nonce = headers
     .get("content-security-policy")
     ?.match(cspNoncePattern)?.[1];
@@ -57,13 +71,14 @@ async function finalizeHtmlResponse(
 
 export const handle: Handle = async ({ event, resolve }) => {
   const route = matchAgentRoute(event.url.pathname);
-  if (event.request.method === "GET" && wantsMarkdown(event.request) && route) {
-    const rendered = await renderAgentMarkdown(
-      route,
-      event.url.origin,
-      event.url.searchParams
-    );
-    return markdownResponse(rendered.body, {
+  if (
+    isAgentReadMethod(event.request.method) &&
+    wantsMarkdown(event.request) &&
+    route
+  ) {
+    const rendered = await renderAgentMarkdown(route, event.url.searchParams);
+    const body = event.request.method === "HEAD" ? null : rendered.body;
+    return markdownResponse(body, {
       canonicalUrl: rendered.canonicalUrl,
       status: rendered.status,
     });
@@ -71,15 +86,17 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   const response = await resolve(event);
   if (
-    event.request.method !== "GET" ||
-    !route ||
-    !shouldEnrichResponse(route, response.status)
+    !(
+      isAgentReadMethod(event.request.method) &&
+      route &&
+      shouldEnrichResponse(route, response.status)
+    )
   ) {
     return finalizeHtmlResponse(response);
   }
 
-  const canonicalUrl = new URL(route.canonicalPath, event.url.origin).href;
   return finalizeHtmlResponse(response, (headers) => {
+    const canonicalUrl = productionSiteHref(route.canonicalPath);
     const enriched = agentResponseHeaders({
       canonicalUrl,
       existingVary: headers.get("Vary"),

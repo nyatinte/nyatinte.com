@@ -12,6 +12,24 @@ const scriptTagPattern = /<script\b[^>]*>/gu;
 const scriptSrcAttributePattern = /\ssrc\s*=/u;
 const scriptNoncePattern = /\snonce="([^"]+)"/u;
 const varyAcceptPattern = /accept/i;
+const jsonLdScriptBodyPattern =
+  /<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g;
+const publishedAchievementSlugPattern =
+  /<loc>https:\/\/nyatinte\.com\/done\/([a-z0-9-]+)<\/loc>/u;
+const markdownAlternateHrefPattern =
+  /<([^>]+)>;\s*rel="alternate";\s*type="text\/markdown"/;
+
+function expectMarkdownAlternatePath(link: string | null, pathname: string) {
+  expect(link).toContain('rel="alternate"');
+  expect(link).toContain('type="text/markdown"');
+  const href = link?.match(markdownAlternateHrefPattern)?.[1];
+  expect(href).toBeDefined();
+  const parsed = new URL(href ?? "");
+  const expectedPath = pathname === "/" ? "/" : pathname;
+  expect(parsed.pathname).toBe(expectedPath);
+  const allowedHosts = new Set(["nyatinte.com", new URL(targetUrl).hostname]);
+  expect(allowedHosts.has(parsed.hostname)).toBe(true);
+}
 
 function nonceFrom(response: Response): string {
   const csp = response.headers.get("content-security-policy");
@@ -23,6 +41,19 @@ function nonceFrom(response: Response): string {
   const nonce = scriptSource?.match(cspNoncePattern)?.[1];
   expect(nonce).toBeTruthy();
   return nonce ?? "";
+}
+
+function jsonLdGraphs(body: string) {
+  return [...body.matchAll(jsonLdScriptBodyPattern)].map((match) =>
+    JSON.parse(match[1] ?? "")
+  );
+}
+
+async function publishedAchievementSlug() {
+  const body = await fetch(new URL("/sitemap.xml", targetUrl)).then(
+    (response) => response.text()
+  );
+  return body.match(publishedAchievementSlugPattern)?.[1] ?? null;
 }
 
 test("GET / serves the home page with an absolute canonical URL", async () => {
@@ -86,10 +117,7 @@ test("HTML pages expose markdown alternates and Vary: Accept", async () => {
   const response = await fetch(new URL("/", targetUrl));
   expect(response.status).toBe(200);
   expect(response.headers.get("vary")).toMatch(varyAcceptPattern);
-  const link = response.headers.get("link");
-  expect(link).toContain('rel="alternate"');
-  expect(link).toContain('type="text/markdown"');
-  expect(link).toContain(`${new URL("/", targetUrl).origin}/`);
+  expectMarkdownAlternatePath(response.headers.get("link"), "/");
 });
 
 test("GET / returns markdown when Accept prefers text/markdown", async () => {
@@ -104,6 +132,38 @@ test("GET / returns markdown when Accept prefers text/markdown", async () => {
   expect(body).toContain("# nyatinte");
 });
 
+test("HTML wins when its Accept q-value is higher than text/markdown", async () => {
+  const response = await fetch(new URL("/", targetUrl), {
+    headers: { Accept: "text/html, text/markdown;q=0.1" },
+  });
+
+  expect(response.status).toBe(200);
+  expect(response.headers.get("content-type")).toContain("text/html");
+  expect(response.headers.get("vary")).toMatch(varyAcceptPattern);
+});
+
+test("HEAD / negotiates markdown and keeps agent-ready headers", async () => {
+  const response = await fetch(new URL("/", targetUrl), {
+    headers: { Accept: "text/markdown" },
+    method: "HEAD",
+  });
+  const body = await response.text();
+
+  expect(response.status).toBe(200);
+  expect(response.headers.get("content-type")).toContain("text/markdown");
+  expect(response.headers.get("vary")).toMatch(varyAcceptPattern);
+  expect(body).toBe("");
+});
+
+test("HEAD / keeps Vary and Link for HTML", async () => {
+  const response = await fetch(new URL("/", targetUrl), { method: "HEAD" });
+
+  expect(response.status).toBe(200);
+  expect(response.headers.get("content-type")).toContain("text/html");
+  expect(response.headers.get("vary")).toMatch(varyAcceptPattern);
+  expectMarkdownAlternatePath(response.headers.get("link"), "/");
+});
+
 test("unknown pages return HTTP 404 markdown when requested", async () => {
   const response = await fetch(new URL("/definitely-missing", targetUrl), {
     headers: { Accept: "text/markdown" },
@@ -115,6 +175,17 @@ test("unknown pages return HTTP 404 markdown when requested", async () => {
   expect(body).toContain("ページが見つかりません");
 });
 
+test("missing achievement slugs return 404 markdown", async () => {
+  const response = await fetch(new URL("/done/not-a-real-slug", targetUrl), {
+    headers: { Accept: "text/markdown" },
+  });
+  const body = await response.text();
+
+  expect(response.status).toBe(404);
+  expect(response.headers.get("content-type")).toContain("text/markdown");
+  expect(body).toContain("実績が見つかりません");
+});
+
 test("GET /sitemap.xml lists core URLs", async () => {
   const response = await fetch(new URL("/sitemap.xml", targetUrl));
   const body = await response.text();
@@ -123,6 +194,7 @@ test("GET /sitemap.xml lists core URLs", async () => {
   expect(response.headers.get("content-type")).toContain("application/xml");
   expect(body).toContain("<urlset");
   expect(body).toContain("/done</loc>");
+  expect(body).toContain("<lastmod>");
 });
 
 test("robots.txt advertises the sitemap and content signals", async () => {
@@ -134,6 +206,45 @@ test("robots.txt advertises the sitemap and content signals", async () => {
   expect(body).toContain(
     "Content-Signal: search=yes, ai-input=yes, ai-train=no"
   );
+  expect(body.indexOf("Content-Signal")).toBeGreaterThan(
+    body.indexOf("User-agent")
+  );
+});
+
+test("home page JSON-LD parses into Person and WebSite graphs", async () => {
+  const body = await fetch(new URL("/", targetUrl)).then((response) =>
+    response.text()
+  );
+  const types = jsonLdGraphs(body).map((graph) => graph["@type"]);
+  expect(types).toContain("Person");
+  expect(types).toContain("WebSite");
+});
+
+test("published achievement pages expose BlogPosting JSON-LD", async () => {
+  const slug = await publishedAchievementSlug();
+  if (!slug) {
+    return;
+  }
+  const body = await fetch(new URL(`/done/${slug}`, targetUrl)).then(
+    (response) => response.text()
+  );
+  const graphs = jsonLdGraphs(body);
+  expect(graphs.some((graph) => graph["@type"] === "BlogPosting")).toBe(true);
+});
+
+test("published achievement pages return markdown when requested", async () => {
+  const slug = await publishedAchievementSlug();
+  if (!slug) {
+    return;
+  }
+  const response = await fetch(new URL(`/done/${slug}`, targetUrl), {
+    headers: { Accept: "text/markdown" },
+  });
+  const body = await response.text();
+
+  expect(response.status).toBe(200);
+  expect(response.headers.get("content-type")).toContain("text/markdown");
+  expect(body.startsWith("# ")).toBe(true);
 });
 
 test("home and achievements share a 1200 × 630 OGP image", async () => {
