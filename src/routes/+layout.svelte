@@ -7,7 +7,7 @@
 <style>
   @font-face {
     font-family: "M PLUS 1p";
-    src: url("/fonts/mplus1p-regular.woff2") format("woff2");
+    src: url("../lib/assets/fonts/mplus1p-regular.woff2") format("woff2");
     font-style: normal;
     font-weight: 400 500;
     font-display: swap;
@@ -15,7 +15,7 @@
   }
   @font-face {
     font-family: "M PLUS 1p";
-    src: url("/fonts/mplus1p-bold.woff2") format("woff2");
+    src: url("../lib/assets/fonts/mplus1p-bold.woff2") format("woff2");
     font-style: normal;
     font-weight: 600 900;
     font-display: swap;
@@ -23,7 +23,7 @@
   }
   @font-face {
     font-family: "M PLUS 1p";
-    src: url("/fonts/mplus1p-regular-latin.woff2") format("woff2");
+    src: url("../lib/assets/fonts/mplus1p-regular-latin.woff2") format("woff2");
     font-style: normal;
     font-weight: 400 500;
     font-display: optional;
@@ -31,7 +31,7 @@
   }
   @font-face {
     font-family: "M PLUS 1p";
-    src: url("/fonts/mplus1p-bold-latin.woff2") format("woff2");
+    src: url("../lib/assets/fonts/mplus1p-bold-latin.woff2") format("woff2");
     font-style: normal;
     font-weight: 600 900;
     font-display: optional;

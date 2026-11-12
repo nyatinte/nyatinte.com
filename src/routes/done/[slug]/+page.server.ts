@@ -1,6 +1,7 @@
 import { error } from "@sveltejs/kit";
 import { renderMarkdown } from "../../../lib/server/achievement/markdown";
 import { createAchievementRepository } from "../../../lib/server/achievement/repository";
+import ogImage from "../../og.png";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ params, url }) => {
@@ -18,7 +19,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
     `/done/${encodeURIComponent(entry.slug)}`,
     url.origin
   );
-  const ogImageUrl = new URL("/og/done.png", url.origin);
+  const ogImageUrl = new URL(ogImage, url.origin);
 
   return {
     bodyHtml: renderMarkdown(entry.bodyMarkdown ?? ""),
