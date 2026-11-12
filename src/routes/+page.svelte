@@ -7,7 +7,6 @@
   import JsonLd from "../lib/components/json-ld.svelte";
   import { HOME_THEME_COLOR } from "../lib/home-theme-color";
   import type { PageProps } from "./$types";
-  import "../lib/styles/home-tokens.css";
 
   let { data }: PageProps = $props();
 

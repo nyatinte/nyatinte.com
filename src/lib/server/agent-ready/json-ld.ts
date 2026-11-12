@@ -1,4 +1,5 @@
-import type { AchievementRecord } from "../achievement/records";
+import { logDescription, logTitle } from "../../log/constants";
+import type { Article } from "../../log/frontmatter";
 import { canonicalSiteUrl, siteAuthor, siteIdentity } from "./constants";
 
 export function createHomeJsonLd() {
@@ -26,8 +27,27 @@ export function createHomeJsonLd() {
   ] as const;
 }
 
-export function createBlogPostingJsonLd(entry: AchievementRecord) {
-  const url = canonicalSiteUrl(`/done/${entry.slug}`);
+export function createLogJsonLd() {
+  const url = canonicalSiteUrl("/log");
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      author: {
+        "@type": "Person",
+        name: siteAuthor.name,
+        url: canonicalSiteUrl("/"),
+      },
+      description: logDescription,
+      inLanguage: siteIdentity.inLanguage,
+      name: logTitle,
+      url,
+    },
+  ] as const;
+}
+
+export function createArticleJsonLd(article: Article) {
+  const url = canonicalSiteUrl(`/log/${article.slug}`);
   return [
     {
       "@context": "https://schema.org",
@@ -37,9 +57,10 @@ export function createBlogPostingJsonLd(entry: AchievementRecord) {
         name: siteAuthor.name,
         url: canonicalSiteUrl("/"),
       },
-      datePublished: entry.occurredAt,
-      description: entry.summary,
-      headline: entry.title,
+      dateModified: article.updated ?? article.date,
+      datePublished: article.date,
+      description: article.description,
+      headline: article.title,
       inLanguage: siteIdentity.inLanguage,
       mainEntityOfPage: url,
       url,

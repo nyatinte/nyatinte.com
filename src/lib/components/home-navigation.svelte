@@ -2,8 +2,8 @@
   import github from "@tabler/icons/outline/brand-github.svg?url";
   import x from "@tabler/icons/outline/brand-x.svg?url";
   import house from "@tabler/icons/outline/home.svg?url";
-  import layoutGrid from "@tabler/icons/outline/layout-grid.svg?url";
   import moonIcon from "@tabler/icons/outline/moon.svg?url";
+  import notebook from "@tabler/icons/outline/notebook.svg?url";
   import sunIcon from "@tabler/icons/outline/sun.svg?url";
 
   let { toggleTheme }: { toggleTheme: () => void } = $props();
@@ -64,18 +64,14 @@
         style:mask-image={`url("${moonIcon}")`}
       ></span>
     </button>
-    <span
-      aria-label="実績、準備中"
-      class="unavailable"
-      role="img"
-      title="実績、準備中"
-    >
+    <a aria-label="ログ" href="/log" title="ログ">
       <span
         aria-hidden="true"
         class="icon"
-        style:mask-image={`url("${layoutGrid}")`}
+        style:mask-image={`url("${notebook}")`}
       ></span>
-    </span>
+      <span class="sr-only">ログ</span>
+    </a>
   </nav>
 </header>
 
@@ -104,8 +100,7 @@
         align-items: center;
       }
       .navigation a,
-      .navigation button,
-      .unavailable {
+      .navigation button {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -144,9 +139,6 @@
           forced-color-adjust: none;
           background: CanvasText;
         }
-      }
-      .unavailable {
-        opacity: 0.5;
       }
       .sr-only {
         position: absolute;
@@ -226,8 +218,7 @@
           padding: 0.125rem;
         }
         .navigation a,
-        .navigation button,
-        .unavailable {
+        .navigation button {
           min-inline-size: 2.75rem;
           block-size: 2.75rem;
         }

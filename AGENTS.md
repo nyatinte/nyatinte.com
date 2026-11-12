@@ -2,18 +2,24 @@
 
 ## プロダクト
 
-`nyatinte.com` の個人サイト。`/done` で本人の実績を公開する。閲覧はログイン不要。実績はタイトルと一言で成立し、Markdown の詳細を後から追加できる。X での OGP を重視する。
+`nyatinte.com` の個人サイト。`/log` で、わからなかったことを調べて書いた記事を公開する。閲覧はログイン不要。記事はエージェントとの会話を Markdown か MDX に書き出し、`src/content/log/<slug>.md` または `.svx` に置く。X での OGP を重視する。
 
-実績は `src/lib/achievements/` の Markdown を正本とする。MCP は変更を PR として作成し、マージ後の手動デプロイで公開ページに反映する。下書きは設けない。公開ページはビルド時のデータを読み、MCP の一覧・取得は GitHub 上の現行データを参照する。
+記事の frontmatter は Zod で検証する。必須は `title`、`description`、`date`。任意は `updated` と `image`。不正な frontmatter はビルドを失敗させる。下書きは設けない。公開ページはビルド時のファイルを読む。一覧は日付の新しい順で、同じ日付ではスラッグの昇順である。
 
-開発・デプロイ方法は [README.md](README.md) を参照。
+`/done` と `/done/` 以下は `/log` へ 301 で移す。トップページのナビゲーションからも `/log` へ移れる。
+
+`/mcp` と、Worker での Cloudflare Access JWT の検証は残す。ツールは登録しない。ブログ用のツールはあとから足す。GitHub トークンは実績の PR 作成にだけ使っていた。使う箇所がなくなったので、設定から外してある。Actions の Secret と Cloudflare のシークレットが残っていれば、運用で削除できる。
+
+開発・デプロイ方法は [README.md](README.md) を参照する。
 
 ## 実装上の決定
 
-- SvelteKit + Svelte 5、TypeScript、Vite+、pnpm、Cloudflare Workers を使う。バージョンとコマンドは `package.json` を参照する。
+- SvelteKit + Svelte 5、TypeScript、Vite+、pnpm、Cloudflare Workers を使う。バージョンとコマンドは `package.json` を参照する。記事は mdsvex で `.md` と `.svx` を扱う。
 - `/mcp` は Cloudflare Access で保護し、Worker でも Access JWT を検証する。
-- OGP は `src/routes/og.png` を共通画像に使う。実績ごとのメタデータは公開ページから生成する。
+- OGP は、frontmatter の `image` がなければ `src/routes/og.png` を共通画像に使う。記事のメタデータは公開ページから生成する。記事ごとの画像を画像生成 AI で作り、プロンプトをスキルにして記事を置く作業に組み込む方針は [docs/adr/0001-ogp-image-generation.md](docs/adr/0001-ogp-image-generation.md) に書く。費用がかかるため、今は実装しない。
 - `wrangler.jsonc` を Worker 設定と型生成の正本とする。本番デプロイは Varlock Wrangler で既存の変数とシークレットを保持する。
+- 一覧から記事への移動では `onNavigate` のなかで `document.startViewTransition` を呼ぶ。API がないときと、`prefers-reduced-motion: reduce` のときは呼ばない。記事から一覧へ戻る移動では呼ばない。
+- `/llms.txt`、`Accept: text/markdown`、`Link` の `rel=alternate` は記事向けに残す。RSS は `/log/rss.xml`。サイトマップは `/sitemap.xml`。
 
 ## スキル
 
@@ -49,6 +55,6 @@
 
 ## 権利と MVP の範囲
 
-ゲームの実績 UI を参考にする場合も、自作の図形とタイポグラフィで表現する。PlayStation、Xbox、Steam のロゴ・トロフィー画像・達成率バー、実在ゲームの名称・アイコン・スクリーンショット、特定プラットフォーム UI の 1 対 1 の再現は禁止。フォントは M PLUS 1p (OFL)、アイコンを使う場合は MIT または ISC のものに限る。
+ゲームの画面を参考にする場合も、図形と文字組みは自作する。PlayStation、Xbox、Steam のロゴ、トロフィー画像、達成率のバー、実在するゲームの名称・アイコン・スクリーンショット、特定のプラットフォームの画面を 1 対 1 で再現することは禁止する。フォントは M PLUS 1p (OFL)。アイコンを使う場合は MIT または ISC のものに限る。
 
-MVP には匿名リアクション・集計、やる宣言、下書き・非公開状態、階級・レア度・達成率、投稿用 Web 管理画面、閲覧者アカウント・フォロー・コメント、全文検索、画像アップロード、RSS、sitemap を含めない。
+MVP には匿名リアクション・集計、やる宣言、下書き・非公開状態、階級・レア度・達成率、投稿用 Web 管理画面、閲覧者アカウント・フォロー・コメント、全文検索、画像アップロード、タグを含めない。RSS は `/log/rss.xml`、サイトマップは `/sitemap.xml` で公開する。
