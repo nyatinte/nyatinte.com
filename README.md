@@ -11,11 +11,12 @@ pnpm install
 pnpm dev
 ```
 
-`pnpm install` は SvelteKit の同期と Vite+ の pre-commit hook の設定も行います。hook はステージ済みファイルを検査します。修正は `pnpm run fix` で行え、hook を無効にする場合は `pnpm exec vp hooks disable` を実行してください。
+`pnpm install` は SvelteKit の同期と Vite+ の Git hook の設定も行い、pre-commit hook はステージ済みファイルを検査します。pre-push hook は CI の Verify と同じ `pnpm check:ci`（check、build、ビルド済み Worker への HTTP テスト）を走らせ、修正は `pnpm run fix` で行えます。一時的に pre-push を飛ばす方法は `git push --no-verify` です。hook 自体を無効にする場合は `pnpm exec vp hooks disable` を実行してください。
 
 | コマンド | 内容 |
 | --- | --- |
 | `pnpm check` | 型生成、format・lint・型チェック |
+| `pnpm check:ci` | CI の Verify と同じ品質チェック（check、build、HTTP テスト） |
 | `pnpm run fix` | Ultracite/Biome による修正 |
 | `pnpm build` | SvelteKit Worker のビルド |
 | `pnpm dev:worker` | ビルド済み Worker をローカルの `:8787` で起動 |

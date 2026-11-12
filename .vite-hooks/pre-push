@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+set -eu
+
+# Same quality gate as the GitHub Actions "Verify" job.
+pnpm check:ci
