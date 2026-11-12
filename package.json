@@ -2,6 +2,15 @@
   "name": "nyatinte-com",
   "version": "0.0.0",
   "private": true,
+  "description": "Personal site for nyatinte.com with public achievement pages and a protected MCP API.",
+  "homepage": "https://nyatinte.com",
+  "bugs": {
+    "url": "https://github.com/nyatinte/nyatinte.com/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nyatinte/nyatinte.com"
+  },
   "author": {
     "name": "nyatinte",
     "url": "https://nyatinte.com"
