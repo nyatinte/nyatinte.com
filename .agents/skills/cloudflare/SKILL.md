@@ -1,6 +1,6 @@
 ---
 name: cloudflare
-description: Cloudflare product discovery and multi-product architecture when the user must choose or combine offerings (storage, queues, AI, Access, etc.). Do not load for routine work in an established Workers + SvelteKit stack—use workers-best-practices, wrangler, or cloudflare-one for implementation and operations.
+description: Discover and choose Cloudflare products for apps, APIs, AI agents, storage, networking, and security. Use for architecture and product selection, including when the user describes a need without naming a Cloudflare product; then find the relevant skill or documentation.
 ---
 
 # Discover and build with Cloudflare

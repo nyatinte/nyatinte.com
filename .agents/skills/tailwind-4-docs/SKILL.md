@@ -1,6 +1,6 @@
 ---
 name: tailwind-4-docs
-description: Tailwind CSS v4 documentation snapshot. Load only when the repository uses Tailwind v4 and the task touches Tailwind config, utilities, variants, or v3→v4 migration—not for unrelated CSS, Svelte styling, or projects without Tailwind dependencies.
+description: Comprehensive Tailwind CSS v4 documentation snapshot and workflow guidance. Use when answering Tailwind v4 questions, selecting utilities/variants, configuring Tailwind v4, or migrating projects from v3 to v4 with official docs and gotcha checks.
 compatibility: Requires git, Python 3, and internet access to initialize the Tailwind docs snapshot from tailwindcss.com.
 ---
 

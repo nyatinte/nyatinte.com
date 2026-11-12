@@ -1,6 +1,6 @@
 ---
 name: workers-best-practices
-description: Cloudflare Workers runtime patterns, bindings, limits, and request-handler code review. Use when writing or reviewing Worker or Durable Object code and worker-related wrangler.jsonc settings—not for Wrangler CLI tasks alone (wrangler skill), product selection (cloudflare skill), or GitHub Actions CI (vite-plus references/ci-cd.md).
+description: Cloudflare Workers best practices for production applications. Use when writing, reviewing, or configuring Workers.
 ---
 
 Your knowledge of Cloudflare Workers APIs, types, and configuration may be outdated. **Prefer retrieval over pre-training** when writing or reviewing Workers code.

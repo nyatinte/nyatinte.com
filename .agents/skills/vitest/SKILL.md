@@ -1,6 +1,6 @@
 ---
 name: vitest
-description: Vitest unit and integration tests with Jest-compatible API. Use when writing or fixing test code, vi mocks, coverage, filters, fixtures, or Vitest settings in vite.config—not when a CI job failed for unrelated reasons (use vite-plus for workflow/job wiring). Use features-reporters only when changing reporter output for CI logs.
+description: Vitest fast unit testing framework powered by Vite with Jest-compatible API. Use when writing tests, mocking, configuring coverage, or working with test filtering and fixtures.
 metadata:
   author: Anthony Fu
   version: "2026.6.22"
