@@ -27,25 +27,31 @@
 
 <main class="article">
   <p class="back"><a href="/log">ログへ</a></p>
-  <time datetime={data.article.date}>{formatLogDate(data.article.date)}</time>
-  {#if data.article.updated}
-    <p class="updated">
-      更新
-      <time datetime={data.article.updated}
-        >{formatLogDate(data.article.updated)}</time
-      >
-    </p>
-  {/if}
   <h1 style:view-transition-name={articleTransitionName(data.article.slug)}>
     {data.article.title}
   </h1>
+  <div class="article-meta">
+    <div class="dates">
+      <time datetime={data.article.date}
+        >{formatLogDate(data.article.date)}</time
+      >
+      {#if data.article.updated}
+        <p class="updated">
+          更新
+          <time datetime={data.article.updated}
+            >{formatLogDate(data.article.updated)}</time
+          >
+        </p>
+      {/if}
+    </div>
+    <CopyMdxButton source={data.article.source} />
+  </div>
   <p class="description">{data.article.description}</p>
   {#if Body}
     <div class="prose">
       <Body />
     </div>
   {/if}
-  <CopyMdxButton source={data.article.source} />
 </main>
 
 <style>
@@ -63,7 +69,7 @@
     color: inherit;
   }
 
-  time,
+  .dates time,
   .updated {
     font-size: 0.9rem;
   }
@@ -73,11 +79,24 @@
   }
 
   h1 {
-    margin: 0.6rem 0 0.8rem;
+    margin: 0.6rem 0 0.5rem;
     font-size: clamp(2rem, 1.5rem + 2vw, 3.2rem);
     font-weight: 600;
     line-height: 1.2;
     letter-spacing: -0.04em;
+  }
+
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-block-end: 1rem;
+  }
+
+  .dates {
+    min-width: 0;
   }
 
   .description {

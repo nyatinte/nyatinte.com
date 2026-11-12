@@ -61,6 +61,6 @@ GitHub Actions の `CI` は PR と `main` への push で検証します。本�
 
 トップページ、ログの一覧、記事は、frontmatter の `image` がなければ `src/routes/og.png` を共通画像に使います。`image` がある記事はそのパスか URL を OGP 画像にします。タイトルなどのメタデータは公開ページから生成します。記事ごとの画像を画像生成 AI で作る方針は [docs/adr/0001-ogp-image-generation.md](docs/adr/0001-ogp-image-generation.md) にあります。費用がかかるため、今は実装していません。
 
-`/llms.txt` は、トップ、ログ、RSS、サイトマップ、各記事へのリンクを返します。HTML を返すページは `Link` ヘッダーに `rel=alternate` と `type=text/markdown` を付け、`Accept: text/markdown` では Markdown を返します。記事ページの「MDXをクリップボードにコピー」は、frontmatter を含む元のファイルをコピーします。RSS は `/log/rss.xml`、サイトマップは `/sitemap.xml` です。
+`/llms.txt` は、トップ、ログ、RSS、サイトマップ、各記事へのリンクを返します。HTML を返すページは `Link` ヘッダーに `rel=alternate` と `type=text/markdown` を付け、`Accept: text/markdown` では Markdown を返します。記事ページの「Markdown をコピー」は、frontmatter を含む元のファイルをコピーします。RSS は `/log/rss.xml`、サイトマップは `/sitemap.xml` です。
 
 一覧から記事を開くとき、ブラウザが View Transition API に対応し、利用者が `prefers-reduced-motion: reduce` を選んでいなければ、view transition を使います。記事から一覧へ戻るときは使いません。
