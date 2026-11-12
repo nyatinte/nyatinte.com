@@ -38,6 +38,7 @@
 | `mcp-builder` | MCP サーバーとツールの実装 |
 | `vitest` | テストの作成・モック・カバレッジ |
 | `yomiyasu` | 日本語ドキュメントの推敲 |
+| `pr` | PR の作成・説明文・as-is/to-be 画像の添付・Stacked PRs・マージ |
 
 日本語の README や AGENTS.md、CLAUDE.md などを書く・直すときは、`yomiyasu` スキルに従って推敲する。
 
@@ -46,7 +47,8 @@
 - コミットは Conventional Commits。本文は日本語。
 - Issue と PR のタイトル・本文、レビューコメント、返信は日本語で書く。コード・識別子・コマンドは原文のまま。
 - pullfrog およびこのリポジトリで動く AI レビュー・エージェントは、レビュー本文、インラインコメント、PR・Issue へのコメントをすべて日本語で書く。
-- 作業は原則ブランチを切り、PR を出す。
+- 作業は原則ブランチを切り、PR を出す。PR は `pr` スキルに従う。
+- PR はマージコミットでマージする（squash・rebase は使わない）。Stack は `gh stack merge --yes --merge`、単体は `gh pr merge --merge`。
 - 破壊的な操作（削除・履歴改変・force push）は先に確認を取る。
 - TypeScript は関数と値で構成し、class 宣言は使わない。
 - Valibot の各項目に `description` と `examples` を付ける。
