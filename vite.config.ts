@@ -4,6 +4,7 @@ import { varlockVitePlugin } from "@varlock/vite-integration";
 import { mdsvex } from "mdsvex";
 import type { PreprocessorGroup } from "svelte/compiler";
 import { defineConfig } from "vite-plus";
+import { remarkHeadingIds } from "./src/lib/log/remark-heading-ids";
 import { logFrontmatterPlugin } from "./src/lib/log/vite-plugin";
 
 const pathSeparatorPattern = /[/\\]/;
@@ -12,6 +13,7 @@ function svelteMarkdown(): PreprocessorGroup {
   const processor = mdsvex({
     extensions: [".md", ".svx"],
     highlight: false,
+    remarkPlugins: [remarkHeadingIds],
     smartypants: false,
   });
   return {
