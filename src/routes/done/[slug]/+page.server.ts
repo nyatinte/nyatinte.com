@@ -1,6 +1,7 @@
 import { error } from "@sveltejs/kit";
 import { renderMarkdown } from "../../../lib/server/achievement/markdown";
 import { createAchievementRepository } from "../../../lib/server/achievement/repository";
+import { createBlogPostingJsonLd } from "../../../lib/server/agent-ready/json-ld";
 import ogImage from "../../og.png";
 import type { PageServerLoad } from "./$types";
 
@@ -25,6 +26,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
     bodyHtml: renderMarkdown(entry.bodyMarkdown ?? ""),
     canonicalUrl: canonicalUrl.href,
     entry,
+    jsonLd: createBlogPostingJsonLd(url.origin, entry),
     next: adjacent.next,
     ogImageUrl: ogImageUrl.href,
     previous: adjacent.previous,

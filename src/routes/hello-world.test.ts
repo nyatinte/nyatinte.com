@@ -11,6 +11,7 @@ const cspNoncePattern = /'nonce-([^']+)'/;
 const scriptTagPattern = /<script\b[^>]*>/gu;
 const scriptSrcAttributePattern = /\ssrc\s*=/u;
 const scriptNoncePattern = /\snonce="([^"]+)"/u;
+const varyAcceptPattern = /accept/i;
 
 function nonceFrom(response: Response): string {
   const csp = response.headers.get("content-security-policy");
@@ -79,6 +80,60 @@ test("home preloads self-hosted, immutable Latin fonts", async () => {
     expect(response.headers.get("content-type")).toContain("font/woff2");
     expect(response.headers.get("cache-control")).toContain("immutable");
   }
+});
+
+test("HTML pages expose markdown alternates and Vary: Accept", async () => {
+  const response = await fetch(new URL("/", targetUrl));
+  expect(response.status).toBe(200);
+  expect(response.headers.get("vary")).toMatch(varyAcceptPattern);
+  const link = response.headers.get("link");
+  expect(link).toContain('rel="alternate"');
+  expect(link).toContain('type="text/markdown"');
+  expect(link).toContain(`${new URL("/", targetUrl).origin}/`);
+});
+
+test("GET / returns markdown when Accept prefers text/markdown", async () => {
+  const response = await fetch(new URL("/", targetUrl), {
+    headers: { Accept: "text/markdown" },
+  });
+  const body = await response.text();
+
+  expect(response.status).toBe(200);
+  expect(response.headers.get("content-type")).toContain("text/markdown");
+  expect(response.headers.get("vary")).toMatch(varyAcceptPattern);
+  expect(body).toContain("# nyatinte");
+});
+
+test("unknown pages return HTTP 404 markdown when requested", async () => {
+  const response = await fetch(new URL("/definitely-missing", targetUrl), {
+    headers: { Accept: "text/markdown" },
+  });
+  const body = await response.text();
+
+  expect(response.status).toBe(404);
+  expect(response.headers.get("content-type")).toContain("text/markdown");
+  expect(body).toContain("ページが見つかりません");
+});
+
+test("GET /sitemap.xml lists core URLs", async () => {
+  const response = await fetch(new URL("/sitemap.xml", targetUrl));
+  const body = await response.text();
+
+  expect(response.status).toBe(200);
+  expect(response.headers.get("content-type")).toContain("application/xml");
+  expect(body).toContain("<urlset");
+  expect(body).toContain("/done</loc>");
+});
+
+test("robots.txt advertises the sitemap and content signals", async () => {
+  const response = await fetch(new URL("/robots.txt", targetUrl));
+  const body = await response.text();
+
+  expect(response.status).toBe(200);
+  expect(body).toContain("Sitemap: https://nyatinte.com/sitemap.xml");
+  expect(body).toContain(
+    "Content-Signal: search=yes, ai-input=yes, ai-train=no"
+  );
 });
 
 test("home and achievements share a 1200 × 630 OGP image", async () => {

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import JsonLd from "../../../lib/components/json-ld.svelte";
   import SiteHeader from "../../../lib/components/site-header.svelte";
   import {
     createXIntentUrl,
@@ -33,6 +34,8 @@
     return `/done?${params.toString()}`;
   }
 </script>
+
+<JsonLd graphs={data.jsonLd} />
 
 <svelte:head>
   <title>{data.entry.title} | nyatinte.com</title>
