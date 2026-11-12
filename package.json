@@ -2,6 +2,7 @@
   "name": "nyatinte-com",
   "version": "0.0.0",
   "private": true,
+  "license": "MIT",
   "description": "Personal site for nyatinte.com with a public log and a protected MCP API.",
   "homepage": "https://nyatinte.com",
   "bugs": {
