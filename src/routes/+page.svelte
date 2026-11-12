@@ -1,25 +1,38 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import { page } from "$app/state";
   import latinBold from "../lib/assets/fonts/mplus1p-bold-latin.woff2";
   import latinRegular from "../lib/assets/fonts/mplus1p-regular-latin.woff2";
   import HomeNavigation from "../lib/components/home-navigation.svelte";
   import IcebergScene from "../lib/components/iceberg-scene.svelte";
+  import {
+    HOME_THEME_COLOR,
+    readHomeBackgroundThemeColor,
+  } from "../lib/home-theme-color";
   import ogImage from "./og.png";
   import "../lib/styles/home-tokens.css";
 
   let theme = $state<"light" | "dark" | null>(null);
   let themeMessage = $state("");
   let orbitTurn = $state<number | null>(null);
+  let resolvedThemeColor = $state<string | null>(null);
+
+  async function syncThemeColorMeta() {
+    await tick();
+    resolvedThemeColor = readHomeBackgroundThemeColor();
+  }
 
   onMount(() => {
     const savedTheme = document.documentElement.dataset.homeTheme;
     if (savedTheme === "light" || savedTheme === "dark") {
       theme = savedTheme;
     }
+    syncThemeColorMeta().catch(() => {
+      // theme-color sync is cosmetic; the page stays usable on failure.
+    });
   });
 
-  function toggleTheme() {
+  async function toggleTheme() {
     const dark = theme
       ? theme === "dark"
       : matchMedia("(prefers-color-scheme: dark)").matches;
@@ -32,6 +45,7 @@
     } catch {
       // The current page remains usable when storage is unavailable.
     }
+    await syncThemeColorMeta();
   }
 </script>
 
@@ -53,6 +67,23 @@
   >
   <meta content="summary_large_image" name="twitter:card">
   <meta content="light dark" name="color-scheme">
+  {#if theme === null}
+    <meta
+      content={HOME_THEME_COLOR.light}
+      media="(prefers-color-scheme: light)"
+      name="theme-color"
+    >
+    <meta
+      content={HOME_THEME_COLOR.dark}
+      media="(prefers-color-scheme: dark)"
+      name="theme-color"
+    >
+  {:else}
+    <meta
+      content={resolvedThemeColor ?? HOME_THEME_COLOR[theme]}
+      name="theme-color"
+    >
+  {/if}
   <link
     as="image"
     fetchpriority="high"
@@ -92,7 +123,8 @@
 
 <style>
   @layer components {
-    :global(html:has(.home)) {
+    :global(html:has(.home)),
+    :global(body:has(.home)) {
       background: var(--home-background);
     }
     @scope (.home) {
