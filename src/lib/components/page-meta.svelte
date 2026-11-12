@@ -26,6 +26,12 @@
   <title>{title}</title>
   <meta content={description} name="description">
   <link href={canonicalUrl} rel="canonical">
+  <link
+    href="https://nyatinte.com/log/rss.xml"
+    rel="alternate"
+    title="ログ"
+    type="application/rss+xml"
+  >
   <meta content={title} property="og:title">
   <meta content={description} property="og:description">
   <meta content={canonicalUrl} property="og:url">

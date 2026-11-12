@@ -1,14 +1,20 @@
 <script lang="ts">
+  import { tick } from "svelte";
+
   let { source }: { source: string } = $props();
   let message = $state("");
 
   async function copySource() {
+    let next = "コピーできませんでした";
     try {
       await navigator.clipboard.writeText(source);
-      message = "コピーしました";
+      next = "コピーしました";
     } catch {
-      message = "コピーできませんでした";
+      next = "コピーできませんでした";
     }
+    message = "";
+    await tick();
+    message = next;
   }
 </script>
 

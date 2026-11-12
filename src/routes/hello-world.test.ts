@@ -299,6 +299,8 @@ test("published article pages expose BlogPosting JSON-LD", async () => {
   expect(graphs.some((graph) => graph["@type"] === "BlogPosting")).toBe(true);
   expect(body).toContain("MDXをクリップボードにコピー");
   expect(body).toContain(`view-transition-name: log-${slug}`);
+  expect(body).toContain('type="application/rss+xml"');
+  expect(body).toContain('href="https://nyatinte.com/log/rss.xml"');
 });
 
 test("published article pages return markdown when requested", async () => {
@@ -318,8 +320,12 @@ test("home and the log share a 1200 × 630 OGP image", async () => {
   const home = await fetch(new URL("/", targetUrl));
   const log = await fetch(new URL("/log", targetUrl));
   const homeBody = await home.text();
+  const logBody = await log.text();
   const homeImage = homeBody.match(ogImagePattern)?.[1];
-  const logImage = (await log.text()).match(ogImagePattern)?.[1];
+  const logImage = logBody.match(ogImagePattern)?.[1];
+  expect(logBody).toContain('role="list"');
+  expect(logBody).toContain('type="application/rss+xml"');
+  expect(logBody).toContain('href="https://nyatinte.com/log/rss.xml"');
   expect(homeImage).toBeDefined();
   expect(logImage).toBe(homeImage);
 

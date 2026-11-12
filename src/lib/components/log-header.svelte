@@ -5,6 +5,12 @@
   import sunIcon from "@tabler/icons/outline/sun.svg?url";
   import { onMount } from "svelte";
   import { page } from "$app/state";
+  import {
+    homeThemeMessage,
+    nextHomeTheme,
+    persistHomeTheme,
+    readAppliedHomeTheme,
+  } from "../home-theme";
   import { HOME_THEME_COLOR } from "../home-theme-color";
 
   let theme = $state<"light" | "dark" | null>(null);
@@ -12,24 +18,13 @@
   const onIndex = $derived(page.url.pathname === "/log");
 
   onMount(() => {
-    const savedTheme = document.documentElement.dataset.homeTheme;
-    if (savedTheme === "light" || savedTheme === "dark") {
-      theme = savedTheme;
-    }
+    theme = readAppliedHomeTheme();
   });
 
   function toggleTheme() {
-    const dark = theme
-      ? theme === "dark"
-      : matchMedia("(prefers-color-scheme: dark)").matches;
-    theme = dark ? "light" : "dark";
-    themeMessage = `${theme === "dark" ? "ダーク" : "ライト"}モードに切り替えました`;
-    document.documentElement.dataset.homeTheme = theme;
-    try {
-      localStorage.setItem("nyatinte-home-theme", theme);
-    } catch {
-      // The current page remains usable when storage is unavailable.
-    }
+    theme = nextHomeTheme(theme);
+    themeMessage = homeThemeMessage(theme);
+    persistHomeTheme(theme);
   }
 </script>
 
