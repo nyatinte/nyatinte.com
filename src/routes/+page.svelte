@@ -5,6 +5,11 @@
   import IcebergScene from "../lib/components/iceberg-scene.svelte";
   import "../lib/styles/home-tokens.css";
 
+  const HOME_THEME_COLOR = {
+    dark: "#101f32",
+    light: "#bedee7",
+  } as const;
+
   let theme = $state<"light" | "dark" | null>(null);
   let themeMessage = $state("");
   let orbitTurn = $state<number | null>(null);
@@ -50,6 +55,25 @@
   >
   <meta content="summary_large_image" name="twitter:card">
   <meta content="light dark" name="color-scheme">
+  {#if theme === null}
+    <meta
+      content={HOME_THEME_COLOR.light}
+      media="(prefers-color-scheme: light)"
+      name="theme-color"
+    >
+    <meta
+      content={HOME_THEME_COLOR.dark}
+      media="(prefers-color-scheme: dark)"
+      name="theme-color"
+    >
+  {:else}
+    <meta
+      content={theme === "dark"
+        ? HOME_THEME_COLOR.dark
+        : HOME_THEME_COLOR.light}
+      name="theme-color"
+    >
+  {/if}
   <link
     as="image"
     fetchpriority="high"
@@ -89,7 +113,8 @@
 
 <style>
   @layer components {
-    :global(html:has(.home)) {
+    :global(html:has(.home)),
+    :global(body:has(.home)) {
       background: var(--home-background);
     }
     @scope (.home) {
