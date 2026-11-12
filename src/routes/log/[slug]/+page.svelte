@@ -50,7 +50,7 @@
         <CopyMdxButton source={data.article.source} />
       </div>
     </div>
-    <div class="article-body">
+    <div class="article-body" data-log-article-end>
       <p class="description">{data.article.description}</p>
       {#if Body}
         <div class="prose">
@@ -117,6 +117,12 @@
 
   .dates {
     min-width: 0;
+  }
+
+  @media (max-width: 1149px) {
+    .article-body {
+      padding-inline-end: 2rem;
+    }
   }
 
   .description {

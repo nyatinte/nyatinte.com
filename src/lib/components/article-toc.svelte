@@ -2,9 +2,11 @@
   import { onMount } from "svelte";
   import type { TocHeading } from "../log/toc";
   import { pulseHaptic } from "../log/toc-haptics";
+  import { getTocVisibility } from "../log/toc-visibility";
 
   let { headings }: { headings: TocHeading[] } = $props();
   let active = $state("");
+  let visible = $state(false);
   let dragging = $state(false);
   let labelIndex = $state(-1);
 
@@ -56,25 +58,33 @@
   }
 
   onMount(() => {
-    active = headings[0]?.id ?? "";
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        if (!dragging && visible[0]) {
-          active = visible[0].target.id;
-        }
-      },
-      { rootMargin: "-15% 0px -75% 0px" }
-    );
-    for (const heading of headings) {
-      const element = document.getElementById(heading.id);
-      if (element) {
-        observer.observe(element);
+    const update = () => {
+      const positions = headings.flatMap((heading) => {
+        const element = document.getElementById(heading.id);
+        return element
+          ? [{ id: heading.id, top: element.getBoundingClientRect().top }]
+          : [];
+      });
+      const body = document.querySelector("[data-log-article-end]");
+      const bottom = body?.getBoundingClientRect().bottom ?? 0;
+      const next = getTocVisibility({
+        articleBottom: bottom,
+        headingPositions: positions,
+        viewportHeight: window.innerHeight,
+      });
+      const { visible: nextVisible, activeId } = next;
+      visible = nextVisible;
+      if (!dragging) {
+        active = activeId;
       }
-    }
-    return () => observer.disconnect();
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
   });
 </script>
 
@@ -119,6 +129,7 @@
     }
     dragging = false;
   }}
+  class:visible={visible}
 >
   {#each headings as heading, index (heading.id)}
     <div
@@ -173,12 +184,31 @@
     top: 40%;
     z-index: 2;
     display: flex;
+    visibility: hidden;
     flex-direction: column;
     gap: 0.55rem;
     align-items: end;
     width: 1.7rem;
     padding: 0.5rem 0;
+    pointer-events: none;
     touch-action: none;
+    opacity: 0;
+    transition:
+      opacity 200ms,
+      visibility 0s 200ms;
+  }
+  .scrubber.visible {
+    visibility: visible;
+    pointer-events: auto;
+    opacity: 1;
+    transition:
+      opacity 200ms,
+      visibility 0s;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .scrubber {
+      transition: none;
+    }
   }
   .scrubber div {
     width: 0.9rem;
