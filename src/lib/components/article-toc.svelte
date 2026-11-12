@@ -211,10 +211,13 @@
       grid-row: 1;
       grid-column: 3;
       align-self: start;
+      width: auto;
+      height: auto;
       max-height: calc(100vh - 4rem);
       padding-inline-start: 1rem;
-      overflow-y: auto;
+      overflow: auto;
       border-inline-start: 1px solid var(--home-nav-border);
+      clip-path: none;
     }
     .scrubber {
       display: none;
