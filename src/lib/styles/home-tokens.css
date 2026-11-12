@@ -15,7 +15,8 @@ html[data-home-theme="dark"] {
   }
 }
 
-html:has(.home) {
+html:has(.home),
+html:has(.log) {
   --home-background: light-dark(
     oklch(88.02% 0.036 216.59),
     oklch(23.64% 0.0423 254.98)
@@ -90,5 +91,13 @@ html[data-home-theme="light"]:has(.home) {
 }
 
 html[data-home-theme="dark"]:has(.home) {
+  color-scheme: dark;
+}
+
+html[data-home-theme="light"]:has(.log) {
+  color-scheme: light;
+}
+
+html[data-home-theme="dark"]:has(.log) {
   color-scheme: dark;
 }

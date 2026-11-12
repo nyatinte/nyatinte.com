@@ -1,4 +1,6 @@
 <script lang="ts">
+  import "../lib/styles/home-tokens.css";
+
   let { children } = $props();
 </script>
 

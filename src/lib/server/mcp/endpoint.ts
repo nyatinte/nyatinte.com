@@ -3,17 +3,13 @@ import {
   originValidationResponse,
 } from "@modelcontextprotocol/server";
 import { type AccessEnvironment, authenticateAccessRequest } from "./access";
-import { handleAchievementMcpRequest } from "./server";
-
-export interface McpEnvironment extends AccessEnvironment {
-  ACHIEVEMENT_GITHUB_TOKEN?: string;
-}
+import { handleSiteMcpRequest } from "./server";
 
 const allowedHostnames = ["nyatinte.com", "localhost", "127.0.0.1"];
 
 export async function handleMcpRequest(
   request: Request,
-  environment: McpEnvironment
+  environment: AccessEnvironment
 ): Promise<Response> {
   const headerError =
     hostHeaderValidationResponse(request, allowedHostnames) ??
@@ -26,16 +22,6 @@ export async function handleMcpRequest(
   if (authInfo instanceof Response) {
     return authInfo;
   }
-  if (!environment.ACHIEVEMENT_GITHUB_TOKEN) {
-    return Response.json(
-      { error: "GitHub is not configured for this MCP service." },
-      { headers: { "cache-control": "no-store" }, status: 503 }
-    );
-  }
 
-  return handleAchievementMcpRequest(
-    request,
-    environment.ACHIEVEMENT_GITHUB_TOKEN,
-    authInfo
-  );
+  return handleSiteMcpRequest(request, authInfo);
 }

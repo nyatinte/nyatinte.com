@@ -18,8 +18,8 @@ const scriptNoncePattern = /\snonce="([^"]+)"/u;
 const varyAcceptPattern = /accept/i;
 const jsonLdScriptBodyPattern =
   /<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g;
-const publishedAchievementSlugPattern =
-  /<loc>https:\/\/nyatinte\.com\/done\/([a-z0-9-]+)<\/loc>/u;
+const publishedArticleSlugPattern =
+  /<loc>https:\/\/nyatinte\.com\/log\/([a-z0-9-]+)<\/loc>/u;
 const metaDescriptionPattern =
   /<meta content="([^"]*)" name="description"\s*\/?>/u;
 const markdownAlternateHrefPattern =
@@ -55,11 +55,11 @@ function jsonLdGraphs(body: string) {
   );
 }
 
-async function publishedAchievementSlug() {
+async function publishedArticleSlug() {
   const body = await fetch(new URL("/sitemap.xml", targetUrl)).then(
     (response) => response.text()
   );
-  return body.match(publishedAchievementSlugPattern)?.[1] ?? null;
+  return body.match(publishedArticleSlugPattern)?.[1] ?? null;
 }
 
 test("GET / serves the home page with an absolute canonical URL", async () => {
@@ -181,15 +181,27 @@ test("unknown pages return HTTP 404 markdown when requested", async () => {
   expect(body).toContain("ページが見つかりません");
 });
 
-test("missing achievement slugs return 404 markdown", async () => {
-  const response = await fetch(new URL("/done/not-a-real-slug", targetUrl), {
+test("missing article slugs return 404 markdown", async () => {
+  const response = await fetch(new URL("/log/not-a-real-slug", targetUrl), {
     headers: { Accept: "text/markdown" },
   });
   const body = await response.text();
 
   expect(response.status).toBe(404);
   expect(response.headers.get("content-type")).toContain("text/markdown");
-  expect(body).toContain("実績が見つかりません");
+  expect(body).toContain("記事が見つかりません");
+});
+
+test("former achievement URLs redirect to the log", async () => {
+  const responses = await Promise.all(
+    ["/done", "/done/old-record"].map((path) =>
+      fetch(new URL(path, targetUrl), { redirect: "manual" })
+    )
+  );
+  for (const response of responses) {
+    expect(response.status).toBe(301);
+    expect(response.headers.get("location")).toBe("/log");
+  }
 });
 
 test("GET /sitemap.xml lists core URLs", async () => {
@@ -199,8 +211,21 @@ test("GET /sitemap.xml lists core URLs", async () => {
   expect(response.status).toBe(200);
   expect(response.headers.get("content-type")).toContain("application/xml");
   expect(body).toContain("<urlset");
-  expect(body).toContain("/done</loc>");
+  expect(body).toContain("/log</loc>");
+  expect(body).toContain("/log/template</loc>");
+  expect(body).not.toContain("/done</loc>");
   expect(body).toContain("<lastmod>");
+});
+
+test("GET /log/rss.xml lists articles", async () => {
+  const response = await fetch(new URL("/log/rss.xml", targetUrl));
+  const body = await response.text();
+
+  expect(response.status).toBe(200);
+  expect(response.headers.get("content-type")).toContain("application/rss+xml");
+  expect(body).toContain("<rss");
+  expect(body).toContain("わからなかったことを調べて書く");
+  expect(body).toContain("/log/template");
 });
 
 test("robots.txt advertises the sitemap and content signals", async () => {
@@ -227,7 +252,9 @@ test("GET /llms.txt serves markdown with core page links", async () => {
   expect(body.startsWith(`# ${siteIdentity.name}`)).toBe(true);
   expect(body).toContain(`> ${siteIdentity.description}`);
   expect(body).toContain(`(${canonicalSiteUrl("/")})`);
-  expect(body).toContain(`(${canonicalSiteUrl("/done")})`);
+  expect(body).toContain(`(${canonicalSiteUrl("/log")})`);
+  expect(body).toContain(`(${canonicalSiteUrl("/log/template")})`);
+  expect(body).toContain(`(${canonicalSiteUrl("/log/rss.xml")})`);
   expect(body).toContain(`(${canonicalSiteUrl("/sitemap.xml")})`);
 });
 
@@ -262,24 +289,24 @@ test("home JSON-LD descriptions match the meta description", async () => {
   expect(website?.description).toBe(metaDescription);
 });
 
-test("published achievement pages expose BlogPosting JSON-LD", async () => {
-  const slug = await publishedAchievementSlug();
-  if (!slug) {
-    return;
-  }
-  const body = await fetch(new URL(`/done/${slug}`, targetUrl)).then(
+test("published article pages expose BlogPosting JSON-LD", async () => {
+  const slug = await publishedArticleSlug();
+  expect(slug).toBeTruthy();
+  const body = await fetch(new URL(`/log/${slug}`, targetUrl)).then(
     (response) => response.text()
   );
   const graphs = jsonLdGraphs(body);
   expect(graphs.some((graph) => graph["@type"] === "BlogPosting")).toBe(true);
+  expect(body).toContain("MDXをクリップボードにコピー");
+  expect(body).toContain(`view-transition-name: log-${slug}`);
+  expect(body).toContain('type="application/rss+xml"');
+  expect(body).toContain('href="https://nyatinte.com/log/rss.xml"');
 });
 
-test("published achievement pages return markdown when requested", async () => {
-  const slug = await publishedAchievementSlug();
-  if (!slug) {
-    return;
-  }
-  const response = await fetch(new URL(`/done/${slug}`, targetUrl), {
+test("published article pages return markdown when requested", async () => {
+  const slug = await publishedArticleSlug();
+  expect(slug).toBeTruthy();
+  const response = await fetch(new URL(`/log/${slug}`, targetUrl), {
     headers: { Accept: "text/markdown" },
   });
   const body = await response.text();
@@ -289,14 +316,18 @@ test("published achievement pages return markdown when requested", async () => {
   expect(body.startsWith("# ")).toBe(true);
 });
 
-test("home and achievements share a 1200 × 630 OGP image", async () => {
+test("home and the log share a 1200 × 630 OGP image", async () => {
   const home = await fetch(new URL("/", targetUrl));
-  const done = await fetch(new URL("/done", targetUrl));
+  const log = await fetch(new URL("/log", targetUrl));
   const homeBody = await home.text();
+  const logBody = await log.text();
   const homeImage = homeBody.match(ogImagePattern)?.[1];
-  const doneImage = (await done.text()).match(ogImagePattern)?.[1];
+  const logImage = logBody.match(ogImagePattern)?.[1];
+  expect(logBody).toContain('role="list"');
+  expect(logBody).toContain('type="application/rss+xml"');
+  expect(logBody).toContain('href="https://nyatinte.com/log/rss.xml"');
   expect(homeImage).toBeDefined();
-  expect(doneImage).toBe(homeImage);
+  expect(logImage).toBe(homeImage);
 
   const imageUrl = new URL(homeImage ?? "");
   expect(imageUrl.origin).toBe(
