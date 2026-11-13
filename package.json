@@ -20,14 +20,16 @@
   "scripts": {
     "build": "wrangler types --include-main-module=false && svelte-kit sync && vp build",
     "check": "wrangler types --include-main-module=false && svelte-kit sync && ultracite check && pnpm run lint:svelte && vp check --no-fmt --no-lint && svelte-check --tsconfig ./tsconfig.json",
+    "check:ci": "APP_ENV=test CF_SEND_TELEMETRY=false sh -c 'pnpm check && pnpm build && pnpm test:http'",
     "deploy": "APP_ENV=production pnpm build && tag=$(node -p 'crypto.randomUUID()') && APP_ENV=production varlock-wrangler versions upload --keep-vars=true --tag \"$tag\" && wrangler versions deploy --version-tag \"$tag\" --yes",
     "dev": "vp dev",
-    "dev:worker": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --local --port 8787",
+    "dev:worker": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --local --port ${PORT:-8787}",
     "fix": "ultracite fix",
     "lint:svelte": "eslint \"src/**/*.{svelte,svelte.js,svelte.ts}\"",
     "prepare": "svelte-kit sync && vp config --no-agent --hooks",
     "preview": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --port 4173",
-    "test": "vp test --run"
+    "test": "vp test --run",
+    "test:http": "APP_ENV=test CF_SEND_TELEMETRY=false sh scripts/test-built-worker.sh"
   },
   "dependencies": {
     "@modelcontextprotocol/server": "2.4.0",

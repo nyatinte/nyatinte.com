@@ -49,6 +49,7 @@
 - pullfrog およびこのリポジトリで動く AI レビュー・エージェントは、レビュー本文、インラインコメント、PR・Issue へのコメントをすべて日本語で書く。
 - 作業は原則ブランチを切り、PR を出す。PR は `pr` スキルに従う。
 - PR はマージコミットでマージする（squash・rebase は使わない）。Stack は `gh stack merge --yes --merge`、単体は `gh pr merge --merge`。
+- push 前に、Vite+ の pre-push hook が `pnpm check:ci`（check、build、ビルド済み Worker への HTTP テスト）を走らせる。変更がルートの `README.md`・`AGENTS.md`・`CLAUDE.md` と `docs/**`・`.agents/**` だけのときは hook がスキップする。飛ばす場合は `git push --no-verify` を使う。GitHub Actions の Verify をこの処理に揃える作業は #114。
 - 破壊的な操作（削除・履歴改変・force push）は先に確認を取る。
 - TypeScript は関数と値で構成し、class 宣言は使わない。
 - Valibot の各項目に `description` と `examples` を付ける。
