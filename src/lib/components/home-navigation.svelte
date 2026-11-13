@@ -8,9 +8,21 @@
   import { page } from "$app/state";
 
   const isHome = $derived(page.url.pathname === "/");
-  const isLog = $derived(
-    page.url.pathname === "/log" || page.url.pathname.startsWith("/log/")
+  const isLogIndex = $derived(
+    page.url.pathname === "/log" || page.url.pathname === "/log/"
   );
+  const isLogArticle = $derived(
+    page.url.pathname.startsWith("/log/") && !isLogIndex
+  );
+  const isLog = $derived(isLogIndex || isLogArticle);
+  const logAriaCurrent = $derived.by(() => {
+    if (isLogIndex) {
+      return "page";
+    }
+    if (isLogArticle) {
+      return "location";
+    }
+  });
 
   let { toggleTheme }: { toggleTheme: () => void } = $props();
 </script>
@@ -71,7 +83,7 @@
       ></span>
     </button>
     <a
-      aria-current={isLog ? "page" : undefined}
+      aria-current={logAriaCurrent}
       aria-label="ログ"
       href="/log"
       title="ログ"

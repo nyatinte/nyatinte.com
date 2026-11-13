@@ -64,6 +64,13 @@
     }
   }
 
+  @media (height <= 420px) {
+    .log {
+      padding-block-start: 0;
+      padding-block-end: 0;
+    }
+  }
+
   :global(:root::view-transition-group(*)) {
     animation-duration: 240ms;
   }
