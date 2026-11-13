@@ -7,18 +7,20 @@
 <div class="landscape">
   <div class="stage">
     <div aria-hidden="true" class="aurora"></div>
-    <div aria-hidden="true" class="orbit">
-      <svg aria-hidden="true" class="sun" viewBox="0 0 64 64">
-        <circle cx="32" cy="32" fill="var(--home-sun)" r="17" />
-        <path
-          d="M32 3v8 M32 53v8 M3 32h8 M53 32h8 M11.5 11.5l5.7 5.7 M46.8 46.8l5.7 5.7 M52.5 11.5l-5.7 5.7 M17.2 46.8l-5.7 5.7"
-          fill="none"
-          stroke="var(--home-sun)"
-          stroke-linecap="round"
-          stroke-width="3"
-        />
-      </svg>
-      <span class="moon"></span>
+    <div aria-hidden="true" class="sky">
+      <div class="orbit">
+        <svg aria-hidden="true" class="sun" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" fill="var(--home-sun)" r="17" />
+          <path
+            d="M32 3v8 M32 53v8 M3 32h8 M53 32h8 M11.5 11.5l5.7 5.7 M46.8 46.8l5.7 5.7 M52.5 11.5l-5.7 5.7 M17.2 46.8l-5.7 5.7"
+            fill="none"
+            stroke="var(--home-sun)"
+            stroke-linecap="round"
+            stroke-width="3"
+          />
+        </svg>
+        <span class="moon"></span>
+      </div>
     </div>
     <svg
       aria-hidden="true"
@@ -238,7 +240,14 @@
       .scene-front {
         view-transition-name: scene-front;
       }
-      .orbit {
+      .sky {
+        position: absolute;
+        inset-block-start: 10%;
+        inset-inline-start: 47%;
+        inline-size: 60%;
+        aspect-ratio: 1;
+        overflow: visible;
+        pointer-events: none;
         view-transition-name: scene-sky;
       }
       .art path {
@@ -292,13 +301,12 @@
       }
       .orbit {
         position: absolute;
-        inset-block-start: 10%;
-        inset-inline-start: 47%;
-        inline-size: 60%;
-        aspect-ratio: 1;
-        pointer-events: none;
+        inset: 0;
         rotate: var(--orbit-turn, var(--home-initial-orbit, 0deg));
         transition: rotate 1.5s ease-in-out;
+        @starting-style {
+          rotate: var(--orbit-turn, var(--home-initial-orbit, 0deg));
+        }
       }
       .sun,
       .moon {
@@ -318,6 +326,9 @@
         box-shadow: inset -0.9rem -0.4rem 0 0 var(--home-moon);
         rotate: calc(-1 * var(--orbit-turn, var(--home-initial-orbit, 0deg)));
         transition: rotate 1.5s ease-in-out;
+        @starting-style {
+          rotate: calc(-1 * var(--orbit-turn, var(--home-initial-orbit, 0deg)));
+        }
       }
       .penguin {
         position: absolute;

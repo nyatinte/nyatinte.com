@@ -143,8 +143,16 @@
     clip-path: inset(50%);
   }
 
+  :global(:root::view-transition) {
+    background-color: var(--home-background);
+  }
+
   :global(:root::view-transition-group(*)) {
     animation-duration: 240ms;
+  }
+
+  :global(:root[data-home-transition]::view-transition-group(*)) {
+    animation-duration: 670ms;
   }
 
   :global(:root::view-transition-group(site-header)) {
@@ -184,6 +192,10 @@
   :global(:root[data-home-transition]::view-transition-old(scene-sky)),
   :global(:root[data-home-transition]::view-transition-new(scene-sky)) {
     --travel-y: -100vh;
+  }
+  :global(:root[data-home-transition]::view-transition-old(scene-sky)),
+  :global(:root[data-home-transition]::view-transition-new(scene-sky)) {
+    clip-path: inset(0 0 45% 0);
   }
   :global(:root[data-home-transition="out"]::view-transition-old(home-title)),
   :global(:root[data-home-transition="out"]::view-transition-old(cloud-left)),
