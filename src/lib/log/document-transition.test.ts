@@ -24,10 +24,10 @@ test("keeps the list-to-article document transition", () => {
   expect(skipTransition).not.toHaveBeenCalled();
 });
 
-test("skips the article-to-list document transition", () => {
+test("keeps the article-to-list document transition", () => {
   const { event: ev, skipTransition } = event("/log/template", "/log");
   skipUnrelatedDocumentTransition(ev);
-  expect(skipTransition).toHaveBeenCalledOnce();
+  expect(skipTransition).not.toHaveBeenCalled();
 });
 
 test("does nothing when the activation API is missing", () => {
