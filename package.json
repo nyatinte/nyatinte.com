@@ -29,6 +29,7 @@
     "prepare": "svelte-kit sync && vp config --no-agent --hooks",
     "preview": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --port 4173",
     "test": "vp test --run",
+    "vitals": "svelte-vitals --no-animation",
     "test:http": "APP_ENV=test CF_SEND_TELEMETRY=false sh scripts/test-built-worker.sh"
   },
   "dependencies": {
@@ -54,6 +55,7 @@
     "mdsvex": "0.12.8",
     "svelte": "5.57.3",
     "svelte-check": "4.7.8",
+    "svelte-vitals": "0.55.5",
     "typescript": "6.0.3",
     "ultracite": "7.12.0",
     "varlock": "1.24.0",

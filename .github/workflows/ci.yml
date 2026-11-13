@@ -86,6 +86,24 @@ jobs:
         if: steps.decide.outputs.full == 'true'
         run: pnpm install --frozen-lockfile
 
+      - name: Report Svelte vitals
+        if: steps.decide.outputs.full == 'true'
+        shell: bash
+        run: |
+          set +e
+          pnpm exec svelte-vitals --no-animation --verbose --reporter md >> "$GITHUB_STEP_SUMMARY"
+          result=$?
+          pnpm exec svelte-vitals --no-animation --verbose --reporter github
+          github_result=$?
+          if [ "$result" -eq 2 ] || [ "$github_result" -eq 2 ]; then
+            echo "::warning::解析が実行できませんでした (終了コード: md=$result, github=$github_result)"
+            echo "### ⚠️ svelte-vitals の解析が実行できませんでした" >> "$GITHUB_STEP_SUMMARY"
+            echo "終了コード: md=$result, github=$github_result" >> "$GITHUB_STEP_SUMMARY"
+          elif [ "$result" -ne 0 ] || [ "$github_result" -ne 0 ]; then
+            echo "svelte-vitals findings (終了コード: md=$result, github=$github_result)"
+          fi
+          exit 0
+
       - name: Check source
         if: steps.decide.outputs.full == 'true'
         run: pnpm check
