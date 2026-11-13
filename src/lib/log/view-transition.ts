@@ -1,9 +1,17 @@
 const articlePath = /^\/log\/[a-z0-9]+(?:-[a-z0-9]+)*$/u;
+const trailingSlash = /\/$/u;
 
 export function shouldStartArticleTransition(from: string, to: string) {
-  return from === "/log" && articlePath.test(to);
+  return (
+    from.replace(trailingSlash, "") === "/log" &&
+    articlePath.test(to.replace(trailingSlash, ""))
+  );
 }
 
 export function articleTransitionName(slug: string) {
-  return `log-${slug}`;
+  return `log-title-${slug}`;
+}
+
+export function articleDateTransitionName(slug: string) {
+  return `log-date-${slug}`;
 }

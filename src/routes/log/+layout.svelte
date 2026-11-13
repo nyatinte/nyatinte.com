@@ -1,9 +1,13 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import { onNavigate } from "$app/navigation";
   import LogHeader from "../../lib/components/log-header.svelte";
+  import { registerDocumentTransitionGuards } from "../../lib/log/document-transition";
   import { shouldStartArticleTransition } from "../../lib/log/view-transition";
 
   let { children } = $props();
+
+  onMount(registerDocumentTransitionGuards);
 
   onNavigate((navigation) => {
     if (!navigation.to) {
@@ -34,6 +38,12 @@
 </div>
 
 <style>
+  @media (prefers-reduced-motion: no-preference) {
+    @view-transition {
+      navigation: auto;
+    }
+  }
+
   :global(html:has(.log)),
   :global(body:has(.log)) {
     background: var(--home-background);

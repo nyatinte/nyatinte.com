@@ -5,7 +5,10 @@
   import PageMeta from "../../../lib/components/page-meta.svelte";
   import { articleComponent } from "../../../lib/log/components";
   import { formatLogDate } from "../../../lib/log/format-date";
-  import { articleTransitionName } from "../../../lib/log/view-transition";
+  import {
+    articleDateTransitionName,
+    articleTransitionName,
+  } from "../../../lib/log/view-transition";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
@@ -35,7 +38,9 @@
       </h1>
       <div class="article-meta">
         <div class="dates">
-          <time datetime={data.article.date}
+          <time
+            datetime={data.article.date}
+            style:view-transition-name={articleDateTransitionName(data.article.slug)}
             >{formatLogDate(data.article.date)}</time
           >
           {#if data.article.updated}
