@@ -223,11 +223,11 @@ importers:
         specifier: 8.72.2
         version: 8.72.2(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
       '@varlock/cloudflare-integration':
-        specifier: 1.6.3
-        version: 1.6.3(@voidzero-dev/vite-plus-core@1.5.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1))(varlock@1.24.0)(wrangler@4.160.0(@types/node@26.6.6))
+        specifier: 1.6.4
+        version: 1.6.4(@voidzero-dev/vite-plus-core@1.5.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1))(varlock@1.25.0)(wrangler@4.160.0(@types/node@26.6.6))
       '@varlock/vite-integration':
-        specifier: 1.5.5
-        version: 1.5.5(@voidzero-dev/vite-plus-core@1.5.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1))(varlock@1.24.0)
+        specifier: 1.5.6
+        version: 1.5.6(@voidzero-dev/vite-plus-core@1.5.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1))(varlock@1.25.0)
       eslint:
         specifier: 10.14.0
         version: 10.14.0(jiti@2.7.0)(supports-color@10.2.2)
@@ -250,8 +250,8 @@ importers:
         specifier: 7.12.0
         version: 7.12.0(@biomejs/biome@2.5.14)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(oxfmt@0.76.0(svelte@5.57.3(@typescript-eslint/types@8.72.2))(vite-plus@1.5.0(@types/node@26.6.6)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(svelte@5.57.3(@typescript-eslint/types@8.72.2))(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1)))(oxlint@1.91.0(oxlint-tsgolint@7.0.2005)(vite-plus@1.5.0(@types/node@26.6.6)(@vitest/ui@5.1.0)(esbuild@0.28.2)(jiti@2.7.0)(svelte@5.57.3(@typescript-eslint/types@8.72.2))(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1)))
       varlock:
-        specifier: 1.24.0
-        version: 1.24.0
+        specifier: 1.25.0
+        version: 1.25.0
       vite:
         specifier: 'catalog:'
         version: '@voidzero-dev/vite-plus-core@1.5.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1)'
@@ -1271,13 +1271,13 @@ packages:
     resolution: {integrity: sha512-NAGrjn0Pitjqzq/GkgMC4kBYm233PQ8GffyQ9+kTA3AlNQYEzOf25EIM02BAHZv5FRJSpHpJk+OGUxVkOB93GQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@varlock/cloudflare-integration@1.6.3':
-    resolution: {integrity: sha512-J9rnJJ6F6Evswj3kn1rjL5wEW0AmPXj+9glVCmZVHVggpOak2IOf0JidQNyuaBZEeLW7nonRO68ga7hKX7qx9w==}
+  '@varlock/cloudflare-integration@1.6.4':
+    resolution: {integrity: sha512-6zT8kjKwHu1r4rAH8qRoYdYuYAenfrrNcyA/DRuIXUb9Np6gLmMzS/PxqtTi2GGWEaknWPGm7DJU4eMkqiW85A==}
     engines: {node: '>=22'}
     hasBin: true
     peerDependencies:
       '@cloudflare/vite-plugin': '>=1'
-      varlock: ^1.24.0
+      varlock: ^1.25.0
       vite: '>=5'
       wrangler: '>=3'
     peerDependenciesMeta:
@@ -1306,11 +1306,11 @@ packages:
     resolution: {integrity: sha512-qudkH54KfX8dBmsQyAlC8BYlPwrxF0Drg6q4MHHVC7l7taTClYNqf6M6xRdIoNynyPDKTTPNjpOvoHwvRanEpg==}
     os: [win32, linux]
 
-  '@varlock/vite-integration@1.5.5':
-    resolution: {integrity: sha512-Dq3V/g2Kxxoj4eb6igBXgH7RdS1yn6bnoCWLPc0HiXN+wMnFHwR+vWRqZbeak7lgTYpiEWIQcde0S4Ig1r5nAA==}
+  '@varlock/vite-integration@1.5.6':
+    resolution: {integrity: sha512-+qHnpHrI1jPDbRZZQdACv9wDJ5wUe+v8uKE9RtJV3MXX5GoPDP24WBbgtDOZ4Zk2phMR4Wa8rcyyf9cymgY4ZQ==}
     engines: {node: '>=22'}
     peerDependencies:
-      varlock: ^1.24.0
+      varlock: ^1.25.0
       vite: '>=5'
 
   '@vitest/browser-preview@5.1.0':
@@ -2538,8 +2538,8 @@ packages:
       typescript:
         optional: true
 
-  varlock@1.24.0:
-    resolution: {integrity: sha512-BSns65LcQUfW8jzx/4wKfL7CYlfEzK8YwhGBS5OOzzmAyK/zooNCERvDhnjVOcFqWDcZVBSxB3tmo1FWeHRqMA==}
+  varlock@1.25.0:
+    resolution: {integrity: sha512-SBTZzrqQD+er1dPCJLE/BzHsCHKJj6j3HHuJHq4b+erDB06MS3MZ/EUgXwKkCytYiM97BZyLk8Plf6Qs2ezkGg==}
     engines: {bun: '>=1.3.3', node: '>=22.3.0'}
     hasBin: true
 
@@ -3418,9 +3418,9 @@ snapshots:
       '@typescript-eslint/types': 8.72.2
       eslint-visitor-keys: 5.0.1
 
-  '@varlock/cloudflare-integration@1.6.3(@voidzero-dev/vite-plus-core@1.5.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1))(varlock@1.24.0)(wrangler@4.160.0(@types/node@26.6.6))':
+  '@varlock/cloudflare-integration@1.6.4(@voidzero-dev/vite-plus-core@1.5.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1))(varlock@1.25.0)(wrangler@4.160.0(@types/node@26.6.6))':
     dependencies:
-      varlock: 1.24.0
+      varlock: 1.25.0
     optionalDependencies:
       vite: '@voidzero-dev/vite-plus-core@1.5.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1)'
       wrangler: 4.160.0(@types/node@26.6.6)
@@ -3437,9 +3437,9 @@ snapshots:
   '@varlock/native-helper-win32-x64@1.24.0':
     optional: true
 
-  '@varlock/vite-integration@1.5.5(@voidzero-dev/vite-plus-core@1.5.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1))(varlock@1.24.0)':
+  '@varlock/vite-integration@1.5.6(@voidzero-dev/vite-plus-core@1.5.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1))(varlock@1.25.0)':
     dependencies:
-      varlock: 1.24.0
+      varlock: 1.25.0
       vite: '@voidzero-dev/vite-plus-core@1.5.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1)'
 
   '@vitest/browser-preview@5.1.0(@voidzero-dev/vite-plus-core@1.5.0(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1))(vitest@5.1.0)':
@@ -4583,7 +4583,7 @@ snapshots:
     optionalDependencies:
       typescript: 6.0.3
 
-  varlock@1.24.0:
+  varlock@1.25.0:
     optionalDependencies:
       '@varlock/native-helper-darwin': 1.24.0
       '@varlock/native-helper-linux-arm64': 1.24.0
