@@ -164,7 +164,7 @@ test("rejects missing Access credentials at the endpoint", async () => {
   expect(result.status).toBe(401);
 });
 
-test("requires a GitHub token after successful Access authentication", async () => {
+test("does not require a GitHub token after Access authentication", async () => {
   const issuer = `https://database-${crypto.randomUUID()}.cloudflareaccess.com`;
   const token = await signedToken({ issuer });
 
@@ -172,9 +172,9 @@ test("requires a GitHub token after successful Access authentication", async () 
     ACCESS_AUDIENCE: AUDIENCE,
     ACCESS_TEAM_DOMAIN: issuer,
   });
+  const body = await result.text();
 
-  expect(result.status).toBe(503);
-  expect(await result.json()).toEqual({
-    error: "GitHub is not configured for this MCP service.",
-  });
+  expect(result.status).not.toBe(401);
+  expect(result.status).not.toBe(503);
+  expect(body).not.toContain("GitHub");
 });

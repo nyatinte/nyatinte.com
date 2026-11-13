@@ -7,6 +7,7 @@ import {
 } from "./lib/server/agent-ready/headers";
 import { renderAgentMarkdown } from "./lib/server/agent-ready/markdown";
 import { matchAgentRoute } from "./lib/server/agent-ready/routes";
+import { legacyDoneLocation } from "./lib/server/legacy-redirect";
 
 const jsonLdScriptPattern = /<script type="application\/ld\+json">/gu;
 const cspNoncePattern = /'nonce-([^']+)'/u;
@@ -22,8 +23,8 @@ function shouldEnrichResponse(
 ) {
   return (
     route.kind === "home" ||
-    route.kind === "done-list" ||
-    route.kind === "done-detail" ||
+    route.kind === "log-list" ||
+    route.kind === "log-detail" ||
     (route.kind === "not-found" && status === 404)
   );
 }
@@ -70,13 +71,21 @@ async function finalizeHtmlResponse(
 }
 
 export const handle: Handle = async ({ event, resolve }) => {
+  const legacyLocation = legacyDoneLocation(event.url.pathname);
+  if (legacyLocation) {
+    return new Response(null, {
+      headers: { location: legacyLocation },
+      status: 301,
+    });
+  }
+
   const route = matchAgentRoute(event.url.pathname);
   if (
     isAgentReadMethod(event.request.method) &&
     wantsMarkdown(event.request) &&
     route
   ) {
-    const rendered = await renderAgentMarkdown(route, event.url.searchParams);
+    const rendered = renderAgentMarkdown(route);
     const body = event.request.method === "HEAD" ? null : rendered.body;
     return markdownResponse(body, {
       canonicalUrl: rendered.canonicalUrl,
