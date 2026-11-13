@@ -47,7 +47,7 @@
     "@sveltejs/vite-plugin-svelte": "7.3.1",
     "@types/node": "26.6.6",
     "@typescript-eslint/parser": "8.72.2",
-    "@varlock/cloudflare-integration": "1.6.3",
+    "@varlock/cloudflare-integration": "1.6.4",
     "@varlock/vite-integration": "1.5.5",
     "eslint": "10.14.0",
     "eslint-plugin-svelte": "3.23.0",
