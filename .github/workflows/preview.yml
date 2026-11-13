@@ -60,8 +60,34 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          preview_json="$(pnpm exec wrangler preview --name "pr-${{ github.event.pull_request.number }}" --json)"
-          preview_url="$(jq -er '.preview.urls[0]' <<< "$preview_json")"
+          # 本番デプロイと同じく varlock-wrangler を使う。素の wrangler だと
+          # __VARLOCK_ENV バインディングが無く、Cloudflare が 10021 で拒否する。
+          # varlock-wrangler は stdout に状態行を出すことがあるので、JSON を抜き出す。
+          preview_json="$(pnpm exec varlock-wrangler preview --name "pr-${{ github.event.pull_request.number }}" --json)"
+          preview_url="$(
+            printf '%s\n' "$preview_json" | python3 -c '
+          import json, sys
+          text = sys.stdin.read()
+          dec = json.JSONDecoder()
+          idx = 0
+          while True:
+              i = text.find("{", idx)
+              if i < 0:
+                  break
+              try:
+                  obj, end = dec.raw_decode(text, i)
+              except json.JSONDecodeError:
+                  idx = i + 1
+                  continue
+              idx = end
+              urls = (obj.get("preview") or {}).get("urls") or []
+              if urls:
+                  print(urls[0])
+                  sys.exit(0)
+          sys.stderr.write("preview URL を出力から取り出せませんでした:\n" + text)
+          sys.exit(1)
+          '
+          )"
           echo "preview_url=$preview_url" >> "$GITHUB_OUTPUT"
 
       - name: Comment on pull request
@@ -70,7 +96,16 @@ jobs:
           PREVIEW_URL: ${{ steps.create-preview.outputs.preview_url }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          gh pr comment "$PR_NUMBER" --edit-last --create-if-none --body "PR Preview URL: $PREVIEW_URL"
+          gh pr comment "$PR_NUMBER" --edit-last --create-if-none --body "$(cat <<EOF
+          ## プレビュー
+
+          この PR の Cloudflare Worker Preview（本番とは隔離されています）:
+
+          $PREVIEW_URL
+
+          PR を閉じると自動で削除されます。
+          EOF
+          )"
 
       - name: Probe Preview
         shell: bash
@@ -117,4 +152,4 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Delete Worker Preview
-        run: pnpm exec wrangler preview delete --name "pr-${{ github.event.pull_request.number }}" --skip-confirmation
+        run: pnpm exec varlock-wrangler preview delete --name "pr-${{ github.event.pull_request.number }}" --skip-confirmation
