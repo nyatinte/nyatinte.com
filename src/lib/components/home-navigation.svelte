@@ -5,6 +5,24 @@
   import moonIcon from "@tabler/icons/outline/moon.svg?url";
   import notebook from "@tabler/icons/outline/notebook.svg?url";
   import sunIcon from "@tabler/icons/outline/sun.svg?url";
+  import { page } from "$app/state";
+
+  const isHome = $derived(page.url.pathname === "/");
+  const isLogIndex = $derived(
+    page.url.pathname === "/log" || page.url.pathname === "/log/"
+  );
+  const isLogArticle = $derived(
+    page.url.pathname.startsWith("/log/") && !isLogIndex
+  );
+  const isLog = $derived(isLogIndex || isLogArticle);
+  const logAriaCurrent = $derived.by(() => {
+    if (isLogIndex) {
+      return "page";
+    }
+    if (isLogArticle) {
+      return "location";
+    }
+  });
 
   let { toggleTheme }: { toggleTheme: () => void } = $props();
 </script>
@@ -13,11 +31,11 @@
   <a class="wordmark" href="/">nyatinte.com</a>
   <nav aria-label="メインナビゲーション" class="navigation">
     <a
-      aria-current="page"
+      aria-current={isHome ? "page" : undefined}
       aria-label="ホーム"
-      class="current"
       href="/"
       title="ホーム"
+      class:current={isHome}
     >
       <span
         aria-hidden="true"
@@ -64,7 +82,13 @@
         style:mask-image={`url("${moonIcon}")`}
       ></span>
     </button>
-    <a aria-label="ログ" href="/log" title="ログ">
+    <a
+      aria-current={logAriaCurrent}
+      aria-label="ログ"
+      href="/log"
+      title="ログ"
+      class:current={isLog}
+    >
       <span
         aria-hidden="true"
         class="icon"

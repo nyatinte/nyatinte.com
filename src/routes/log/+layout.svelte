@@ -51,9 +51,24 @@
 
   .log {
     min-block-size: 100svh;
+    padding-block-start: 7rem;
     color: var(--home-foreground);
     color-scheme: var(--home-scheme, light dark);
     background: var(--home-background);
+  }
+
+  @media (width <= 700px) {
+    .log {
+      padding-block-start: 5rem;
+      padding-block-end: 6rem;
+    }
+  }
+
+  @media (height <= 420px) {
+    .log {
+      padding-block-start: 0;
+      padding-block-end: 0;
+    }
   }
 
   :global(:root::view-transition-group(*)) {
