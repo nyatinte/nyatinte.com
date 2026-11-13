@@ -2,8 +2,19 @@ import { expect, test } from "vite-plus/test";
 import {
   articleDateTransitionName,
   articleTransitionName,
+  homeTransitionDirection,
   shouldStartArticleTransition,
 } from "./view-transition";
+
+test("transitions between home and the log index in both directions only", () => {
+  expect(homeTransitionDirection("/", "/log")).toBe("out");
+  expect(homeTransitionDirection("/log", "/")).toBe("in");
+  expect(homeTransitionDirection("/", "/log/")).toBe("out");
+  expect(homeTransitionDirection("/log/", "/")).toBe("in");
+  expect(homeTransitionDirection("/log/article", "/")).toBeNull();
+  expect(homeTransitionDirection("/", "/log/article")).toBeNull();
+  expect(homeTransitionDirection("/log", "/log")).toBeNull();
+});
 
 test("starts a view transition only from the list to an article", () => {
   expect(shouldStartArticleTransition("/log", "/log/template")).toBe(true);

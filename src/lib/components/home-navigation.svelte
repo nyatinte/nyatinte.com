@@ -110,6 +110,7 @@
         align-items: center;
         justify-content: space-between;
         padding: 2rem clamp(2rem, 6vw, 6rem);
+        view-transition-name: site-header;
       }
       .wordmark {
         font-size: 1.125rem;
