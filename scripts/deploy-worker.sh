@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -eu
 
-APP_ENV="${APP_ENV:-production}"
+APP_ENV=production
 CF_SEND_TELEMETRY="${CF_SEND_TELEMETRY:-false}"
 export APP_ENV CF_SEND_TELEMETRY
 
@@ -10,12 +10,13 @@ pnpm build
 
 tag="${DEPLOY_VERSION_TAG:-}"
 if [ -z "$tag" ]; then
-  tag=$(git rev-parse HEAD 2>/dev/null || node -p 'crypto.randomUUID()')
+  commit=$(git rev-parse HEAD 2>/dev/null || printf 'unknown')
+  tag="$commit-$(node -p 'crypto.randomUUID()')"
 fi
 output_file="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/wrangler-versions-upload.jsonl"
 rm -f "$output_file"
 
-WRANGLER_OUTPUT_FILE_PATH="$output_file" APP_ENV=production varlock-wrangler versions upload --keep-vars=true --tag "$tag"
+WRANGLER_OUTPUT_FILE_PATH="$output_file" varlock-wrangler versions upload --keep-vars=true --tag "$tag"
 if [ ! -s "$output_file" ]; then
   echo "アップロード出力ファイルがありません、または空です: $output_file" >&2
   exit 1
