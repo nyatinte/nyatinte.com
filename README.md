@@ -68,3 +68,4 @@ GitHub Actions の `CI` は PR と `main` への push で検証します。本�
 ## ライセンス
 
 [MIT License](./LICENSE) です。Copyright (c) 2026 Takumi Nakamura。
+同梱フォント（SIL OFL 1.1）とアイコン（MIT）のライセンスは [`static/licenses/`](./static/licenses/) を参照してください。
