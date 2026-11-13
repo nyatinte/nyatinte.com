@@ -16,8 +16,13 @@ test("starts a view transition only from the list to an article", () => {
 });
 
 test("prefixes slugs so the view transition name is a CSS identifier", () => {
-  expect(articleTransitionName("2026-11-12-foo")).toBe("log-2026-11-12-foo");
-  expect(articleTransitionName("template")).toBe("log-template");
+  expect(articleTransitionName("2026-11-12-foo")).toBe(
+    "log-title-2026-11-12-foo"
+  );
+  expect(articleTransitionName("template")).toBe("log-title-template");
+  expect(articleTransitionName("date-template")).not.toBe(
+    articleDateTransitionName("template")
+  );
   expect(articleDateTransitionName("2026-11-12-foo")).toBe(
     "log-date-2026-11-12-foo"
   );

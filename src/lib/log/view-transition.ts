@@ -9,7 +9,7 @@ export function shouldStartArticleTransition(from: string, to: string) {
 }
 
 export function articleTransitionName(slug: string) {
-  return `log-${slug}`;
+  return `log-title-${slug}`;
 }
 
 export function articleDateTransitionName(slug: string) {

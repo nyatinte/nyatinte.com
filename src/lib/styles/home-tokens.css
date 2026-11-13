@@ -1,9 +1,3 @@
-@media (prefers-reduced-motion: no-preference) {
-  @view-transition {
-    navigation: auto;
-  }
-}
-
 html[data-home-theme="light"] {
   --home-scheme: light;
 }
