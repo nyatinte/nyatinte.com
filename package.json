@@ -29,8 +29,8 @@
     "prepare": "svelte-kit sync && vp config --no-agent --hooks",
     "preview": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --port 4173",
     "test": "vp test --run",
-    "vitals": "svelte-vitals --no-animation",
-    "test:http": "APP_ENV=test CF_SEND_TELEMETRY=false sh scripts/test-built-worker.sh"
+    "test:http": "APP_ENV=test CF_SEND_TELEMETRY=false sh scripts/test-built-worker.sh",
+    "vitals": "svelte-vitals --no-animation"
   },
   "dependencies": {
     "@modelcontextprotocol/server": "2.4.0",
