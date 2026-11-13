@@ -11,6 +11,7 @@
     "type": "git",
     "url": "https://github.com/nyatinte/nyatinte.com"
   },
+  "license": "MIT",
   "author": {
     "name": "nyatinte",
     "url": "https://nyatinte.com"

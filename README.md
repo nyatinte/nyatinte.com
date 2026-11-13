@@ -64,3 +64,8 @@ GitHub Actions の `CI` は PR と `main` への push で検証します。本�
 `/llms.txt` は、トップ、ログ、RSS、サイトマップ、各記事へのリンクを返します。HTML を返すページは `Link` ヘッダーに `rel=alternate` と `type=text/markdown` を付け、`Accept: text/markdown` では Markdown を返します。記事ページの「Markdown をコピー」は、frontmatter を含む元のファイルをコピーします。RSS は `/log/rss.xml`、サイトマップは `/sitemap.xml` です。
 
 一覧から記事を開くとき、ブラウザが View Transition API に対応し、利用者が `prefers-reduced-motion: reduce` を選んでいなければ、view transition を使います。記事から一覧へ戻るときは使いません。
+
+## ライセンス
+
+[MIT License](./LICENSE) です。Copyright (c) 2026 Takumi Nakamura。
+同梱フォント（SIL OFL 1.1）とアイコン（MIT）のライセンスは [`static/licenses/`](./static/licenses/) を参照してください。
