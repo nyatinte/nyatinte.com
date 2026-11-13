@@ -2,9 +2,9 @@
 
 set -eu
 
-# Docs-only paths must match the Verify job's dorny/paths-filter in
-# .github/workflows/ci.yml (root README.md, AGENTS.md, CLAUDE.md, docs/**,
-# .agents/**). CI unification of the check command itself is Issue #114.
+# Skip checks for docs-only changes (root README.md, AGENTS.md, CLAUDE.md,
+# docs/**, .agents/**). Aligning the workflow's Verify job with this hook is
+# Issue #114.
 
 is_zero_sha() {
   [ -n "${1:-}" ] || return 1
@@ -41,20 +41,20 @@ while read -r local_ref local_sha remote_ref remote_sha || [ -n "${local_sha:-}"
 
   # Deleting a remote ref: nothing new to verify.
   if is_zero_sha "${local_sha}"; then
-    local_ref=""
-    local_sha=""
-    remote_ref=""
-    remote_sha=""
     continue
   fi
 
   if is_zero_sha "${remote_sha:-}"; then
-    # New branch or tag: compare against origin/main, same idea as a PR.
-    if ! git rev-parse --verify --quiet origin/main >/dev/null; then
+    # New branch or tag: compare against the push remote's trunk.
+    trunk="refs/remotes/$1/HEAD"
+    if ! git rev-parse --verify --quiet "${trunk}" >/dev/null; then
+      trunk="refs/remotes/$1/main"
+    fi
+    if ! git rev-parse --verify --quiet "${trunk}" >/dev/null; then
       need_check=true
       break
     fi
-    if ! base=$(git merge-base origin/main "${local_sha}" 2>/dev/null); then
+    if ! base=$(git merge-base "${trunk}" "${local_sha}" 2>/dev/null); then
       need_check=true
       break
     fi
@@ -73,14 +73,10 @@ while read -r local_ref local_sha remote_ref remote_sha || [ -n "${local_sha:-}"
     break
   fi
 
-  local_ref=""
-  local_sha=""
-  remote_ref=""
-  remote_sha=""
 done
 
 if [ "${seen_ref}" != true ] || [ "${need_check}" = true ]; then
-  # Same quality gate as the GitHub Actions "Verify" job.
+  # Run the check, build, and HTTP tests used by this pre-push hook.
   pnpm check:ci
   exit $?
 fi

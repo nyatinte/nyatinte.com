@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 # Start the already-built Worker, wait until it responds, then run the test suite.
-# Used by `pnpm test:http` and, through `pnpm check:ci`, by CI Verify and the pre-push hook.
+# Used by `pnpm test:http`; `pnpm check:ci` runs check, build, and these HTTP tests via the pre-push hook.
 # The port defaults to 8788 so a local `pnpm dev:worker` on 8787 can keep running.
 
 set -eu
@@ -80,8 +80,8 @@ if curl --fail --silent --max-time 1 "${url}/" >/dev/null 2>&1; then
   exit 1
 fi
 
-# Same command as `pnpm dev:worker`, with an isolated port.
-pnpm exec varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --local --port "${port}" \
+# Start the built Worker using the shared `pnpm dev:worker` command.
+PORT="${port}" pnpm dev:worker \
   >"${log_file}" 2>&1 &
 worker_pid=$!
 

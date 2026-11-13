@@ -22,7 +22,7 @@
     "check:ci": "APP_ENV=test CF_SEND_TELEMETRY=false sh -c 'pnpm check && pnpm build && pnpm test:http'",
     "deploy": "APP_ENV=production pnpm build && tag=$(node -p 'crypto.randomUUID()') && APP_ENV=production varlock-wrangler versions upload --keep-vars=true --tag \"$tag\" && wrangler versions deploy --version-tag \"$tag\" --yes",
     "dev": "vp dev",
-    "dev:worker": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --local --port 8787",
+    "dev:worker": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --local --port ${PORT:-8787}",
     "fix": "ultracite fix",
     "lint:svelte": "eslint \"src/**/*.{svelte,svelte.js,svelte.ts}\"",
     "prepare": "svelte-kit sync && vp config --no-agent --hooks",
