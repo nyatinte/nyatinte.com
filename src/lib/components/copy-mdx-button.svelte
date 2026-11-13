@@ -1,4 +1,5 @@
 <script lang="ts">
+  import clipboard from "@tabler/icons/outline/clipboard.svg?url";
   import { tick } from "svelte";
 
   let { source }: { source: string } = $props();
@@ -18,21 +19,41 @@
   }
 </script>
 
-<button class="copy" onclick={copySource} type="button">
-  MDXをクリップボードにコピー
+<button
+  class="copy"
+  onclick={copySource}
+  type="button"
+  style:--clipboard-icon={`url("${clipboard}")`}
+>
+  <span aria-hidden="true" class="copy-icon"></span>
+  <span>{message || "Markdown をコピー"}</span>
 </button>
 <p aria-live="polite" class="copy-status">{message}</p>
 
 <style>
   .copy {
-    padding: 0.7rem 1rem;
-    margin-block-start: 2.5rem;
+    display: inline-flex;
+    flex: 0 0 auto;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
     font: inherit;
+    font-size: 0.8rem;
     color: var(--home-foreground);
     cursor: pointer;
     background: var(--home-nav-background);
     border: 1px solid var(--home-nav-border);
-    border-radius: 999px;
+    border-radius: 0.35rem;
+  }
+
+  .copy-icon {
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+    background-color: currentColor;
+    mask-image: var(--clipboard-icon);
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
   }
 
   .copy:hover {
@@ -45,8 +66,14 @@
   }
 
   .copy-status {
-    min-block-size: 1.5rem;
-    margin: 0.75rem 0 0;
-    font-size: 0.9rem;
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    white-space: nowrap;
+    border: 0;
+    clip: rect(0, 0, 0, 0);
   }
 </style>

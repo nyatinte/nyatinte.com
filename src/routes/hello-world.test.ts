@@ -297,8 +297,8 @@ test("published article pages expose BlogPosting JSON-LD", async () => {
   );
   const graphs = jsonLdGraphs(body);
   expect(graphs.some((graph) => graph["@type"] === "BlogPosting")).toBe(true);
-  expect(body).toContain("MDXをクリップボードにコピー");
-  expect(body).toContain(`view-transition-name: log-${slug}`);
+  expect(body).toContain("Markdown をコピー");
+  expect(body).toContain(`view-transition-name: log-title-${slug}`);
   expect(body).toContain('type="application/rss+xml"');
   expect(body).toContain('href="https://nyatinte.com/log/rss.xml"');
 });

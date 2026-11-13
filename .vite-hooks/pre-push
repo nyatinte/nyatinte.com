@@ -1,0 +1,85 @@
+#!/usr/bin/env sh
+
+set -eu
+
+# Skip checks for docs-only changes (root README.md, AGENTS.md, CLAUDE.md,
+# docs/**, .agents/**). Aligning the workflow's Verify job with this hook is
+# Issue #114.
+
+is_zero_sha() {
+  [ -n "${1:-}" ] || return 1
+  case "$1" in
+    *[!0]*) return 1 ;;
+    *) return 0 ;;
+  esac
+}
+
+is_docs_only_path() {
+  case "$1" in
+    README.md|AGENTS.md|CLAUDE.md|docs|docs/*|.agents|.agents/*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+# Returns 0 when every path is docs-only (or the list is empty).
+is_docs_only_list() {
+  while IFS= read -r path || [ -n "${path}" ]; do
+    [ -z "${path}" ] && continue
+    if ! is_docs_only_path "${path}"; then
+      return 1
+    fi
+  done
+  return 0
+}
+
+need_check=false
+seen_ref=false
+
+while read -r local_ref local_sha remote_ref remote_sha || [ -n "${local_sha:-}" ]; do
+  [ -z "${local_sha:-}" ] && continue
+  seen_ref=true
+
+  # Deleting a remote ref: nothing new to verify.
+  if is_zero_sha "${local_sha}"; then
+    continue
+  fi
+
+  if is_zero_sha "${remote_sha:-}"; then
+    # New branch or tag: compare against the push remote's trunk.
+    trunk="refs/remotes/$1/HEAD"
+    if ! git rev-parse --verify --quiet "${trunk}" >/dev/null; then
+      trunk="refs/remotes/$1/main"
+    fi
+    if ! git rev-parse --verify --quiet "${trunk}" >/dev/null; then
+      need_check=true
+      break
+    fi
+    if ! base=$(git merge-base "${trunk}" "${local_sha}" 2>/dev/null); then
+      need_check=true
+      break
+    fi
+  else
+    # Updating an existing remote ref: files introduced versus the remote tip.
+    if ! git cat-file -e "${remote_sha}^{commit}" 2>/dev/null; then
+      need_check=true
+      break
+    fi
+    base="${remote_sha}"
+  fi
+
+  changed=$(git diff --name-only --no-renames "${base}" "${local_sha}")
+  if ! printf '%s\n' "${changed}" | is_docs_only_list; then
+    need_check=true
+    break
+  fi
+
+done
+
+if [ "${seen_ref}" != true ] || [ "${need_check}" = true ]; then
+  # Run the check, build, and HTTP tests used by this pre-push hook.
+  pnpm check:ci
+  exit $?
+fi
+
+echo "pre-push: docs-only changes (README.md, AGENTS.md, CLAUDE.md, docs/**, .agents/**); skipping pnpm check:ci."
+exit 0
