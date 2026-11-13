@@ -50,7 +50,7 @@
         <CopyMdxButton source={data.article.source} />
       </div>
     </div>
-    <div class="article-body" data-log-article-end>
+    <div class="article-body">
       <p class="description">{data.article.description}</p>
       {#if Body}
         <div class="prose">
@@ -119,7 +119,7 @@
     min-width: 0;
   }
 
-  @media (max-width: 1149px) {
+  @media (max-width: 706px) {
     .article-body {
       padding-inline-end: 2rem;
     }

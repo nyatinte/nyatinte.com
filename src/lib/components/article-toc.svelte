@@ -58,25 +58,29 @@
   }
 
   onMount(() => {
+    let frame = 0;
     const update = () => {
-      const positions = headings.flatMap((heading) => {
-        const element = document.getElementById(heading.id);
-        return element
-          ? [{ id: heading.id, top: element.getBoundingClientRect().top }]
-          : [];
-      });
-      const body = document.querySelector("[data-log-article-end]");
-      const bottom = body?.getBoundingClientRect().bottom ?? 0;
-      const next = getTocVisibility({
-        articleBottom: bottom,
-        headingPositions: positions,
-        viewportHeight: window.innerHeight,
-      });
-      const { visible: nextVisible, activeId } = next;
-      visible = nextVisible;
-      if (!dragging) {
-        active = activeId;
+      if (frame) {
+        return;
       }
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const positions = headings.flatMap((heading) => {
+          const element = document.getElementById(heading.id);
+          return element
+            ? [{ id: heading.id, top: element.getBoundingClientRect().top }]
+            : [];
+        });
+        const next = getTocVisibility({
+          headingPositions: positions,
+          viewportHeight: window.innerHeight,
+        });
+        const { visible: nextVisible, activeId } = next;
+        visible = nextVisible;
+        if (!dragging) {
+          active = activeId;
+        }
+      });
     };
     update();
     window.addEventListener("scroll", update, { passive: true });
@@ -84,6 +88,7 @@
     return () => {
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
+      cancelAnimationFrame(frame);
     };
   });
 </script>
