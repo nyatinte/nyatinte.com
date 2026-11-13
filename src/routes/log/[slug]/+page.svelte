@@ -124,6 +124,12 @@
     min-width: 0;
   }
 
+  @media (max-width: 706px) {
+    .article-body {
+      padding-inline-end: 2rem;
+    }
+  }
+
   .description {
     margin: 0 0 2rem;
     font-size: 1.05rem;
