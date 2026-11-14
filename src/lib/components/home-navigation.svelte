@@ -110,7 +110,6 @@
         align-items: center;
         justify-content: space-between;
         padding: 2rem clamp(2rem, 6vw, 6rem);
-        transition: color var(--home-theme-duration) var(--home-theme-easing);
         view-transition-name: site-header;
       }
       .wordmark {
@@ -138,8 +137,6 @@
         background: transparent;
         border: 0;
         border-radius: 3rem;
-        transition: background-color var(--home-theme-duration)
-          var(--home-theme-easing);
       }
       .navigation a:hover,
       .navigation button:hover,
@@ -206,9 +203,6 @@
           border: 1px solid var(--home-nav-border);
           border-radius: 3rem;
           transform: translateX(-50%);
-          transition:
-            background-color var(--home-theme-duration) var(--home-theme-easing),
-            border-color var(--home-theme-duration) var(--home-theme-easing);
         }
         .navigation .current {
           background: var(--home-nav-current);
@@ -218,14 +212,6 @@
             position: static;
             transform: none;
           }
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        :scope,
-        .navigation,
-        .navigation a,
-        .navigation button {
-          transition: none;
         }
       }
       @media (width < 240px) {

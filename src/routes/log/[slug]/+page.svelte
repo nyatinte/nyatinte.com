@@ -164,8 +164,6 @@
     padding: 0.1em 0.3em;
     background: var(--home-nav-background);
     border-radius: 0.3rem;
-    transition: background-color var(--home-theme-duration)
-      var(--home-theme-easing);
   }
 
   .prose :global(pre) {
@@ -173,8 +171,6 @@
     overflow: auto;
     background: var(--home-nav-background);
     border-radius: 0.6rem;
-    transition: background-color var(--home-theme-duration)
-      var(--home-theme-easing);
   }
 
   .prose :global(pre code) {

@@ -152,8 +152,6 @@
         block-size: max(100%, 62.5vw);
         background: var(--home-sky);
         transform: translate(-50%, -50%);
-        transition: background-color var(--home-theme-duration)
-          var(--home-theme-easing);
       }
       .art {
         position: absolute;
@@ -368,15 +366,6 @@
       @media (prefers-reduced-motion: no-preference) {
         .bouncing {
           animation: bounce 450ms ease-out;
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .orbit,
-        .moon,
-        .stage,
-        .aurora,
-        .art path {
-          transition: none;
         }
       }
       @keyframes bounce {

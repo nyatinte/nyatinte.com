@@ -73,9 +73,6 @@
         color-scheme: var(--home-scheme, light dark);
         background: var(--home-background);
         isolation: isolate;
-        transition:
-          color var(--home-theme-duration) var(--home-theme-easing),
-          background-color var(--home-theme-duration) var(--home-theme-easing);
       }
       h1 {
         position: absolute;
@@ -96,11 +93,6 @@
         margin-block-start: 0.4em;
         font-size: clamp(1.5rem, 1rem + 2vw, 3rem);
         letter-spacing: -0.03em;
-      }
-      @media (prefers-reduced-motion: reduce) {
-        :scope {
-          transition: none;
-        }
       }
       @media (width <= 700px) {
         h1 {
