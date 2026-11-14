@@ -68,7 +68,7 @@ PR を開くと、コメントに Cloudflare Worker Preview の URL が表示さ
 
 `/llms.txt` は、トップ、ログ、RSS、サイトマップ、各記事へのリンクを返します。HTML を返すページは `Link` ヘッダーに `rel=alternate` と `type=text/markdown` を付け、`Accept: text/markdown` では Markdown を返します。記事ページの「Markdown をコピー」は、frontmatter を含む元のファイルをコピーします。RSS は `/log/rss.xml`、サイトマップは `/sitemap.xml` です。
 
-一覧から記事を開くとき、ブラウザが View Transition API に対応し、利用者が `prefers-reduced-motion: reduce` を選んでいなければ、view transition を使います。記事から一覧へ戻るときは使いません。
+ホームとログの間、ログの一覧と記事の間を移動するとき（どちらの向きも）、ブラウザが View Transition API に対応し、利用者が `prefers-reduced-motion: reduce` を選んでいなければ、view transition を使います。
 
 ## ライセンス
 
