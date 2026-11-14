@@ -1,4 +1,5 @@
-@layer theme-transition;
+/* ほかの CSS より先に読み込む。先に別の @layer があると順序を変えられない。 */
+@layer theme-transition, components, base;
 
 :root {
   --home-theme-duration: 1.5s;
