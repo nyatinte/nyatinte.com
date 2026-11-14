@@ -13,6 +13,7 @@
 
 <style>
   @media (prefers-reduced-motion: no-preference) {
+    /* ドキュメント間遷移は /log のみに適用する。 */
     @view-transition {
       navigation: auto;
     }
@@ -42,17 +43,6 @@
     .log {
       padding-block-start: 0;
       padding-block-end: 0;
-    }
-  }
-
-  :global(:root::view-transition-group(*)) {
-    animation-duration: 240ms;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    :global(:root::view-transition-old(*)),
-    :global(:root::view-transition-new(*)) {
-      animation: none;
     }
   }
 </style>

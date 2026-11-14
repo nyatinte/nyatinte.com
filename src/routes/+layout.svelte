@@ -152,6 +152,13 @@
     animation-duration: 240ms;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    :global(:root::view-transition-old(*)),
+    :global(:root::view-transition-new(*)) {
+      animation: none;
+    }
+  }
+
   :global(:root[data-home-transition]::view-transition-group(*)) {
     animation-duration: 670ms;
   }
