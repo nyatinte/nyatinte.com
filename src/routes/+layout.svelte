@@ -13,10 +13,8 @@
     readAppliedHomeTheme,
   } from "../lib/home-theme";
   import { HOME_THEME_COLOR } from "../lib/home-theme-color";
-  import {
-    homeTransitionDirection,
-    shouldStartArticleTransition,
-  } from "../lib/log/view-transition";
+  import { homeTransitionDirection } from "../lib/home-transition";
+  import { shouldStartArticleTransition } from "../lib/log/view-transition";
 
   let { children } = $props();
   let theme = $state<"light" | "dark" | null>(null);
