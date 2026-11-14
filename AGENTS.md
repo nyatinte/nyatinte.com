@@ -18,7 +18,7 @@
 - `/mcp` は Cloudflare Access で保護し、Worker でも Access JWT を検証する。
 - OGP は、frontmatter の `image` がなければ `src/routes/og.png` を共通画像に使う。記事のメタデータは公開ページから生成する。記事ごとの画像を画像生成 AI で作り、プロンプトをスキルにして記事を置く作業に組み込む方針は [docs/adr/0001-ogp-image-generation.md](docs/adr/0001-ogp-image-generation.md) に書く。費用がかかるため、今は実装しない。
 - `wrangler.jsonc` を Worker 設定と型生成の正本とする。本番デプロイは Varlock Wrangler で既存の変数とシークレットを保持する。
-- ホームとログの間、ログ一覧と記事の間（どちらの向きも）の移動では、ルートレイアウトの `onNavigate` が `document.startViewTransition` を呼ぶ。API がないときと `prefers-reduced-motion: reduce` のときは呼ばない。`/log` 以下のドキュメント間遷移はログレイアウトの `@view-transition` で有効にする。これも `prefers-reduced-motion: no-preference` のときだけで、一覧と記事の間以外の移動はガードでスキップする。`::view-transition` の CSS はルートレイアウトにまとめる。
+- ホームとほかのページの間、ログ一覧と記事の間（どちらの向きも）の移動では、ルートレイアウトの `onNavigate` が `document.startViewTransition` を呼ぶ。API がないときと `prefers-reduced-motion: reduce` のときは呼ばない。`/log` 以下のドキュメント間遷移はログレイアウトの `@view-transition` で有効にする。これも `prefers-reduced-motion: no-preference` のときだけで、一覧と記事の間以外の移動はガードでスキップする。`::view-transition` の CSS はルートレイアウトにまとめる。
 - `/llms.txt`、`Accept: text/markdown`、`Link` の `rel=alternate` は記事向けに残す。RSS は `/log/rss.xml`。サイトマップは `/sitemap.xml`。
 
 ## スキル
