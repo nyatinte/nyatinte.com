@@ -152,7 +152,8 @@
         block-size: max(100%, 62.5vw);
         background: var(--home-sky);
         transform: translate(-50%, -50%);
-        transition: background-color 1.5s ease-in-out;
+        transition: background-color var(--home-theme-duration)
+          var(--home-theme-easing);
       }
       .art {
         position: absolute;
@@ -201,7 +202,7 @@
           var(--home-aurora-mask) 30%,
           transparent 75%
         );
-        transition: opacity 1.5s ease-in-out;
+        transition: opacity var(--home-theme-duration) var(--home-theme-easing);
       }
       .aurora::after {
         position: absolute;
@@ -252,8 +253,8 @@
       }
       .art path {
         transition:
-          fill 1.5s ease-in-out,
-          stroke 1.5s ease-in-out;
+          fill var(--home-theme-duration) var(--home-theme-easing),
+          stroke var(--home-theme-duration) var(--home-theme-easing);
       }
       .clouds {
         fill: var(--home-cloud);
@@ -303,7 +304,7 @@
         position: absolute;
         inset: 0;
         rotate: var(--orbit-turn, var(--home-initial-orbit, 0deg));
-        transition: rotate 1.5s ease-in-out;
+        transition: rotate var(--home-theme-duration) var(--home-theme-easing);
         @starting-style {
           rotate: var(--orbit-turn, var(--home-initial-orbit, 0deg));
         }
@@ -325,7 +326,7 @@
         inset-inline-start: 70%;
         box-shadow: inset -0.9rem -0.4rem 0 0 var(--home-moon);
         rotate: calc(-1 * var(--orbit-turn, var(--home-initial-orbit, 0deg)));
-        transition: rotate 1.5s ease-in-out;
+        transition: rotate var(--home-theme-duration) var(--home-theme-easing);
         @starting-style {
           rotate: calc(-1 * var(--orbit-turn, var(--home-initial-orbit, 0deg)));
         }

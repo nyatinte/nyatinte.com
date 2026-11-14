@@ -21,6 +21,8 @@
   :global(html:has(.log)),
   :global(body:has(.log)) {
     background: var(--home-background);
+    transition: background-color var(--home-theme-duration)
+      var(--home-theme-easing);
   }
 
   .log {
@@ -29,6 +31,9 @@
     color: var(--home-foreground);
     color-scheme: var(--home-scheme, light dark);
     background: var(--home-background);
+    transition:
+      color var(--home-theme-duration) var(--home-theme-easing),
+      background-color var(--home-theme-duration) var(--home-theme-easing);
   }
 
   @media (width <= 700px) {
@@ -50,6 +55,12 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .log,
+    :global(html:has(.log)),
+    :global(body:has(.log)) {
+      transition: none;
+    }
+
     :global(:root::view-transition-old(*)),
     :global(:root::view-transition-new(*)) {
       animation: none;

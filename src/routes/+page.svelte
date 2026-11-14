@@ -74,8 +74,8 @@
         background: var(--home-background);
         isolation: isolate;
         transition:
-          color 1.5s ease-in-out,
-          background-color 1.5s ease-in-out;
+          color var(--home-theme-duration) var(--home-theme-easing),
+          background-color var(--home-theme-duration) var(--home-theme-easing);
       }
       h1 {
         position: absolute;
