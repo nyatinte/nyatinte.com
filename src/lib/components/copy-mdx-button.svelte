@@ -44,15 +44,6 @@
     background: var(--home-nav-background);
     border: 1px solid var(--home-nav-border);
     border-radius: 0.35rem;
-    transition:
-      background-color var(--home-theme-duration) var(--home-theme-easing),
-      border-color var(--home-theme-duration) var(--home-theme-easing);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .copy {
-      transition: none;
-    }
   }
 
   .copy-icon {

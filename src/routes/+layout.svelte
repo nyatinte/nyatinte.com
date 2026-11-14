@@ -1,4 +1,5 @@
 <script lang="ts">
+  import "../lib/styles/theme-transition.css";
   import "../lib/styles/home-tokens.css";
   import { onMount } from "svelte";
   import { onNavigate } from "$app/navigation";

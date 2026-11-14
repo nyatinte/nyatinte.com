@@ -163,7 +163,6 @@
     height: 1px;
     overflow: hidden;
     clip-path: inset(50%);
-    transition: border-color var(--home-theme-duration) var(--home-theme-easing);
   }
   .toc h2 {
     margin: 0 0 0.5rem;
@@ -220,8 +219,6 @@
     width: 0.9rem;
     height: 3px;
     background: var(--home-nav-border);
-    transition: background-color var(--home-theme-duration)
-      var(--home-theme-easing);
   }
   .scrubber div.short {
     width: 0.6rem;
@@ -240,9 +237,6 @@
     background: var(--home-nav-background);
     border: 1px solid var(--home-nav-border);
     transform: translateY(-50%);
-    transition:
-      background-color var(--home-theme-duration) var(--home-theme-easing),
-      border-color var(--home-theme-duration) var(--home-theme-easing);
   }
   @media (min-width: 1150px) {
     .toc {
