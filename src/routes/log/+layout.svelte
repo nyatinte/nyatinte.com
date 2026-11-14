@@ -28,8 +28,6 @@
   .log {
     min-block-size: 100svh;
     padding-block-start: 7rem;
-    color: var(--home-foreground);
-    color-scheme: var(--home-scheme, light dark);
     background: var(--home-background);
   }
 
