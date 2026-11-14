@@ -244,8 +244,8 @@ importers:
         specifier: 4.7.8
         version: 4.7.8(picomatch@4.0.7)(svelte@5.57.3(@typescript-eslint/types@8.72.2))(typescript@6.0.3)
       svelte-vitals:
-        specifier: 0.55.5
-        version: 0.55.5(@typescript-eslint/types@8.72.2)(citty@0.2.2)(commander@15.1.0)
+        specifier: 0.56.0
+        version: 0.56.0(@typescript-eslint/types@8.72.2)(citty@0.2.2)(commander@15.1.0)
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -380,8 +380,16 @@ packages:
     resolution: {integrity: sha512-iHTrHA8MtVuLl2TfZySmcKv1qO2PoyC9Z7pfSDozEuV5vtY3/wcOPKJXlqJ5Oq2Cx5DDGQGAMVx6HZfRRoVEbQ==}
     engines: {node: '>= 20.12.0'}
 
+  '@clack/core@1.6.0':
+    resolution: {integrity: sha512-4GZynIB2IIe431odxesswvWTCP6orvqd6e2b07b3VFWBQRqUqIHc/EPIZwFoKS692QBp+ooPuXKaJV8g4kXuYA==}
+    engines: {node: '>= 20.12.0'}
+
   '@clack/prompts@1.8.1':
     resolution: {integrity: sha512-dlT1m5e/0yUL0kRNcQn7yGLVThkgbB0Ga/1AmfDDC/8ik6AIiSf2QLQO2zPYvefsHP0aFgxO93cVLCCfDp7kzQ==}
+    engines: {node: '>= 20.12.0'}
+
+  '@clack/prompts@1.9.0':
+    resolution: {integrity: sha512-tEj8X2No2A1c9NDnZECxiiJ8TP3vmFlN9tLlLeSaMqVW4tUmVG2R4qpv/eP4zymWxnymYLkLcIYVV0VcWj3RCQ==}
     engines: {node: '>= 20.12.0'}
 
   '@cloudflare/kv-asset-handler@0.5.0':
@@ -1199,8 +1207,8 @@ packages:
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
-  '@svelte-vitals/core@0.55.5':
-    resolution: {integrity: sha512-BCEN2ZMWircldU80hFRO3kMXUV4G5wN1oSypZu0/wegcJ0gafngm1lpVMX2fulCvN0O0WJC+WS0rTkQPvGErVQ==}
+  '@svelte-vitals/core@0.56.0':
+    resolution: {integrity: sha512-QeTw0cujVT09MKWTztrRagvzTdb+WSQQNcg6brREc2UgiQ2Ts28f4I1bYluKmPJ3IFxpzMHa41J4E2yyZLI+6w==}
     engines: {node: '>=24.16.0'}
 
   '@sveltejs/acorn-typescript@1.0.13':
@@ -2423,6 +2431,10 @@ packages:
   sisteransi@1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
 
+  sisteransi@2.0.0:
+    resolution: {integrity: sha512-2WCqLdt12eN6ehLI50S2/ZxoowXU3DD1KVPRyVP0WEsFahrGZZmCdq1K59qjJljMRIDTwx1D9YaRK+hDneBUMg==}
+    engines: {node: '>=20'}
+
   slice-ansi@10.0.0:
     resolution: {integrity: sha512-2rOYDG420YH3p2PbRAu6LdYnGuMZldshqZS2qqFh/WEzAytVo7b8n1HhubLtRunvqjao74MmGfW4sY4ex0YvpQ==}
     engines: {node: '>=22'}
@@ -2471,8 +2483,8 @@ packages:
       svelte:
         optional: true
 
-  svelte-vitals@0.55.5:
-    resolution: {integrity: sha512-0IoJ2KzPX3KC85cg3ha9v+c8UCnJ4ii7Oi/3pyG1p2+rOxWuOx0Y47nqYnKeNRMJQITSQFBowJQTHF0C8OXCvQ==}
+  svelte-vitals@0.56.0:
+    resolution: {integrity: sha512-nW6MW3Ue8PMavgdv+mJmKm1ztt5p/fMLUgW/00QOKTgpNf7SXi3xWRFZqG8Xe2cA/2l38KVydOgBn2FxYkAe6Q==}
     engines: {node: '>=24.16.0'}
     hasBin: true
 
@@ -2852,12 +2864,25 @@ snapshots:
       fast-wrap-ansi: 0.2.2
       sisteransi: 1.0.5
 
+  '@clack/core@1.6.0':
+    dependencies:
+      fast-string-width: 3.0.2
+      fast-wrap-ansi: 0.2.2
+      sisteransi: 2.0.0
+
   '@clack/prompts@1.8.1':
     dependencies:
       '@clack/core': 1.5.1
       fast-string-width: 3.0.2
       fast-wrap-ansi: 0.2.2
       sisteransi: 1.0.5
+
+  '@clack/prompts@1.9.0':
+    dependencies:
+      '@clack/core': 1.6.0
+      fast-string-width: 3.0.2
+      fast-wrap-ansi: 0.2.2
+      sisteransi: 2.0.0
 
   '@cloudflare/kv-asset-handler@0.5.0': {}
 
@@ -3371,7 +3396,7 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
-  '@svelte-vitals/core@0.55.5(@typescript-eslint/types@8.72.2)':
+  '@svelte-vitals/core@0.56.0(@typescript-eslint/types@8.72.2)':
     dependencies:
       aria-query: 5.3.2
       svelte: 5.57.3(@typescript-eslint/types@8.72.2)
@@ -4505,6 +4530,8 @@ snapshots:
 
   sisteransi@1.0.5: {}
 
+  sisteransi@2.0.0: {}
+
   slice-ansi@10.0.0:
     dependencies:
       ansi-styles: 7.0.0
@@ -4557,13 +4584,13 @@ snapshots:
     optionalDependencies:
       svelte: 5.57.3(@typescript-eslint/types@8.72.2)
 
-  svelte-vitals@0.55.5(@typescript-eslint/types@8.72.2)(citty@0.2.2)(commander@15.1.0):
+  svelte-vitals@0.56.0(@typescript-eslint/types@8.72.2)(citty@0.2.2)(commander@15.1.0):
     dependencies:
-      '@clack/prompts': 1.8.1
+      '@clack/prompts': 1.9.0
       '@gunshi/plugin-completion': 0.37.3(@gunshi/plugin-i18n@0.37.3)(citty@0.2.2)(commander@15.1.0)
       '@gunshi/plugin-i18n': 0.37.3
       '@gunshi/plugin-suggestion': 0.37.3(@gunshi/plugin-i18n@0.37.3)
-      '@svelte-vitals/core': 0.55.5(@typescript-eslint/types@8.72.2)
+      '@svelte-vitals/core': 0.56.0(@typescript-eslint/types@8.72.2)
       gunshi: 0.37.3
       magicast: 0.5.5
       svelte: 5.57.3(@typescript-eslint/types@8.72.2)
