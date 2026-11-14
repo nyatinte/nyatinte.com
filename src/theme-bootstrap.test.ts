@@ -28,6 +28,14 @@ test.each([
   expect(dataset.homeTheme).toBe(expected);
 });
 
+const rootRule = tokens.match(/:root\s*\{([^}]*)\}/u)?.[1];
+const backgroundToken = /--home-background\s*:/u;
+
+test("keeps shared tokens independent of page classes", () => {
+  expect(tokens).not.toContain(":has(");
+  expect(rootRule).toMatch(backgroundToken);
+});
+
 test("declares explicit color schemes for stored preferences", () => {
   for (const [theme, scheme] of [
     ["light", "light"],
