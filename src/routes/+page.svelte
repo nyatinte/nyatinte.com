@@ -59,8 +59,7 @@
 
 <style>
   @layer components {
-    :global(html:has(.home)),
-    :global(body:has(.home)) {
+    :global(html:has(.home)) {
       background: var(--home-background);
     }
     @scope (.home) {
@@ -69,8 +68,6 @@
         position: relative;
         min-block-size: max(100svh, 32rem);
         overflow: hidden;
-        color: var(--home-foreground);
-        color-scheme: var(--home-scheme, light dark);
         background: var(--home-background);
         isolation: isolate;
       }

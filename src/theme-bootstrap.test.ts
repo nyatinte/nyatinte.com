@@ -29,12 +29,15 @@ test.each([
 });
 
 test("declares explicit color schemes for stored preferences", () => {
-  expect(tokens).toContain(
-    'html[data-home-theme="light"]:has(.home) {\n  color-scheme: light;'
-  );
-  expect(tokens).toContain(
-    'html[data-home-theme="dark"]:has(.home) {\n  color-scheme: dark;'
-  );
+  for (const [theme, scheme] of [
+    ["light", "light"],
+    ["dark", "dark"],
+  ]) {
+    const rule = tokens.match(
+      new RegExp(`html\\[data-home-theme="${theme}"\\]\\s*\\{([^}]*)\\}`, "u")
+    )?.[1];
+    expect(rule).toMatch(new RegExp(`color-scheme:\\s*${scheme};`, "u"));
+  }
 });
 
 test("keeps the full and Latin font subsets from overlapping", () => {
