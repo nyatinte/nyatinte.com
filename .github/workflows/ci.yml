@@ -86,6 +86,41 @@ jobs:
         if: steps.decide.outputs.full == 'true'
         run: pnpm install --frozen-lockfile
 
+      - name: Report Svelte vitals
+        if: steps.decide.outputs.full == 'true'
+        shell: bash
+        run: |
+          set +e
+          report_file="$RUNNER_TEMP/svelte-vitals.md"
+          md_stderr="$RUNNER_TEMP/svelte-vitals-md.stderr"
+          github_stderr="$RUNNER_TEMP/svelte-vitals-github.stderr"
+          pnpm exec svelte-vitals --no-animation --verbose --reporter md > "$report_file" 2> "$md_stderr"
+          result=$?
+          cat "$md_stderr"
+          pnpm exec svelte-vitals --no-animation --verbose --reporter github 2> "$github_stderr"
+          github_result=$?
+          cat "$github_stderr"
+          if [ ! -s "$report_file" ] || [ "$result" -eq 2 ] || [ "$github_result" -eq 2 ]; then
+            echo "::error::svelte-vitals の解析が実行できませんでした (終了コード: md=$result, github=$github_result)"
+            {
+              echo "### ❌ svelte-vitals の解析が実行できませんでした"
+              echo "終了コード: md=$result, github=$github_result"
+              for stderr_file in "$md_stderr" "$github_stderr"; do
+                if [ -s "$stderr_file" ]; then
+                  echo '```'
+                  cat "$stderr_file"
+                  echo '```'
+                fi
+              done
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            cat "$report_file" >> "$GITHUB_STEP_SUMMARY"
+            if [ "$result" -ne 0 ] || [ "$github_result" -ne 0 ]; then
+              echo "svelte-vitals findings (終了コード: md=$result, github=$github_result)"
+            fi
+          fi
+          exit 0
+
       - name: Check source
         if: steps.decide.outputs.full == 'true'
         run: pnpm check
