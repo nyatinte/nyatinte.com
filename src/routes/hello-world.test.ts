@@ -79,6 +79,18 @@ test("GET / serves the home page with an absolute canonical URL", async () => {
   }
 });
 
+test("a colocated article OGP is served by the built Worker", async () => {
+  const page = await fetch(new URL("/log/cua-computer-use", targetUrl));
+  expect(page.status).toBe(200);
+  const imageUrl = (await page.text()).match(ogImagePattern)?.[1];
+  expect(imageUrl).toBeDefined();
+  const image = new URL(imageUrl ?? "");
+  expect(image.hostname).toBe("nyatinte.com");
+  const response = await fetch(new URL(image.pathname, targetUrl));
+  expect(response.status).toBe(200);
+  expect(response.headers.get("content-type")).toContain("image/jpeg");
+});
+
 test("GET / sends fresh CSP nonces for every inline script", async () => {
   const firstResponse = await fetch(new URL("/", targetUrl));
   const firstBody = await firstResponse.text();

@@ -1,20 +1,50 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { type Dirent, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { articlesFromSources } from "./frontmatter";
 
 export function loadArticlesFromDirectory(directory: string) {
-  let names: string[];
+  let entries: Dirent[];
   try {
-    names = readdirSync(directory);
+    entries = readdirSync(directory, { withFileTypes: true });
   } catch (cause) {
     throw new Error(`Article directory is missing: ${directory}`, { cause });
   }
   const sources: Record<string, string> = {};
-  for (const name of names) {
-    if (!(name.endsWith(".md") || name.endsWith(".svx"))) {
+  for (const entry of entries) {
+    if (entry.name.startsWith(".")) {
       continue;
     }
-    sources[name] = readFileSync(join(directory, name), "utf8");
+    if (!entry.isDirectory()) {
+      throw new Error(`Expected an article directory: ${entry.name}`);
+    }
+    const files = readdirSync(join(directory, entry.name));
+    const articles = files.filter(
+      (name) => name === "index.md" || name === "index.svx"
+    );
+    if (articles.length === 0) {
+      throw new Error(`${entry.name}: missing index.md or index.svx`);
+    }
+    for (const name of articles) {
+      sources[`${entry.name}/${name}`] = readFileSync(
+        join(directory, entry.name, name),
+        "utf8"
+      );
+    }
   }
-  return articlesFromSources(sources);
+  const articles = articlesFromSources(sources);
+  for (const article of articles) {
+    if (article.image?.startsWith("./")) {
+      const image = join(directory, article.slug, article.image.slice(2));
+      try {
+        if (!statSync(image).isFile()) {
+          throw new Error("Not a file");
+        }
+      } catch (cause) {
+        throw new Error(`${article.slug}: image not found: ${article.image}`, {
+          cause,
+        });
+      }
+    }
+  }
+  return articles;
 }
