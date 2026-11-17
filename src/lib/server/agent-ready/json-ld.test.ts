@@ -3,7 +3,7 @@ import { getArticle } from "../../log/articles";
 import { siteIdentity } from "./constants";
 import { createArticleJsonLd, createHomeJsonLd } from "./json-ld";
 
-test("home JSON-LD reuses the site meta description on Person and WebSite", () => {
+test("Given トップページの JSON-LD、When 説明文を組み立てると、Then Person と WebSite で meta description を共有する", () => {
   const graphs = createHomeJsonLd();
   const person = graphs.find((graph) => graph["@type"] === "Person");
   const website = graphs.find((graph) => graph["@type"] === "WebSite");
@@ -11,7 +11,7 @@ test("home JSON-LD reuses the site meta description on Person and WebSite", () =
   expect(website?.description).toBe(siteIdentity.description);
 });
 
-test("article JSON-LD uses the frontmatter title and date", () => {
+test("Given 記事の frontmatter、When JSON-LD を生成すると、Then title と date を使う", () => {
   const article = getArticle("template");
   expect(article).toBeDefined();
   if (!article) {

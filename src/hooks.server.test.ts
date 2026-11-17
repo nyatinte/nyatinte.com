@@ -29,7 +29,7 @@ function eventFor(url: string): RequestEvent {
   } as unknown as RequestEvent;
 }
 
-test("HTML responses use the production origin in the markdown Link header", async () => {
+test("Given HTML レスポンス、When markdown Link ヘッダーを返すと、Then 本番 origin を使う", async () => {
   const response = await handle({
     event: eventFor("http://127.0.0.1:8787/"),
     resolve: async () =>
@@ -42,7 +42,7 @@ test("HTML responses use the production origin in the markdown Link header", asy
   expect(response.headers.get("link")).toContain("https://nyatinte.com/");
 });
 
-test("redirects former achievement paths before rendering", async () => {
+test("Given 旧実績パス、When レンダリング前に処理すると、Then リダイレクトする", async () => {
   const response = await handle({
     event: eventFor("http://127.0.0.1:8787/done/old"),
     resolve: () => {

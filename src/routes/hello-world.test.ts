@@ -62,10 +62,13 @@ async function publishedArticleSlug() {
   return body.match(publishedArticleSlugPattern)?.[1] ?? null;
 }
 
-test("GET / serves the home page with an absolute canonical URL", async () => {
+test("トップページの場合にcanonical URL は絶対 URL になる", async () => {
+  // Given: トップページ
+  // When: GET / を開くと
   const response = await fetch(new URL("/", targetUrl));
   const body = await response.text();
 
+  // Then
   expect(response.status).toBe(200);
   expect(response.headers.get("content-type")).toContain("text/html");
   expect(body).toContain('<html lang="ja">');
@@ -79,24 +82,34 @@ test("GET / serves the home page with an absolute canonical URL", async () => {
   }
 });
 
-test("a colocated article OGP is served by the built Worker", async () => {
+test("Worker が記事に置いた OGP 画像を配信する", async () => {
+  // Given: OGP 画像を持つ公開記事
+  // When: 記事ページを取得する
   const page = await fetch(new URL("/log/cua-computer-use", targetUrl));
+  const body = await page.text();
+  const imageUrl = body.match(ogImagePattern)?.[1];
+  // Then: 記事ページが成功し OGP 画像 URL を含む
   expect(page.status).toBe(200);
-  const imageUrl = (await page.text()).match(ogImagePattern)?.[1];
   expect(imageUrl).toBeDefined();
+
+  // When: OGP 画像を取得する
   const image = new URL(imageUrl ?? "");
-  expect(image.hostname).toBe("nyatinte.com");
   const response = await fetch(new URL(image.pathname, targetUrl));
+  // Then: Worker から JPEG を配信する
+  expect(image.hostname).toBe("nyatinte.com");
   expect(response.status).toBe(200);
   expect(response.headers.get("content-type")).toContain("image/jpeg");
 });
 
-test("GET / sends fresh CSP nonces for every inline script", async () => {
+test("インラインスクリプトの CSP nonce をリクエストごとに新しくする", async () => {
+  // Given: トップページを 2 回取得する
+  // When: GET / を繰り返す
   const firstResponse = await fetch(new URL("/", targetUrl));
   const firstBody = await firstResponse.text();
   const secondResponse = await fetch(new URL("/", targetUrl));
   const secondBody = await secondResponse.text();
 
+  // Then
   expect(firstResponse.status).toBe(200);
   expect(secondResponse.status).toBe(200);
   const firstNonce = nonceFrom(firstResponse);
@@ -117,9 +130,12 @@ test("GET / sends fresh CSP nonces for every inline script", async () => {
   }
 });
 
-test("home preloads self-hosted, immutable Latin fonts", async () => {
+test("トップページの場合に自前配信の不変な Latin フォントを preload する", async () => {
+  // Given: トップページ
+  // When: HTML を返すと
   const page = await fetch(new URL("/", targetUrl));
   const fonts = [...(await page.text()).matchAll(latinFontPattern)];
+  // Then
   expect(fonts).toHaveLength(2);
   const responses = await Promise.all(
     fonts.map(([, path]) => fetch(new URL(path, targetUrl)))
@@ -131,95 +147,122 @@ test("home preloads self-hosted, immutable Latin fonts", async () => {
   }
 });
 
-test("HTML pages expose markdown alternates and Vary: Accept", async () => {
+test("HTML ページの場合にMarkdown alternate と Vary: Accept を含む", async () => {
+  // Given: HTML ページ
+  // When: レスポンスを返すと
   const response = await fetch(new URL("/", targetUrl));
+  // Then
   expect(response.status).toBe(200);
   expect(response.headers.get("vary")).toMatch(varyAcceptPattern);
   expectMarkdownAlternatePath(response.headers.get("link"), "/");
 });
 
-test("GET / returns markdown when Accept prefers text/markdown", async () => {
+test("Accept が text/markdown を優先するとき、Markdown を返す", async () => {
+  // Given: Accept が text/markdown を優先するとき
+  // When: GET / を呼ぶと
   const response = await fetch(new URL("/", targetUrl), {
     headers: { Accept: "text/markdown" },
   });
   const body = await response.text();
 
+  // Then
   expect(response.status).toBe(200);
   expect(response.headers.get("content-type")).toContain("text/markdown");
   expect(response.headers.get("vary")).toMatch(varyAcceptPattern);
   expect(body).toContain("# nyatinte");
 });
 
-test("HTML wins when its Accept q-value is higher than text/markdown", async () => {
+test("HTML の Accept q 値が text/markdown より高いとき、HTML を返す", async () => {
+  // Given: HTML の Accept q 値が text/markdown より高いとき
+  // When: GET / を呼ぶと
   const response = await fetch(new URL("/", targetUrl), {
     headers: { Accept: "text/html, text/markdown;q=0.1" },
   });
 
+  // Then
   expect(response.status).toBe(200);
   expect(response.headers.get("content-type")).toContain("text/html");
   expect(response.headers.get("vary")).toMatch(varyAcceptPattern);
 });
 
-test("HEAD / negotiates markdown and keeps agent-ready headers", async () => {
+test("Accept が Markdown を優先するとき、Markdown のヘッダーを保ち本文は返さない", async () => {
+  // Given: Accept が Markdown を優先するとき
+  // When: HEAD / を呼ぶと
   const response = await fetch(new URL("/", targetUrl), {
     headers: { Accept: "text/markdown" },
     method: "HEAD",
   });
   const body = await response.text();
 
+  // Then
   expect(response.status).toBe(200);
   expect(response.headers.get("content-type")).toContain("text/markdown");
   expect(response.headers.get("vary")).toMatch(varyAcceptPattern);
   expect(body).toBe("");
 });
 
-test("HEAD / keeps Vary and Link for HTML", async () => {
+test("HTML を要求するとき、Vary と Link ヘッダーを保つ", async () => {
+  // Given: HTML を要求するとき
+  // When: HEAD / を呼ぶと
   const response = await fetch(new URL("/", targetUrl), { method: "HEAD" });
 
+  // Then
   expect(response.status).toBe(200);
   expect(response.headers.get("content-type")).toContain("text/html");
   expect(response.headers.get("vary")).toMatch(varyAcceptPattern);
   expectMarkdownAlternatePath(response.headers.get("link"), "/");
 });
 
-test("unknown pages return HTTP 404 markdown when requested", async () => {
+test("存在しないページの場合に404 の Markdown を返す", async () => {
+  // Given: 存在しないページ
+  // When: Markdown を要求すると
   const response = await fetch(new URL("/definitely-missing", targetUrl), {
     headers: { Accept: "text/markdown" },
   });
   const body = await response.text();
 
+  // Then
   expect(response.status).toBe(404);
   expect(response.headers.get("content-type")).toContain("text/markdown");
   expect(body).toContain("ページが見つかりません");
 });
 
-test("missing article slugs return 404 markdown", async () => {
+test("存在しない記事スラッグの場合に404 の Markdown を返す", async () => {
+  // Given: 存在しない記事スラッグ
+  // When: Markdown を要求すると
   const response = await fetch(new URL("/log/not-a-real-slug", targetUrl), {
     headers: { Accept: "text/markdown" },
   });
   const body = await response.text();
 
+  // Then
   expect(response.status).toBe(404);
   expect(response.headers.get("content-type")).toContain("text/markdown");
   expect(body).toContain("記事が見つかりません");
 });
 
-test("former achievement URLs redirect to the log", async () => {
+test("旧実績 URLの場合に/log へリダイレクトする", async () => {
+  // Given: 旧実績 URL
+  // When: アクセスすると
   const responses = await Promise.all(
     ["/done", "/done/old-record"].map((path) =>
       fetch(new URL(path, targetUrl), { redirect: "manual" })
     )
   );
   for (const response of responses) {
+    // Then
     expect(response.status).toBe(301);
     expect(response.headers.get("location")).toBe("/log");
   }
 });
 
-test("GET /sitemap.xml lists core URLs", async () => {
+test("サイトマップの場合に主要 URL を列挙する", async () => {
+  // Given: サイトマップ
+  // When: GET /sitemap.xml を呼ぶと
   const response = await fetch(new URL("/sitemap.xml", targetUrl));
   const body = await response.text();
 
+  // Then
   expect(response.status).toBe(200);
   expect(response.headers.get("content-type")).toContain("application/xml");
   expect(body).toContain("<urlset");
@@ -229,10 +272,13 @@ test("GET /sitemap.xml lists core URLs", async () => {
   expect(body).toContain("<lastmod>");
 });
 
-test("GET /log/rss.xml lists articles", async () => {
+test("RSS フィードの場合に記事を列挙する", async () => {
+  // Given: RSS フィード
+  // When: GET /log/rss.xml を呼ぶと
   const response = await fetch(new URL("/log/rss.xml", targetUrl));
   const body = await response.text();
 
+  // Then
   expect(response.status).toBe(200);
   expect(response.headers.get("content-type")).toContain("application/rss+xml");
   expect(body).toContain("<rss");
@@ -240,10 +286,13 @@ test("GET /log/rss.xml lists articles", async () => {
   expect(body).toContain("/log/template");
 });
 
-test("robots.txt advertises the sitemap and content signals", async () => {
+test("robots.txtの場合にsitemap と content signals を案内する", async () => {
+  // Given: robots.txt
+  // When: 取得すると
   const response = await fetch(new URL("/robots.txt", targetUrl));
   const body = await response.text();
 
+  // Then
   expect(response.status).toBe(200);
   expect(body).toContain("Sitemap: https://nyatinte.com/sitemap.xml");
   expect(body).toContain("# LLMs: https://nyatinte.com/llms.txt");
@@ -255,10 +304,13 @@ test("robots.txt advertises the sitemap and content signals", async () => {
   );
 });
 
-test("GET /llms.txt serves markdown with core page links", async () => {
+test("llms.txtの場合に主要ページへのリンクを含む Markdown を返す", async () => {
+  // Given: llms.txt
+  // When: GET /llms.txt を呼ぶと
   const response = await fetch(new URL("/llms.txt", targetUrl));
   const body = await response.text();
 
+  // Then
   expect(response.status).toBe(200);
   expect(response.headers.get("content-type")).toContain("text/markdown");
   expect(body.startsWith(`# ${siteIdentity.name}`)).toBe(true);
@@ -270,29 +322,38 @@ test("GET /llms.txt serves markdown with core page links", async () => {
   expect(body).toContain(`(${canonicalSiteUrl("/sitemap.xml")})`);
 });
 
-test("Accept: text/markdown still negotiates HTML on / without hitting /llms.txt", async () => {
+test("/ で Accept: text/markdown を送るとき、/llms.txt ではなくトップページの Markdown を返す", async () => {
+  // Given: / で Accept: text/markdown を送るとき
+  // When: コンテンツを要求すると
   const response = await fetch(new URL("/", targetUrl), {
     headers: { Accept: "text/markdown" },
   });
+  // Then
   expect(response.status).toBe(200);
   expect(response.headers.get("content-type")).toContain("text/markdown");
   expect(await response.text()).toContain("# nyatinte");
 });
 
-test("home page JSON-LD parses into Person and WebSite graphs", async () => {
+test("トップページの場合にPerson と WebSite の graph を含む", async () => {
+  // Given: トップページ
+  // When: JSON-LD を解析すると
   const body = await fetch(new URL("/", targetUrl)).then((response) =>
     response.text()
   );
   const types = jsonLdGraphs(body).map((graph) => graph["@type"]);
+  // Then
   expect(types).toContain("Person");
   expect(types).toContain("WebSite");
 });
 
-test("home JSON-LD descriptions match the meta description", async () => {
+test("トップページの JSON-LDの場合にmeta description と一致する", async () => {
+  // Given: トップページの JSON-LD
+  // When: 説明文を確認すると
   const body = await fetch(new URL("/", targetUrl)).then((response) =>
     response.text()
   );
   const metaDescription = body.match(metaDescriptionPattern)?.[1];
+  // Then
   expect(metaDescription).toBe(siteIdentity.description);
   const graphs = jsonLdGraphs(body);
   const person = graphs.find((graph) => graph["@type"] === "Person");
@@ -301,8 +362,11 @@ test("home JSON-LD descriptions match the meta description", async () => {
   expect(website?.description).toBe(metaDescription);
 });
 
-test("published article pages expose BlogPosting JSON-LD", async () => {
+test("公開記事ページの場合にBlogPosting を含む", async () => {
+  // Given: 公開記事ページ
+  // When: JSON-LD を確認すると
   const slug = await publishedArticleSlug();
+  // Then
   expect(slug).toBeTruthy();
   const body = await fetch(new URL(`/log/${slug}`, targetUrl)).then(
     (response) => response.text()
@@ -315,8 +379,11 @@ test("published article pages expose BlogPosting JSON-LD", async () => {
   expect(body).toContain('href="https://nyatinte.com/log/rss.xml"');
 });
 
-test("published article pages return markdown when requested", async () => {
+test("公開記事ページの場合に記事の Markdown を返す", async () => {
+  // Given: 公開記事ページ
+  // When: Markdown を要求すると
   const slug = await publishedArticleSlug();
+  // Then
   expect(slug).toBeTruthy();
   const response = await fetch(new URL(`/log/${slug}`, targetUrl), {
     headers: { Accept: "text/markdown" },
@@ -328,13 +395,16 @@ test("published article pages return markdown when requested", async () => {
   expect(body.startsWith("# ")).toBe(true);
 });
 
-test("home and the log share a 1200 × 630 OGP image", async () => {
+test("トップページとログ一覧で1200 × 630 の共通 OGP 画像を使う", async () => {
+  // Given: トップページとログ一覧
+  // When: OGP 画像を確認すると
   const home = await fetch(new URL("/", targetUrl));
   const log = await fetch(new URL("/log", targetUrl));
   const homeBody = await home.text();
   const logBody = await log.text();
   const homeImage = homeBody.match(ogImagePattern)?.[1];
   const logImage = logBody.match(ogImagePattern)?.[1];
+  // Then
   expect(logBody).toContain('role="list"');
   expect(logBody).toContain('type="application/rss+xml"');
   expect(logBody).toContain('href="https://nyatinte.com/log/rss.xml"');
@@ -355,13 +425,17 @@ test("home and the log share a 1200 × 630 OGP image", async () => {
   expect(image.getUint32(20)).toBe(630);
 });
 
-test("公開ページに X のカード用タグが揃っている", async () => {
+test("公開ページに X のカード用メタタグを含める", async () => {
+  // Given: トップページとログ一覧
+  const paths = ["/", "/log"];
+  // When: 両方のページを取得する
   const bodies = await Promise.all(
-    ["/", "/log"].map(async (path) => {
+    paths.map(async (path) => {
       const response = await fetch(new URL(path, targetUrl));
       return [path, await response.text()] as const;
     })
   );
+  // Then: 両方のページに X のカード用メタタグを含める
   for (const [path, body] of bodies) {
     for (const name of [
       "twitter:card",

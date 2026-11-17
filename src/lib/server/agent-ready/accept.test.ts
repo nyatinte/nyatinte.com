@@ -1,7 +1,7 @@
 import { expect, test } from "vite-plus/test";
 import { prefersMarkdown, wantsMarkdown } from "./accept";
 
-test("prefers markdown only when its q-value beats text/html", () => {
+test("Given Accept の q 値、When Markdown と HTML の優先度を判定すると、Then Markdown の q 値が高い場合だけ優先する", () => {
   expect(prefersMarkdown("text/markdown")).toBe(true);
   expect(prefersMarkdown("text/markdown, text/html;q=0.9")).toBe(true);
   expect(prefersMarkdown("text/html, text/markdown;q=0.1")).toBe(false);
@@ -9,7 +9,7 @@ test("prefers markdown only when its q-value beats text/html", () => {
   expect(prefersMarkdown("*/*")).toBe(false);
 });
 
-test("wantsMarkdown reads the Accept request header", () => {
+test("Given HTTP リクエスト、When Markdown 希望を調べると、Then Accept ヘッダーを読む", () => {
   expect(
     wantsMarkdown(
       new Request("https://example.com/", {

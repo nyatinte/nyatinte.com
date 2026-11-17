@@ -9,7 +9,7 @@ import { parseVersionId } from "./parse-wrangler-version-id.mjs";
 const expected = "136328e2-6a45-4020-8f34-c072f743b031";
 const workerTag = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 
-test("upload 行の Version ID を取り、worker_tag は使わない", () => {
+test("Given upload 行に Version ID と worker_tag があるとき、When ID を解析すると、Then Version ID を使う", () => {
   assert.equal(
     parseVersionId(
       `${JSON.stringify({ type: "wrangler-session" })}\n${JSON.stringify({ type: "version-upload", version_id: expected, worker_tag: workerTag })}`
@@ -18,7 +18,7 @@ test("upload 行の Version ID を取り、worker_tag は使わない", () => {
   );
 });
 
-test("最後の upload 行を使い、不正な JSON 行は無視する", () => {
+test("Given 複数の upload 行と不正な JSON 行、When ID を解析すると、Then 最後の upload 行を使い不正な行を無視する", () => {
   const next = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
   assert.equal(
     parseVersionId(
@@ -28,7 +28,7 @@ test("最後の upload 行を使い、不正な JSON 行は無視する", () => 
   );
 });
 
-test("upload 行以外や不正な ID は失敗する", () => {
+test("Given upload 行でない入力または不正な ID、When ID を解析すると、Then 失敗する", () => {
   for (const input of [
     "",
     JSON.stringify({ type: "deploy", version_id: expected }),
@@ -39,7 +39,7 @@ test("upload 行以外や不正な ID は失敗する", () => {
   }
 });
 
-test("CLI はファイル無し・空ファイルで失敗する", () => {
+test("Given CLI に存在しないファイルまたは空ファイルを渡すとき、When 実行すると、Then 失敗する", () => {
   const dir = mkdtempSync(join(tmpdir(), "parse-version-id-"));
   try {
     const empty = join(dir, "empty.jsonl");

@@ -1,7 +1,7 @@
 import { expect, test } from "vite-plus/test";
 import { homeTransitionDirection } from "./home-transition";
 
-test("transitions between home and any other page", () => {
+test("Given トップページと別ページの間を移動するとき、When 遷移方向を判定すると、Then in または out を返す", () => {
   for (const path of [
     "/log",
     "/log/",
@@ -14,7 +14,7 @@ test("transitions between home and any other page", () => {
   }
 });
 
-test("does not transition unless exactly one non-empty path is home", () => {
+test("Given 遷移元と遷移先の片方だけがトップページでないとき、When 遷移方向を判定すると、Then null を返す", () => {
   expect(homeTransitionDirection("/", "/")).toBeNull();
   expect(homeTransitionDirection("/log", "/log/template")).toBeNull();
   expect(homeTransitionDirection("/log", "/log")).toBeNull();

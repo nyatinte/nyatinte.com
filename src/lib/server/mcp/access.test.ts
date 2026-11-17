@@ -56,7 +56,7 @@ function requestWithToken(token?: string) {
   });
 }
 
-test("rejects requests without an Access JWT", async () => {
+test("Given Access JWT のないリクエスト、When 認証すると、Then 拒否する", async () => {
   const result = await authenticateAccessRequest(requestWithToken(), {
     ACCESS_AUDIENCE: AUDIENCE,
     ACCESS_TEAM_DOMAIN: "https://unit-test.cloudflareaccess.com",
@@ -67,7 +67,7 @@ test("rejects requests without an Access JWT", async () => {
   expect((result as Response).headers.get("cache-control")).toBe("no-store");
 });
 
-test("accepts a signed Access JWT for the configured issuer and audience", async () => {
+test("Given issuer と audience が一致する署名済み Access JWT、When 認証すると、Then 受け入れる", async () => {
   const issuer = `https://valid-${crypto.randomUUID()}.cloudflareaccess.com`;
   const token = await signedToken({ issuer });
 
@@ -84,7 +84,7 @@ test("accepts a signed Access JWT for the configured issuer and audience", async
   expect(result).not.toBeInstanceOf(Response);
 });
 
-test("accepts a signed service token with an empty subject and client ID", async () => {
+test("Given subject が空で client ID を持つ署名済み service token、When 認証すると、Then 受け入れる", async () => {
   const issuer = `https://service-${crypto.randomUUID()}.cloudflareaccess.com`;
   const token = await signedToken({
     commonName: "service-client.access",
@@ -134,7 +134,7 @@ test.each([
   expect((result as Response).status).toBe(401);
 });
 
-test("fails closed when Access configuration is missing", async () => {
+test("Given Access 設定が不足しているとき、When 認証すると、Then fail closed にする", async () => {
   const result = await authenticateAccessRequest(
     requestWithToken("not-a-jwt"),
     {}
@@ -144,7 +144,7 @@ test("fails closed when Access configuration is missing", async () => {
   expect((result as Response).status).toBe(503);
 });
 
-test("rejects requests from untrusted hosts before authenticating", async () => {
+test("Given 信頼されない host からのリクエスト、When 認証前に検査すると、Then 拒否する", async () => {
   const request = new Request("https://attacker.example/mcp", {
     headers: { Origin: "https://attacker.example" },
     method: "POST",
@@ -155,7 +155,7 @@ test("rejects requests from untrusted hosts before authenticating", async () => 
   expect(result.status).toBe(403);
 });
 
-test("rejects missing Access credentials at the endpoint", async () => {
+test("Given Access 認証情報のない endpoint リクエスト、When 処理すると、Then 拒否する", async () => {
   const result = await handleMcpRequest(requestWithToken(), {
     ACCESS_AUDIENCE: AUDIENCE,
     ACCESS_TEAM_DOMAIN: "https://unit-test.cloudflareaccess.com",
@@ -164,7 +164,7 @@ test("rejects missing Access credentials at the endpoint", async () => {
   expect(result.status).toBe(401);
 });
 
-test("does not require a GitHub token after Access authentication", async () => {
+test("Given Access 認証済みのリクエスト、When endpoint を利用すると、Then GitHub token を要求しない", async () => {
   const issuer = `https://database-${crypto.randomUUID()}.cloudflareaccess.com`;
   const token = await signedToken({ issuer });
 

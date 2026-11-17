@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vite-plus/test";
 import { getTocVisibility } from "./toc-visibility";
 
-describe("getTocVisibility", () => {
-  it("keeps the first heading active while the scrubber is hidden", () => {
+describe("目次の表示状態", () => {
+  it("Given scrubber が非表示のとき、When 表示状態を調べると、Then 最初の見出しを active にする", () => {
     expect(
       getTocVisibility({
         headingPositions: [
@@ -13,7 +13,7 @@ describe("getTocVisibility", () => {
       })
     ).toEqual({ activeId: "one", visible: false });
   });
-  it("shows when the first heading reaches the threshold", () => {
+  it("Given 最初の見出しがしきい値に達したとき、When 表示状態を調べると、Then scrubber を表示する", () => {
     expect(
       getTocVisibility({
         headingPositions: [{ id: "one", top: 390 }],
@@ -21,7 +21,7 @@ describe("getTocVisibility", () => {
       })
     ).toEqual({ activeId: "one", visible: true });
   });
-  it("activates the heading in the reading zone", () => {
+  it("Given 見出しが読書領域にあるとき、When 表示状態を調べると、Then その見出しを active にする", () => {
     expect(
       getTocVisibility({
         headingPositions: [
@@ -32,7 +32,7 @@ describe("getTocVisibility", () => {
       })
     ).toEqual({ activeId: "two", visible: true });
   });
-  it("uses scroll margin as the minimum reading zone on short viewports", () => {
+  it("Given viewport が低いとき、When 読書領域を計算すると、Then scroll margin を最小領域にする", () => {
     expect(
       getTocVisibility({
         headingPositions: [
@@ -43,7 +43,7 @@ describe("getTocVisibility", () => {
       })
     ).toEqual({ activeId: "two", visible: true });
   });
-  it("hides after the last heading leaves the viewport", () => {
+  it("Given 最後の見出しが viewport の外に出たとき、When 表示状態を調べると、Then scrubber を隠す", () => {
     expect(
       getTocVisibility({
         headingPositions: [
@@ -54,7 +54,7 @@ describe("getTocVisibility", () => {
       })
     ).toEqual({ activeId: "two", visible: false });
   });
-  it("defaults active heading to the first before it reaches the reading zone", () => {
+  it("Given 見出しが読書領域に達する前、When active 見出しを調べると、Then 最初の見出しを返す", () => {
     expect(
       getTocVisibility({
         headingPositions: [{ id: "one", top: 500 }],

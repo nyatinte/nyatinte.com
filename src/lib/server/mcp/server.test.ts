@@ -5,7 +5,7 @@ import {
 import { expect, test } from "vite-plus/test";
 import { createSiteMcpHandler } from "./server";
 
-test("MCP starts without tools so blog tools can be added later", async () => {
+test("Given MCP サーバー、When 起動すると、Then ツールを登録しない", async () => {
   const handler = createSiteMcpHandler();
   const transport = new StreamableHTTPClientTransport(
     new URL("https://nyatinte.com/mcp"),

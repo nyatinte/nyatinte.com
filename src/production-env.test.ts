@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { expect, test } from "vite-plus/test";
 
-test("production deployment requires Access configuration", () => {
+test("Given 本番環境、When Access 設定が不足していると、Then 設定の読み込みに失敗する", () => {
   const cwd = mkdtempSync(join(tmpdir(), "dotcom-env-"));
   copyFileSync(resolve(".env.schema"), join(cwd, ".env.schema"));
   const executable = resolve("node_modules/.bin/varlock");

@@ -31,12 +31,12 @@ test.each([
 const rootRule = tokens.match(/:root\s*\{([^}]*)\}/u)?.[1];
 const backgroundToken = /--home-background\s*:/u;
 
-test("keeps shared tokens independent of page classes", () => {
+test("Given 共通テーマトークン、When ページごとの class が変わっても、Then トークンは独立している", () => {
   expect(tokens).not.toContain(":has(");
   expect(rootRule).toMatch(backgroundToken);
 });
 
-test("declares explicit color schemes for stored preferences", () => {
+test("Given 保存済みのテーマ設定、When color scheme を宣言すると、Then 値を明示する", () => {
   for (const [theme, scheme] of [
     ["light", "light"],
     ["dark", "dark"],
@@ -48,7 +48,7 @@ test("declares explicit color schemes for stored preferences", () => {
   }
 });
 
-test("keeps the full and Latin font subsets from overlapping", () => {
+test("Given full と Latin のフォント subset、When unicode range を定義すると、Then 範囲は重複しない", () => {
   expect(layout.match(/unicode-range:\s*U\+0100-10FFFF;/gu)).toHaveLength(2);
   expect(
     layout.match(/font-display:\s*optional;\s*unicode-range:\s*U\+0000-00FF;/gu)

@@ -2,14 +2,14 @@ import { expect, test } from "vite-plus/test";
 import { canonicalSiteUrl } from "./constants";
 import { renderAgentMarkdown } from "./markdown";
 
-test("renders markdown for the home page", () => {
+test("Given トップページ、When Markdown を描画すると、Then ページ内容を返す", () => {
   const rendered = renderAgentMarkdown({ canonicalPath: "/", kind: "home" });
   expect(rendered.status).toBe(200);
   expect(rendered.body).toContain("# nyatinte");
   expect(rendered.body).toContain(`[ログ](${canonicalSiteUrl("/log")})`);
 });
 
-test("renders markdown for unknown pages with a 404 status", () => {
+test("Given 存在しないページ、When Markdown を描画すると、Then 404 とエラーメッセージを返す", () => {
   const rendered = renderAgentMarkdown({
     canonicalPath: "/missing",
     kind: "not-found",
@@ -18,7 +18,7 @@ test("renders markdown for unknown pages with a 404 status", () => {
   expect(rendered.body).toContain("ページが見つかりません");
 });
 
-test("renders markdown for missing articles with a 404 status", () => {
+test("Given 存在しない記事、When Markdown を描画すると、Then 404 とエラーメッセージを返す", () => {
   const rendered = renderAgentMarkdown({
     canonicalPath: "/log/missing",
     kind: "log-detail",
@@ -28,7 +28,7 @@ test("renders markdown for missing articles with a 404 status", () => {
   expect(rendered.body).toContain("記事が見つかりません");
 });
 
-test("renders the sample article as markdown", () => {
+test("Given 公開記事、When Markdown を描画すると、Then 記事本文を返す", () => {
   const rendered = renderAgentMarkdown({
     canonicalPath: "/log/template",
     kind: "log-detail",
