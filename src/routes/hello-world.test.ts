@@ -354,3 +354,23 @@ test("home and the log share a 1200 × 630 OGP image", async () => {
   expect(image.getUint32(16)).toBe(1200);
   expect(image.getUint32(20)).toBe(630);
 });
+
+test("公開ページに X のカード用タグが揃っている", async () => {
+  const bodies = await Promise.all(
+    ["/", "/log"].map(async (path) => {
+      const response = await fetch(new URL(path, targetUrl));
+      return [path, await response.text()] as const;
+    })
+  );
+  for (const [path, body] of bodies) {
+    for (const name of [
+      "twitter:card",
+      "twitter:site",
+      "twitter:title",
+      "twitter:description",
+      "twitter:image",
+    ]) {
+      expect(body, `${path}: ${name}`).toContain(`name="${name}"`);
+    }
+  }
+});
