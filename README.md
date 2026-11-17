@@ -40,9 +40,9 @@ HTTP テストの接続先は `VITE_HELLO_WORLD_URL` で変更できます。そ
 
 ## ログ
 
-`/log` は記事の一覧、`/log/<slug>` は記事です。どちらもログイン不要で閲覧できます。記事は `src/content/log/` の `.md` と `.svx` で、公開ページはビルド時にそのファイルを読みます。一覧は日付の新しい順です。同じ日付の記事はスラッグの昇順です。
+`/log` は記事の一覧、`/log/<slug>` は記事です。どちらもログイン不要で閲覧できます。記事は `src/content/log/<slug>/index.md` または `index.svx` に置き、公開ページはビルド時にそのファイルを読みます。一覧は日付の新しい順です。同じ日付の記事はスラッグの昇順です。
 
-frontmatter の `title`、`description`、`date` は必須です。`updated` と `image` は任意です。日付は `YYYY-MM-DD` です。`image` は `/` で始まるサイト内のパスか、http または https の URL です。frontmatter が不正な記事があると、ビルドは失敗します。雛形は `src/content/log/template.md` です。ファイル名がスラッグになり、使える文字は小文字の英数字とハイフンです。
+frontmatter の `title`、`description`、`date` は必須です。`updated` と `image` は任意です。日付は `YYYY-MM-DD` です。`image` は同じディレクトリ内の画像への相対パス（例: `./og.jpg`）、`/` で始まるサイト内のパス、または http か https の URL です。frontmatter が不正な記事や、指定した相対パスに画像がない記事があると、ビルドは失敗します。雛形は `src/content/log/template/index.md` です。ディレクトリ名がスラッグになり、使える文字は小文字の英数字とハイフンです。
 
 `/done` と `/done/` 以下は `/log` へ 301 で転送します。
 

@@ -2,7 +2,7 @@
 
 ## プロダクト
 
-`nyatinte.com` の個人サイト。`/log` で、わからなかったことを調べて書いた記事を公開する。閲覧はログイン不要。記事はエージェントとの会話を Markdown か MDX に書き出し、`src/content/log/<slug>.md` または `.svx` に置く。X での OGP を重視する。
+`nyatinte.com` の個人サイト。`/log` で、わからなかったことを調べて書いた記事を公開する。閲覧はログイン不要。記事はエージェントとの会話を Markdown か MDX に書き出し、`src/content/log/<slug>/index.md` または `index.svx` に置く。記事用の OGP 画像も同じディレクトリに置ける。X での OGP を重視する。
 
 記事の frontmatter は Zod で検証する。必須は `title`、`description`、`date`。任意は `updated` と `image`。不正な frontmatter はビルドを失敗させる。下書きは設けない。公開ページはビルド時のファイルを読む。一覧は日付の新しい順で、同じ日付ではスラッグの昇順である。
 
