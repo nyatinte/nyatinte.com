@@ -27,6 +27,14 @@
     property="og:image:alt"
   >
   <meta content="summary_large_image" name="twitter:card">
+  <meta content="@nyatinte" name="twitter:site">
+  <meta content="nyatinte.com" name="twitter:title">
+  <meta content={data.siteDescription} name="twitter:description">
+  <meta content={data.ogImageUrl} name="twitter:image">
+  <meta
+    content="氷河にいる親子ペンギンと nyatinte.com の文字"
+    name="twitter:image:alt"
+  >
   <link
     as="image"
     fetchpriority="high"

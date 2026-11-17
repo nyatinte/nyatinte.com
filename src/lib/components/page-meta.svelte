@@ -48,7 +48,9 @@
   {/if}
   <meta content={imageAlt} property="og:image:alt">
   <meta content="summary_large_image" name="twitter:card">
+  <meta content="@nyatinte" name="twitter:site">
   <meta content={title} name="twitter:title">
   <meta content={description} name="twitter:description">
   <meta content={imageUrl} name="twitter:image">
+  <meta content={imageAlt} name="twitter:image:alt">
 </svelte:head>
