@@ -2,8 +2,11 @@ import { expect, test } from "vite-plus/test";
 import { canonicalSiteUrl, siteIdentity } from "./constants";
 import { buildLlmsTxt } from "./llms-txt";
 
-test("Given llms.txt を生成するとき、When 公開ページを列挙すると、Then ログと記事を含める", () => {
+test("llms.txt を生成するとき、ログと記事を含める", () => {
+  // Given: llms.txt を生成するとき
+  // When: 公開ページを列挙すると
   const body = buildLlmsTxt();
+  // Then
   expect(body.startsWith(`# ${siteIdentity.name}\n`)).toBe(true);
   expect(body).toContain(`> ${siteIdentity.description}`);
   expect(body).toContain("## Pages");

@@ -2,7 +2,10 @@ import { describe, expect, it } from "vite-plus/test";
 import { getTocVisibility } from "./toc-visibility";
 
 describe("目次の表示状態", () => {
-  it("Given scrubber が非表示のとき、When 表示状態を調べると、Then 最初の見出しを active にする", () => {
+  it("scrubber が非表示のとき、最初の見出しを active にする", () => {
+    // Given: scrubber が非表示のとき
+    // When: 表示状態を調べると
+    // Then
     expect(
       getTocVisibility({
         headingPositions: [
@@ -13,7 +16,10 @@ describe("目次の表示状態", () => {
       })
     ).toEqual({ activeId: "one", visible: false });
   });
-  it("Given 最初の見出しがしきい値に達したとき、When 表示状態を調べると、Then scrubber を表示する", () => {
+  it("最初の見出しがしきい値に達したとき、scrubber を表示する", () => {
+    // Given: 最初の見出しがしきい値に達したとき
+    // When: 表示状態を調べると
+    // Then
     expect(
       getTocVisibility({
         headingPositions: [{ id: "one", top: 390 }],
@@ -21,7 +27,10 @@ describe("目次の表示状態", () => {
       })
     ).toEqual({ activeId: "one", visible: true });
   });
-  it("Given 見出しが読書領域にあるとき、When 表示状態を調べると、Then その見出しを active にする", () => {
+  it("見出しが読書領域にあるとき、その見出しを active にする", () => {
+    // Given: 見出しが読書領域にあるとき
+    // When: 表示状態を調べると
+    // Then
     expect(
       getTocVisibility({
         headingPositions: [
@@ -32,7 +41,10 @@ describe("目次の表示状態", () => {
       })
     ).toEqual({ activeId: "two", visible: true });
   });
-  it("Given viewport が低いとき、When 読書領域を計算すると、Then scroll margin を最小領域にする", () => {
+  it("viewport が低いとき、scroll margin を最小領域にする", () => {
+    // Given: viewport が低いとき
+    // When: 読書領域を計算すると
+    // Then
     expect(
       getTocVisibility({
         headingPositions: [
@@ -43,7 +55,10 @@ describe("目次の表示状態", () => {
       })
     ).toEqual({ activeId: "two", visible: true });
   });
-  it("Given 最後の見出しが viewport の外に出たとき、When 表示状態を調べると、Then scrubber を隠す", () => {
+  it("最後の見出しが viewport の外に出たとき、scrubber を隠す", () => {
+    // Given: 最後の見出しが viewport の外に出たとき
+    // When: 表示状態を調べると
+    // Then
     expect(
       getTocVisibility({
         headingPositions: [
@@ -54,7 +69,10 @@ describe("目次の表示状態", () => {
       })
     ).toEqual({ activeId: "two", visible: false });
   });
-  it("Given 見出しが読書領域に達する前、When active 見出しを調べると、Then 最初の見出しを返す", () => {
+  it("見出しが読書領域に達する前の場合に最初の見出しを返す", () => {
+    // Given: 見出しが読書領域に達する前
+    // When: active 見出しを調べると
+    // Then
     expect(
       getTocVisibility({
         headingPositions: [{ id: "one", top: 500 }],

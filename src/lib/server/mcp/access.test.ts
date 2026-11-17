@@ -56,18 +56,23 @@ function requestWithToken(token?: string) {
   });
 }
 
-test("Given Access JWT のないリクエスト、When 認証すると、Then 拒否する", async () => {
+test("Access JWT のないリクエストの場合に拒否する", async () => {
+  // Given: Access JWT のないリクエスト
+  // When: 認証すると
   const result = await authenticateAccessRequest(requestWithToken(), {
     ACCESS_AUDIENCE: AUDIENCE,
     ACCESS_TEAM_DOMAIN: "https://unit-test.cloudflareaccess.com",
   });
 
+  // Then
   expect(result).toBeInstanceOf(Response);
   expect((result as Response).status).toBe(401);
   expect((result as Response).headers.get("cache-control")).toBe("no-store");
 });
 
-test("Given issuer と audience が一致する署名済み Access JWT、When 認証すると、Then 受け入れる", async () => {
+test("issuer と audience が一致する署名済み Access JWTの場合に受け入れる", async () => {
+  // Given: issuer と audience が一致する署名済み Access JWT
+  // When: 認証すると
   const issuer = `https://valid-${crypto.randomUUID()}.cloudflareaccess.com`;
   const token = await signedToken({ issuer });
 
@@ -76,6 +81,7 @@ test("Given issuer と audience が一致する署名済み Access JWT、When �
     ACCESS_TEAM_DOMAIN: issuer,
   });
 
+  // Then
   expect(result).toMatchObject({
     clientId: "access-user-123",
     scopes: [],
@@ -84,7 +90,9 @@ test("Given issuer と audience が一致する署名済み Access JWT、When �
   expect(result).not.toBeInstanceOf(Response);
 });
 
-test("Given subject が空で client ID を持つ署名済み service token、When 認証すると、Then 受け入れる", async () => {
+test("subject が空で client ID を持つ署名済み service tokenの場合に受け入れる", async () => {
+  // Given: subject が空で client ID を持つ署名済み service token
+  // When: 認証すると
   const issuer = `https://service-${crypto.randomUUID()}.cloudflareaccess.com`;
   const token = await signedToken({
     commonName: "service-client.access",
@@ -96,6 +104,7 @@ test("Given subject が空で client ID を持つ署名済み service token、Wh
     ACCESS_AUDIENCE: AUDIENCE,
     ACCESS_TEAM_DOMAIN: issuer,
   });
+  // Then
   expect(result).toMatchObject({ clientId: "service-client.access", token });
 });
 
@@ -105,14 +114,17 @@ test.each([
   [123, "app"],
   ["service-client.access", "org"],
 ])(
-  "rejects a service token without a valid client ID and type",
+  "client ID または token type が不正な service token を拒否する",
   async (commonName, type) => {
+    // Given: client ID または token type が不正な service token
     const issuer = `https://invalid-service-${crypto.randomUUID()}.cloudflareaccess.com`;
     const token = await signedToken({ commonName, issuer, subject: "", type });
+    // When: Access JWT を検証する
     const result = await authenticateAccessRequest(requestWithToken(token), {
       ACCESS_AUDIENCE: AUDIENCE,
       ACCESS_TEAM_DOMAIN: issuer,
     });
+    // Then: 401 で拒否する
     expect(result).toBeInstanceOf(Response);
     expect((result as Response).status).toBe(401);
   }
@@ -121,30 +133,41 @@ test.each([
 test.each([
   ["issuer", "https://wrong-issuer.cloudflareaccess.com", AUDIENCE],
   ["audience", "https://valid.cloudflareaccess.com", "wrong-audience"],
-])("rejects a token with the wrong %s", async (_claim, issuer, audience) => {
-  const teamDomain = `https://test-${crypto.randomUUID()}.cloudflareaccess.com`;
-  const token = await signedToken({ audience, issuer });
+])(
+  "issuer または audience が不正な token を拒否する",
+  async (_claim, issuer, audience) => {
+    // Given: issuer または audience が設定と一致しない署名済み token
+    const teamDomain = `https://test-${crypto.randomUUID()}.cloudflareaccess.com`;
+    const token = await signedToken({ audience, issuer });
 
-  const result = await authenticateAccessRequest(requestWithToken(token), {
-    ACCESS_AUDIENCE: AUDIENCE,
-    ACCESS_TEAM_DOMAIN: teamDomain,
-  });
+    // When: Access JWT を設定と照合する
+    const result = await authenticateAccessRequest(requestWithToken(token), {
+      ACCESS_AUDIENCE: AUDIENCE,
+      ACCESS_TEAM_DOMAIN: teamDomain,
+    });
 
-  expect(result).toBeInstanceOf(Response);
-  expect((result as Response).status).toBe(401);
-});
+    // Then: 401 で拒否する
+    expect(result).toBeInstanceOf(Response);
+    expect((result as Response).status).toBe(401);
+  }
+);
 
-test("Given Access 設定が不足しているとき、When 認証すると、Then fail closed にする", async () => {
+test("Access 設定が不足しているとき、fail closed にする", async () => {
+  // Given: Access 設定が不足しているとき
+  // When: 認証すると
   const result = await authenticateAccessRequest(
     requestWithToken("not-a-jwt"),
     {}
   );
 
+  // Then
   expect(result).toBeInstanceOf(Response);
   expect((result as Response).status).toBe(503);
 });
 
-test("Given 信頼されない host からのリクエスト、When 認証前に検査すると、Then 拒否する", async () => {
+test("信頼されない host からのリクエストの場合に拒否する", async () => {
+  // Given: 信頼されない host からのリクエスト
+  // When: 認証前に検査すると
   const request = new Request("https://attacker.example/mcp", {
     headers: { Origin: "https://attacker.example" },
     method: "POST",
@@ -152,19 +175,25 @@ test("Given 信頼されない host からのリクエスト、When 認証前に
 
   const result = await handleMcpRequest(request, {});
 
+  // Then
   expect(result.status).toBe(403);
 });
 
-test("Given Access 認証情報のない endpoint リクエスト、When 処理すると、Then 拒否する", async () => {
+test("Access 認証情報のない endpoint リクエストの場合に拒否する", async () => {
+  // Given: Access 認証情報のない endpoint リクエスト
+  // When: 処理すると
   const result = await handleMcpRequest(requestWithToken(), {
     ACCESS_AUDIENCE: AUDIENCE,
     ACCESS_TEAM_DOMAIN: "https://unit-test.cloudflareaccess.com",
   });
 
+  // Then
   expect(result.status).toBe(401);
 });
 
-test("Given Access 認証済みのリクエスト、When endpoint を利用すると、Then GitHub token を要求しない", async () => {
+test("Access 認証済みのリクエストの場合にGitHub token を要求しない", async () => {
+  // Given: Access 認証済みのリクエスト
+  // When: endpoint を利用すると
   const issuer = `https://database-${crypto.randomUUID()}.cloudflareaccess.com`;
   const token = await signedToken({ issuer });
 
@@ -174,6 +203,7 @@ test("Given Access 認証済みのリクエスト、When endpoint を利用す�
   });
   const body = await result.text();
 
+  // Then
   expect(result.status).not.toBe(401);
   expect(result.status).not.toBe(503);
   expect(body).not.toContain("GitHub");
