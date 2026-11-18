@@ -1,11 +1,13 @@
 import { parse } from "yaml";
 import z from "zod/v4";
-import { fileName } from "./file-name";
+import { articleFileName } from "./file-name";
 
 const datePattern = /^\d{4}-\d{2}-\d{2}$/u;
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
 const lineBreakPattern = /[\r\n]/u;
 const extensionPattern = /\.(md|svx)$/u;
+const localImagePattern =
+  /^\.\/[a-zA-Z0-9][a-zA-Z0-9._-]*\.(?:png|jpe?g|webp|gif)$/u;
 
 function splitFrontmatter(source: string) {
   const normalized = source.replaceAll("\r\n", "\n");
@@ -56,6 +58,9 @@ const imageReference = z
   .trim()
   .min(1)
   .refine((value) => {
+    if (localImagePattern.test(value)) {
+      return true;
+    }
     if (value.startsWith("/") && !value.startsWith("//")) {
       return true;
     }
@@ -65,7 +70,7 @@ const imageReference = z
     } catch {
       return false;
     }
-  }, "Use a site path or an http(s) URL");
+  }, "Use a local image, a site path, or an http(s) URL");
 
 export const articleFrontmatterSchema = z
   .object({
@@ -151,7 +156,7 @@ export function sortArticlesNewestFirst(articles: Article[]) {
 
 export function articlesFromSources(sources: Record<string, string>) {
   const articles = Object.entries(sources).map(([path, source]) =>
-    parseArticleSource(fileName(path), source)
+    parseArticleSource(articleFileName(path), source)
   );
   const seen = new Set<string>();
   for (const article of articles) {
