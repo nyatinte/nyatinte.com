@@ -1,0 +1,132 @@
+---
+title: 大 AI 時代だからこそ身軽になれ
+description: AI 時代に新しい技術を試す価値と、土台をベースに差分更新していく学び方について。
+date: 2026-11-18
+image: ./og.png
+---
+
+<script>
+  import XPostCard from '../../../lib/components/x-post-card.svelte';
+  import nyatinteAvatar from './nyatinte-avatar.jpg';
+  import codeModeImage from './code-mode-post.png';
+</script>
+
+AI をはじめとした技術の進化がこれだけ早い時代に、一つのツールに固執して、新しいものに触れる機会を失うのはあまりにももったいない。
+
+すでに〇〇というツールで満足しているから…という主張も理解できるが、個人的にはそれだけを理由に新しいものを試さないのは、本当にもったいないと思う！
+
+だからこそ、今の時代はいつでも新しいものを試せるくらいには身軽であるべきだと考えている。
+
+## 流行っているものには何かしらの理由がある
+特に ChatGPT などの LLM が登場した時期頃から、「AI 驚き屋」というように揶揄されている人もいるが、そもそもなぜ驚き屋が出るのか？火のないところに煙は立たないように、何かしら流行る理由があるはずだと考えている。
+
+もちろん、流行っているからといって必ずしも優れた技術だとは限らないが、それでもなぜ流行っているのかを知ることには価値があると思う。そしてその理由は経験上、試さないと理解できない、これまでに試した経験がないと理解が難しいものであると思っている。
+
+最近（日本だと 2026 年 10 月頃〜）話題になった Muse もそうだ。Muse は無料で使い始めることができるのに、Muse を試しすらしない人もいる。Muse という存在を知っていて、なおかつ話題になっていると知っていても実際に触らない人がいる。
+
+個人的に、Muse にはかなり驚いているが、驚きの理由としては OpenClaw や Hermes 等のパーソナルエージェントでは出来ていた機能ではあるものの、それが箱出しで zero config でかなり使いものになるアプリケーションになっていること、VM 環境やコネクタ連携等がシームレスに連携されており、本当に気軽に使い始めやすいアプリになっていることだ。限界はこれまでのパーソナルエージェントと大差ないと思うが、アプリケーションとしては別物である。
+
+この OpenClaw や Hermes 等でもできていたけど、という文脈は、それこそ過去に何かを試していたからこその文脈である。つまり、実際に Muse を試したからこそ、その流行っている理由に気づけたし、過去に OpenClaw や Hermes 等を試していたからこそ、何が違うのかを理解できたのだと思う。
+
+## 正しい意味で驚くためには前提知識がいる
+Muse を例にあげたが、少し過去を振り返ってみる。
+
+Claude Code の Skill 機能は 2025 年 10 月にリリースされたが、ここで今までの機能と決定的に違う部分を理解できた人はどれだけいるか？
+
+Claude Code をそれ以前にそこそこ使っていると、Custom Slash Command との関連が理解でき、ユーザーが呼び出す構造から、エージェントがコンテキストに基づいて呼び出すこともできる構造に拡張されたのだというふうに理解できる。後に Slash Command は Skill と統合されるのだが、その流れも自然と理解できる。
+
+Skill の呼び出し自体が Claude Code においても `/` であることも当然のように理解できるだろう。あとは Claude Code の Skill における `disable-model-invocation: true` も結局これは Slash Command だというふうに直感的にわかるだろう。
+
+Skill 登場時は大驚き屋時代だったと思うが、これも前提知識を持った上で見てみると、何が本質的な内容なのかを理解でき、正しい意味で驚けると考えている。
+
+## 人生は差分更新や！
+前提となる知識が大事だよーと主張してきたが、正直今の時代は変化が早すぎる。流行り廃りも本当に早いし、新しいものがポンポン出てくる、更新もどんどんされていく。
+
+自分は Web フロントエンド周りの技術が好きで、Next.js アップデート早いよー破壊的変更多いよーなどと 2 年前くらいはキャッキャしていたが、今はぶっちゃけその比ではない。
+
+複数の技術を深掘りして追いかけて極めたと胸を張って言えるくらいになってから次に進むのでは変化が早すぎる。理想は色々な技術を深掘りをできて広く深く知識をつけれたらいいのだが、超人じゃないと無理だ。
+
+AI 時代になって学習も効率的になっているが、人間そのものが進化したわけではないので学習能力・認知能力には限界がある。だからこそ、とりあえず早いうちに 1 回触っておいて土台をつけておき、その土台をベースにした差分更新が重要だと考えている。というか差分更新じゃないと自分はたぶんついていけない。
+
+最近の自分の例だと Claude Code に Code Mode (ツール呼び出しをまとめるやつ) が来たとき、これ Pi Agent のやつだという更新ができた。
+
+<figure class="delta-diagram">
+  <figcaption><span>人生は差分更新や！</span><strong>新しい技術は、既存の土台との差分で理解する</strong></figcaption>
+  <div class="delta-flow" role="img" aria-label="既存の土台となる知識に新しい技術の差分を足すことで理解を更新し、次の土台にする">
+    <div class="delta-step"><small>すでにある</small><strong>土台の知識</strong><span>Claude Code・Pi Agent・MCP</span></div>
+    <span class="delta-plus" aria-hidden="true">＋</span>
+    <div class="delta-step delta-new"><small>新しく触れる</small><strong>新しい技術</strong><span>Code Mode</span></div>
+    <span class="delta-arrow" aria-hidden="true">→</span>
+    <div class="delta-step delta-result"><small>差分を理解して</small><strong>知識を更新</strong><span>Tool Call にも適用された</span></div>
+  </div>
+  <p>一度触れて土台をつくる → 次は差分で学ぶ → 更新した知識が次の土台になる</p>
+</figure>
+
+<XPostCard
+  href="https://x.com/nyatinte/status/2121577812138266721"
+  author="nyatinte"
+  handle="nyatinte"
+  avatar={nyatinteAvatar}
+  text={'Claude Code に Code Mode 来たんだ\nPi とかで使っていたのでようやく来たか感'}
+  image={codeModeImage}
+  imageAlt="通常のツール呼び出しと Code Mode の流れを比較した図"
+  date="2026年11月14日"
+/>
+
+これも Claude Code のアップデートの土台と、Pi Agent という関連する土台があったからこそ、すんなり理解できた。何なら Code Mode という概念自体も [Cloudflare](https://blog.cloudflare.com/code-mode/) や [Anthropic](https://t.co/GUwqWTXo6e) の 2025 後半に出したこの辺の記事を見ていると、あーこれが MCP のみならず Tool Call に適用されたのね、と理解できる。
+
+Tool Call も MCP の Tool の概念を知っていれば小さい差分として理解できるだろう。
+
+というふうにいくつかの土台が相互的に差分更新されることで知識として定着していく。
+
+## ではなぜ新しいものを試せないのか？
+これは自分もあるあるなのだが、すでに使っているツールに満足していると、新しいものを試す動機が弱くなると感じる。
+
+特に自分が愛着を持ってカスタマイズして config も調整して、カラーテーマも自分の好きな色なんかにしちゃって…というときはこれでよくね？と思う瞬間は多い。ほかにも、あたらしいものが有料な時も抵抗を感じる。
+
+例えば Grok Bot がそうだ。X Premium に統合された今、Grok Bot を試すためには ¥5,280。初月割があっても半額で ¥2,640、払えるけどちょっとだけ試すにしては微妙に抵抗感のある金額だと思う。X アカウント運用を頑張っているならともかく、Grok Bot だけを試すにしては…となる人も多いだろう。
+
+ただ、金銭的なハードルだけが新しいものを試さない理由なのだろうか？ほかにも一方で安いけど試さないという例もあると思っている。
+
+例えば [OpenCode Go](https://x.com/opencode/status/2116209960673800474)。Deepseek V4.1 Flash が $10 で $100 使える。ZDR もある。
+
+GLM 5.3 に関しては気が狂ったのか、今週末までは $10 で $500 使える。意味がわからない。
+
+これだけ安価に新しいモデル、特に OpenWeight 系を試せる環境があっても、実際には試さない人も多いと思う。同僚に OpenCode Go の格安っぷりを布教したけど実際に使った人は多分ほとんどいない。
+
+しかし、これまで書いてきたように実際に触ってみることでしか得られない栄養がある。現状に満足していたり、移行のめんどくささを理由に機会を逃すのはもったいない。
+
+じゃあ、面倒な部分をそれこそ AI に任せてしまえばいい。
+
+## 身軽になるべきだが、ミニマリストになるべきではない
+AI 時代で大きく変わったこととして、とりあえず引っ越すコストが本当に下がった。config がファイル管理されているなら、そのファイルを編集して移行してもらえばいいし、GUI アプリケーションも設定が面倒ならデスクトップ操作自体を任せちゃえばいい。
+
+パソコンをたたかなくても、リモートでアクセスできるようにして grok bot にこれ試したいから入れてセットアップしておいてと頼めば、帰宅した瞬間に試せる環境が整うくらいになっている。
+
+自分は AI 時代より前から便利ツール系やモダン技術系が好きで、エディタもコロコロ変えるし、ランチャーも alfred, raycast とか試すし、スクショアプリは 5 こ位比較検討してたりとしていたが、本当に楽になった。
+
+試すコストも減ったし、色々なものが（それこそ slop も含め）新しく出てきた。たぶん 2 年前に使ってたツールはほぼすべて置き換わっている。
+
+若干脱線したが、何かを試したいと少しでも思ったときに、いつでもどこでも動けるくらいには身軽になっている方が絶対いい。
+
+かといって、すべてのものを捨ててミニマリスト的な身軽さを維持するのではなく、AI を 24/365 どこでも対応の引越し業者的に扱える体制がベストであると個人的には考える。
+
+大 AI 時代だから身軽になれ、とりあえず Muse 知っているのに試してないやつは試せ。Grok Bot 興味あるけど試してない人は一歩踏み出してみよう。
+
+そして面白いものがあったら自分に教えてください、たぶん飛びつきます！！
+
+<style>
+  .delta-diagram { margin: 2rem 0; padding: clamp(1rem, 4vw, 1.75rem); border: 1px solid var(--home-nav-border); border-radius: 1rem; background: var(--home-nav-background); }
+  .delta-diagram figcaption { display: grid; gap: 0.25rem; }
+  .delta-diagram figcaption span { color: var(--home-accent); font-size: 0.75rem; font-weight: 700; }
+  .delta-flow { display: flex; align-items: center; justify-content: space-between; gap: 0.65rem; margin: 1.5rem 0; }
+  .delta-step { display: grid; flex: 1; gap: 0.35rem; min-width: 0; padding: 1rem 0.75rem; border: 1px solid var(--home-nav-border); border-radius: 0.8rem; background: var(--home-background); }
+  .delta-step small, .delta-step span { font-size: 0.72rem; }
+  .delta-step small { color: var(--home-accent); }
+  .delta-step span { line-height: 1.5; }
+  .delta-new { border-style: dashed; }
+  .delta-result { border-color: var(--home-accent); }
+  .delta-plus, .delta-arrow { color: var(--home-accent); font-size: 1.3rem; font-weight: 700; }
+  .delta-diagram > p { margin: 0; font-size: 0.8rem; text-align: center; }
+  @media (max-width: 600px) { .delta-flow { flex-direction: column; } .delta-step { width: 100%; } .delta-arrow { transform: rotate(90deg); } }
+</style>
