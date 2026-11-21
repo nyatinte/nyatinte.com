@@ -4,7 +4,9 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { expect, test } from "vite-plus/test";
 
-test("production deployment requires Access configuration", () => {
+test("本番環境の場合に設定の読み込みに失敗する", () => {
+  // Given: 本番環境
+  // When: Access 設定が不足していると
   const cwd = mkdtempSync(join(tmpdir(), "dotcom-env-"));
   copyFileSync(resolve(".env.schema"), join(cwd, ".env.schema"));
   const executable = resolve("node_modules/.bin/varlock");
@@ -21,6 +23,7 @@ test("production deployment requires Access configuration", () => {
       stdio: "pipe",
     });
   try {
+    // Then
     expect(() => load({})).toThrow();
     const complete: Record<string, string> = {
       ACCESS_AUDIENCE: "example",

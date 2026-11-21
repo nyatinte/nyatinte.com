@@ -5,7 +5,10 @@ import {
   shouldStartArticleTransition,
 } from "./view-transition";
 
-test("starts a view transition between the list and an article", () => {
+test("ログ一覧と記事の間を移動するとき、view transition を開始する", () => {
+  // Given: ログ一覧と記事の間を移動するとき
+  // When: 遷移可否を判定すると
+  // Then
   expect(shouldStartArticleTransition("/log", "/log/template")).toBe(true);
   expect(shouldStartArticleTransition("/log/", "/log/template/")).toBe(true);
   expect(shouldStartArticleTransition("/log/", "/log/template")).toBe(true);
@@ -16,7 +19,10 @@ test("starts a view transition between the list and an article", () => {
   expect(shouldStartArticleTransition("/log", "/log")).toBe(false);
 });
 
-test("prefixes slugs so the view transition name is a CSS identifier", () => {
+test("記事の slugの場合にCSS identifier として有効な prefix を付ける", () => {
+  // Given: 記事の slug
+  // When: view transition 名を作ると
+  // Then
   expect(articleTransitionName("2026-11-12-foo")).toBe(
     "log-title-2026-11-12-foo"
   );

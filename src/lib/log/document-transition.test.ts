@@ -18,20 +18,29 @@ function event(from: string | undefined, to: string | undefined) {
   };
 }
 
-test("keeps the list-to-article document transition", () => {
+test("ログ一覧から記事へ移動するとき、遷移をスキップしない", () => {
+  // Given: ログ一覧から記事へ移動するとき
+  // When: document transition を判定すると
   const { event: ev, skipTransition } = event("/log", "/log/template");
   skipUnrelatedDocumentTransition(ev);
+  // Then
   expect(skipTransition).not.toHaveBeenCalled();
 });
 
-test("keeps the article-to-list document transition", () => {
+test("記事からログ一覧へ移動するとき、遷移をスキップしない", () => {
+  // Given: 記事からログ一覧へ移動するとき
+  // When: document transition を判定すると
   const { event: ev, skipTransition } = event("/log/template", "/log");
   skipUnrelatedDocumentTransition(ev);
+  // Then
   expect(skipTransition).not.toHaveBeenCalled();
 });
 
-test("does nothing when the activation API is missing", () => {
+test("遷移 API がないとき、何もしない", () => {
+  // Given: 遷移 API がないとき
+  // When: document transition を判定すると
   const { event: ev, skipTransition } = event(undefined, undefined);
   skipUnrelatedDocumentTransition(ev);
+  // Then
   expect(skipTransition).not.toHaveBeenCalled();
 });

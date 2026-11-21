@@ -5,7 +5,9 @@ import {
 import { expect, test } from "vite-plus/test";
 import { createSiteMcpHandler } from "./server";
 
-test("MCP starts without tools so blog tools can be added later", async () => {
+test("MCP サーバーの場合にツールを登録しない", async () => {
+  // Given: MCP サーバー
+  // When: 起動すると
   const handler = createSiteMcpHandler();
   const transport = new StreamableHTTPClientTransport(
     new URL("https://nyatinte.com/mcp"),
@@ -23,6 +25,7 @@ test("MCP starts without tools so blog tools can be added later", async () => {
   try {
     await client.connect(transport);
     const tools = await client.listTools();
+    // Then
     expect(tools.tools).toEqual([]);
   } finally {
     await client.close();

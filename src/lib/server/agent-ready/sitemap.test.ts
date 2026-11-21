@@ -1,8 +1,11 @@
 import { expect, test } from "vite-plus/test";
 import { buildSitemapXml } from "./sitemap";
 
-test("builds a sitemap containing the log and lastmod", () => {
+test("公開ページの場合にログ URL と lastmod を含める", () => {
+  // Given: 公開ページ
+  // When: sitemap を生成すると
   const xml = buildSitemapXml();
+  // Then
   expect(xml).toContain("https://nyatinte.com/");
   expect(xml).toContain("https://nyatinte.com/log");
   expect(xml).toContain("https://nyatinte.com/log/template");

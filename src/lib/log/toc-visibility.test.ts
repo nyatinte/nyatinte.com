@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vite-plus/test";
 import { getTocVisibility } from "./toc-visibility";
 
-describe("getTocVisibility", () => {
-  it("keeps the first heading active while the scrubber is hidden", () => {
+describe("目次の表示状態", () => {
+  it("scrubber が非表示のとき、最初の見出しを active にする", () => {
+    // Given: scrubber が非表示のとき
+    // When: 表示状態を調べると
+    // Then
     expect(
       getTocVisibility({
         headingPositions: [
@@ -13,7 +16,10 @@ describe("getTocVisibility", () => {
       })
     ).toEqual({ activeId: "one", visible: false });
   });
-  it("shows when the first heading reaches the threshold", () => {
+  it("最初の見出しがしきい値に達したとき、scrubber を表示する", () => {
+    // Given: 最初の見出しがしきい値に達したとき
+    // When: 表示状態を調べると
+    // Then
     expect(
       getTocVisibility({
         headingPositions: [{ id: "one", top: 390 }],
@@ -21,7 +27,10 @@ describe("getTocVisibility", () => {
       })
     ).toEqual({ activeId: "one", visible: true });
   });
-  it("activates the heading in the reading zone", () => {
+  it("見出しが読書領域にあるとき、その見出しを active にする", () => {
+    // Given: 見出しが読書領域にあるとき
+    // When: 表示状態を調べると
+    // Then
     expect(
       getTocVisibility({
         headingPositions: [
@@ -32,7 +41,10 @@ describe("getTocVisibility", () => {
       })
     ).toEqual({ activeId: "two", visible: true });
   });
-  it("uses scroll margin as the minimum reading zone on short viewports", () => {
+  it("viewport が低いとき、scroll margin を最小領域にする", () => {
+    // Given: viewport が低いとき
+    // When: 読書領域を計算すると
+    // Then
     expect(
       getTocVisibility({
         headingPositions: [
@@ -43,7 +55,10 @@ describe("getTocVisibility", () => {
       })
     ).toEqual({ activeId: "two", visible: true });
   });
-  it("hides after the last heading leaves the viewport", () => {
+  it("最後の見出しが viewport の外に出たとき、scrubber を隠す", () => {
+    // Given: 最後の見出しが viewport の外に出たとき
+    // When: 表示状態を調べると
+    // Then
     expect(
       getTocVisibility({
         headingPositions: [
@@ -54,7 +69,10 @@ describe("getTocVisibility", () => {
       })
     ).toEqual({ activeId: "two", visible: false });
   });
-  it("defaults active heading to the first before it reaches the reading zone", () => {
+  it("見出しが読書領域に達する前の場合に最初の見出しを返す", () => {
+    // Given: 見出しが読書領域に達する前
+    // When: active 見出しを調べると
+    // Then
     expect(
       getTocVisibility({
         headingPositions: [{ id: "one", top: 500 }],
