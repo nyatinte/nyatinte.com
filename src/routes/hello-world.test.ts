@@ -79,6 +79,18 @@ test("GET / serves the home page with an absolute canonical URL", async () => {
   }
 });
 
+test("a colocated article OGP is served by the built Worker", async () => {
+  const page = await fetch(new URL("/log/cua-computer-use", targetUrl));
+  expect(page.status).toBe(200);
+  const imageUrl = (await page.text()).match(ogImagePattern)?.[1];
+  expect(imageUrl).toBeDefined();
+  const image = new URL(imageUrl ?? "");
+  expect(image.hostname).toBe("nyatinte.com");
+  const response = await fetch(new URL(image.pathname, targetUrl));
+  expect(response.status).toBe(200);
+  expect(response.headers.get("content-type")).toContain("image/jpeg");
+});
+
 test("GET / sends fresh CSP nonces for every inline script", async () => {
   const firstResponse = await fetch(new URL("/", targetUrl));
   const firstBody = await firstResponse.text();
@@ -341,4 +353,24 @@ test("home and the log share a 1200 × 630 OGP image", async () => {
   expect(image.getUint32(0)).toBe(0x89_50_4e_47);
   expect(image.getUint32(16)).toBe(1200);
   expect(image.getUint32(20)).toBe(630);
+});
+
+test("公開ページに X のカード用タグが揃っている", async () => {
+  const bodies = await Promise.all(
+    ["/", "/log"].map(async (path) => {
+      const response = await fetch(new URL(path, targetUrl));
+      return [path, await response.text()] as const;
+    })
+  );
+  for (const [path, body] of bodies) {
+    for (const name of [
+      "twitter:card",
+      "twitter:site",
+      "twitter:title",
+      "twitter:description",
+      "twitter:image",
+    ]) {
+      expect(body, `${path}: ${name}`).toContain(`name="${name}"`);
+    }
+  }
 });

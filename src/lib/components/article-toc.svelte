@@ -233,7 +233,7 @@
     max-width: 12rem;
     padding: 0.3rem 0.5rem;
     font-size: 0.75rem;
-    color: var(--home-foreground);
+    color: inherit;
     background: var(--home-nav-background);
     border: 1px solid var(--home-nav-border);
     transform: translateY(-50%);

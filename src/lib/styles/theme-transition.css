@@ -1,0 +1,31 @@
+/* ほかの CSS より先に読み込む。先に別の @layer があると順序を変えられない。 */
+@layer theme-transition, components, base;
+
+:root {
+  --home-theme-duration: 1.5s;
+  --home-theme-easing: ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --home-theme-duration: 0s;
+  }
+}
+
+/* 最下位レイヤーに置き、コンポーネント側の transition を優先する。 */
+@layer theme-transition {
+  /* fill/stroke は継承され、全要素に付けると子孫の開始が遅れるため対象外。 */
+  :where(.site *) {
+    transition:
+      background-color var(--home-theme-duration) var(--home-theme-easing),
+      border-color var(--home-theme-duration) var(--home-theme-easing);
+  }
+
+  /* 面とヘッダーのみ color を遷移。color は継承されるので入れ子にしない。 */
+  :where(.site > :not(.theme-announcement)) {
+    transition:
+      color var(--home-theme-duration) var(--home-theme-easing),
+      background-color var(--home-theme-duration) var(--home-theme-easing),
+      border-color var(--home-theme-duration) var(--home-theme-easing);
+  }
+}

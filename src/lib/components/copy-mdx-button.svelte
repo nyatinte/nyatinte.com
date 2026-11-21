@@ -39,7 +39,7 @@
     padding: 0.375rem 0.75rem;
     font: inherit;
     font-size: 0.8rem;
-    color: var(--home-foreground);
+    color: inherit;
     cursor: pointer;
     background: var(--home-nav-background);
     border: 1px solid var(--home-nav-border);

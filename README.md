@@ -16,6 +16,7 @@ pnpm dev
 | コマンド | 内容 |
 | --- | --- |
 | `pnpm check` | 型生成、format・lint・型チェック |
+| `pnpm vitals` | Svelte の静的コード健全性を確認 |
 | `pnpm check:ci` | check、build、HTTP テストを実行（pre-push hook が実行） |
 | `pnpm test:http` | ビルド済み Worker を起動して HTTP テストを実行（デフォルト `:8788`） |
 | `pnpm run fix` | Ultracite/Biome による修正 |
@@ -39,9 +40,9 @@ HTTP テストの接続先は `VITE_HELLO_WORLD_URL` で変更できます。そ
 
 ## ログ
 
-`/log` は記事の一覧、`/log/<slug>` は記事です。どちらもログイン不要で閲覧できます。記事は `src/content/log/` の `.md` と `.svx` で、公開ページはビルド時にそのファイルを読みます。一覧は日付の新しい順です。同じ日付の記事はスラッグの昇順です。
+`/log` は記事の一覧、`/log/<slug>` は記事です。どちらもログイン不要で閲覧できます。記事は `src/content/log/<slug>/index.md` または `index.svx` に置き、公開ページはビルド時にそのファイルを読みます。一覧は日付の新しい順です。同じ日付の記事はスラッグの昇順です。
 
-frontmatter の `title`、`description`、`date` は必須です。`updated` と `image` は任意です。日付は `YYYY-MM-DD` です。`image` は `/` で始まるサイト内のパスか、http または https の URL です。frontmatter が不正な記事があると、ビルドは失敗します。雛形は `src/content/log/template.md` です。ファイル名がスラッグになり、使える文字は小文字の英数字とハイフンです。
+frontmatter の `title`、`description`、`date` は必須です。`updated` と `image` は任意です。日付は `YYYY-MM-DD` です。`image` は同じディレクトリ内の画像への相対パス（例: `./og.jpg`）、`/` で始まるサイト内のパス、または http か https の URL です。frontmatter が不正な記事や、指定した相対パスに画像がない記事があると、ビルドは失敗します。雛形は `src/content/log/template/index.md` です。ディレクトリ名がスラッグになり、使える文字は小文字の英数字とハイフンです。
 
 `/done` と `/done/` 以下は `/log` へ 301 で転送します。
 
@@ -53,13 +54,13 @@ GitHub トークンは実績の PR 作成にだけ使っていました。使う
 
 ## デプロイ
 
-GitHub Actions の `CI` は PR と `main` への push で検証します。本番デプロイは `main` からワークフローを手動実行し、`production_deploy` に `deploy` を選択します。検証のあと、デプロイと HTTP smoke test を行います。ローカルからは `pnpm run deploy` でも実行可能です。
+GitHub Actions の `CI` は PR と `main` への push で検証します。CI では svelte-vitals の結果を表示するだけで、Verify はこの結果で失敗しません。inline annotation は GitHub の 1 ステップあたりの上限を超えると欠けることがあるため、完全な結果は Job Summary を正とします。本番デプロイは `main` からワークフローを手動実行し、`production_deploy` に `deploy` を選択します。検証のあと、デプロイと HTTP smoke test を行います。ローカルからは `pnpm run deploy` でも実行可能です。
 
 PR を開くと、コメントに Cloudflare Worker Preview の URL が表示されます。本番の `workers.dev` は引き続きオフです。Preview は無料枠で最大 100 件（100/100）まで利用でき、上限に達すると古い Preview から削除されます。
 
 本番環境の必須変数は `.env.schema` を参照してください。Actions には `ACCESS_TEAM_DOMAIN` と `ACCESS_AUDIENCE` の Variables、`CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` の Secrets が必要です。Access の設定と認証情報は別途用意します。
 
-`pnpm run deploy` はビルド後、Varlock Wrangler の `versions upload --keep-vars=true` で既存の vars と secrets を保ったままバージョンをアップロードし、そのバージョンをデプロイします。ルートなどのトリガー設定を変える場合は別途適用が必要です。`wrangler.jsonc` は Worker 設定と型生成の正本です。
+`pnpm run deploy` はビルド後、Varlock Wrangler の `versions upload --keep-vars=true` で既存の vars と secrets を保ってアップロードし、返された Version ID を指定してデプロイします。ルートなどのトリガー設定を変える場合は別途適用が必要です。`wrangler.jsonc` は Worker 設定と型生成の正本です。
 
 ## OGP と配信
 
@@ -67,7 +68,7 @@ PR を開くと、コメントに Cloudflare Worker Preview の URL が表示さ
 
 `/llms.txt` は、トップ、ログ、RSS、サイトマップ、各記事へのリンクを返します。HTML を返すページは `Link` ヘッダーに `rel=alternate` と `type=text/markdown` を付け、`Accept: text/markdown` では Markdown を返します。記事ページの「Markdown をコピー」は、frontmatter を含む元のファイルをコピーします。RSS は `/log/rss.xml`、サイトマップは `/sitemap.xml` です。
 
-一覧から記事を開くとき、ブラウザが View Transition API に対応し、利用者が `prefers-reduced-motion: reduce` を選んでいなければ、view transition を使います。記事から一覧へ戻るときは使いません。
+ホームとほかのページの間、ログの一覧と記事の間を移動するとき（どちらの向きも）、ブラウザが View Transition API に対応し、利用者が `prefers-reduced-motion: reduce` を選んでいなければ、view transition を使います。
 
 ## ライセンス
 

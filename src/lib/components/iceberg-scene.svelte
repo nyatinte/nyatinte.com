@@ -7,33 +7,47 @@
 <div class="landscape">
   <div class="stage">
     <div aria-hidden="true" class="aurora"></div>
-    <div aria-hidden="true" class="orbit">
-      <svg aria-hidden="true" class="sun" viewBox="0 0 64 64">
-        <circle cx="32" cy="32" fill="var(--home-sun)" r="17" />
-        <path
-          d="M32 3v8 M32 53v8 M3 32h8 M53 32h8 M11.5 11.5l5.7 5.7 M46.8 46.8l5.7 5.7 M52.5 11.5l-5.7 5.7 M17.2 46.8l-5.7 5.7"
-          fill="none"
-          stroke="var(--home-sun)"
-          stroke-linecap="round"
-          stroke-width="3"
-        />
-      </svg>
-      <span class="moon"></span>
+    <div aria-hidden="true" class="sky">
+      <div class="orbit">
+        <svg aria-hidden="true" class="sun" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" fill="var(--home-sun)" r="17" />
+          <path
+            d="M32 3v8 M32 53v8 M3 32h8 M53 32h8 M11.5 11.5l5.7 5.7 M46.8 46.8l5.7 5.7 M52.5 11.5l-5.7 5.7 M17.2 46.8l-5.7 5.7"
+            fill="none"
+            stroke="var(--home-sun)"
+            stroke-linecap="round"
+            stroke-width="3"
+          />
+        </svg>
+        <span class="moon"></span>
+      </div>
     </div>
     <svg
       aria-hidden="true"
-      class="art"
+      class="art clouds cloud-left"
       preserveAspectRatio="xMidYMid slice"
       viewBox="0 0 1440 900"
     >
-      <g class="clouds">
-        <path
-          d="M615 296 C625 285 640 284 652 290 C664 274 686 273 700 287 C713 282 727 286 735 296Z"
-        />
-        <path
-          d="M880 251 C891 241 904 240 915 245 C927 231 948 232 960 244 C973 239 987 242 996 251Z"
-        />
-      </g>
+      <path
+        d="M615 296 C625 285 640 284 652 290 C664 274 686 273 700 287 C713 282 727 286 735 296Z"
+      />
+    </svg>
+    <svg
+      aria-hidden="true"
+      class="art clouds cloud-right"
+      preserveAspectRatio="xMidYMid slice"
+      viewBox="0 0 1440 900"
+    >
+      <path
+        d="M880 251 C891 241 904 240 915 245 C927 231 948 232 960 244 C973 239 987 242 996 251Z"
+      />
+    </svg>
+    <svg
+      aria-hidden="true"
+      class="art scene-back"
+      preserveAspectRatio="xMidYMid slice"
+      viewBox="0 0 1440 900"
+    >
       <path
         class="far-ice"
         d="M0 480 L101 452 184 455 256 416 341 421 408 368 507 381 554 349 685 361 770 324 880 333 948 308 1068 320 1168 293 1267 314 1370 302 1440 326 V700 H0Z"
@@ -42,11 +56,25 @@
         class="far-light"
         d="M256 416 L341 421 408 368 507 381 554 349 685 361 640 398 551 393 503 420 413 405 366 438Z M770 324 L880 333 948 308 1068 320 1168 293 1139 354 1028 368 965 348 889 385 825 369Z M1267 314 L1370 302 1440 326 V365 L1374 347 1327 365Z"
       />
+    </svg>
+    <svg
+      aria-hidden="true"
+      class="art scene-middle"
+      preserveAspectRatio="xMidYMid slice"
+      viewBox="0 0 1440 900"
+    >
       <path class="sea" d="M0 532 Q351 497 706 523 T1440 516 V900 H0Z" />
       <path
         class="distant-ice"
         d="M0 555 Q121 538 228 553 L333 546 391 564 341 580 219 582 130 595 0 585Z M1000 542 L1101 525 1178 538 1261 531 1440 549 V582 L1350 584 1294 572 1206 582 1140 569 1080 581Z"
       />
+    </svg>
+    <svg
+      aria-hidden="true"
+      class="art scene-front"
+      preserveAspectRatio="xMidYMid slice"
+      viewBox="0 0 1440 900"
+    >
       <g transform="translate(0 12)">
         {#key adultTaps}
           <image
@@ -124,10 +152,10 @@
         block-size: max(100%, 62.5vw);
         background: var(--home-sky);
         transform: translate(-50%, -50%);
-        transition: background-color 1.5s ease-in-out;
       }
       .art {
-        position: relative;
+        position: absolute;
+        inset: 0;
         display: block;
         inline-size: 100%;
         block-size: 100%;
@@ -172,7 +200,7 @@
           var(--home-aurora-mask) 30%,
           transparent 75%
         );
-        transition: opacity 1.5s ease-in-out;
+        transition: opacity var(--home-theme-duration) var(--home-theme-easing);
       }
       .aurora::after {
         position: absolute;
@@ -190,22 +218,50 @@
       }
       @keyframes aurora-drift {
         to {
-          transform: translateX(12%);
+          transform: translateY(-12%);
         }
+      }
+      .scene-back {
+        view-transition-name: scene-back;
+      }
+      .cloud-left {
+        view-transition-name: cloud-left;
+      }
+      .cloud-right {
+        view-transition-name: cloud-right;
+      }
+      .aurora {
+        view-transition-name: scene-aurora;
+      }
+      .scene-middle {
+        view-transition-name: scene-middle;
+      }
+      .scene-front {
+        view-transition-name: scene-front;
+      }
+      .sky {
+        position: absolute;
+        inset-block-start: 10%;
+        inset-inline-start: 47%;
+        inline-size: 60%;
+        aspect-ratio: 1;
+        overflow: visible;
+        pointer-events: none;
+        view-transition-name: scene-sky;
       }
       .art path {
         transition:
-          fill 1.5s ease-in-out,
-          stroke 1.5s ease-in-out;
+          fill var(--home-theme-duration) var(--home-theme-easing),
+          stroke var(--home-theme-duration) var(--home-theme-easing);
       }
       .clouds {
         fill: var(--home-cloud);
       }
       @media (prefers-reduced-motion: no-preference) {
-        .clouds path:first-child {
+        .cloud-left path {
           animation: cloud-drift 28s ease-in-out infinite alternate;
         }
-        .clouds path:last-child {
+        .cloud-right path {
           animation: cloud-drift 36s ease-in-out infinite alternate-reverse;
         }
       }
@@ -244,13 +300,12 @@
       }
       .orbit {
         position: absolute;
-        inset-block-start: 10%;
-        inset-inline-start: 47%;
-        inline-size: 60%;
-        aspect-ratio: 1;
-        pointer-events: none;
-        rotate: var(--orbit-turn, 0deg);
-        transition: rotate 1.5s ease-in-out;
+        inset: 0;
+        rotate: var(--orbit-turn, var(--home-initial-orbit, 0deg));
+        transition: rotate var(--home-theme-duration) var(--home-theme-easing);
+        @starting-style {
+          rotate: var(--orbit-turn, var(--home-initial-orbit, 0deg));
+        }
       }
       .sun,
       .moon {
@@ -268,8 +323,11 @@
         inset-block-start: 92%;
         inset-inline-start: 70%;
         box-shadow: inset -0.9rem -0.4rem 0 0 var(--home-moon);
-        rotate: calc(-1 * var(--orbit-turn, 0deg));
-        transition: rotate 1.5s ease-in-out;
+        rotate: calc(-1 * var(--orbit-turn, var(--home-initial-orbit, 0deg)));
+        transition: rotate var(--home-theme-duration) var(--home-theme-easing);
+        @starting-style {
+          rotate: calc(-1 * var(--orbit-turn, var(--home-initial-orbit, 0deg)));
+        }
       }
       .penguin {
         position: absolute;
@@ -308,15 +366,6 @@
       @media (prefers-reduced-motion: no-preference) {
         .bouncing {
           animation: bounce 450ms ease-out;
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .orbit,
-        .moon,
-        .stage,
-        .aurora,
-        .art path {
-          transition: none;
         }
       }
       @keyframes bounce {

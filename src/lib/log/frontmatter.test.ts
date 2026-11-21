@@ -1,4 +1,4 @@
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, test } from "vite-plus/test";
@@ -98,12 +98,38 @@ test("rejects duplicate slugs", () => {
 
 test("a directory of invalid frontmatter fails validation", () => {
   const directory = mkdtempSync(join(tmpdir(), "log-"));
+  mkdirSync(join(directory, "broken"));
   writeFileSync(
-    join(directory, "broken.md"),
+    join(directory, "broken", "index.md"),
     "---\ntitle: 題\ndate: 2026-11-12\n---\n"
   );
   expect(() => loadArticlesFromDirectory(directory)).toThrow(
     "invalid frontmatter"
+  );
+});
+
+test("article directories use their directory name as the slug", () => {
+  const directory = mkdtempSync(join(tmpdir(), "log-"));
+  mkdirSync(join(directory, "my-post"));
+  writeFileSync(
+    join(directory, "my-post", "index.md"),
+    valid.replace("---\n\n本文", "image: ./og.jpg\n---\n\n本文")
+  );
+  expect(() => loadArticlesFromDirectory(directory)).toThrow("image not found");
+  writeFileSync(join(directory, "my-post", "og.jpg"), "image");
+  expect(loadArticlesFromDirectory(directory)[0]).toMatchObject({
+    image: "./og.jpg",
+    slug: "my-post",
+  });
+});
+
+test("rejects duplicate index files in an article directory", () => {
+  const directory = mkdtempSync(join(tmpdir(), "log-"));
+  mkdirSync(join(directory, "my-post"));
+  writeFileSync(join(directory, "my-post", "index.md"), valid);
+  writeFileSync(join(directory, "my-post", "index.svx"), valid);
+  expect(() => loadArticlesFromDirectory(directory)).toThrow(
+    "Duplicate article slug: my-post"
   );
 });
 

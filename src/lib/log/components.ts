@@ -1,5 +1,5 @@
 import type { Component } from "svelte";
-import { fileName } from "./file-name";
+import { articleFileName } from "./file-name";
 
 const extensionPattern = /\.(md|svx)$/u;
 
@@ -8,13 +8,13 @@ interface ArticleModule {
 }
 
 const modules = import.meta.glob<ArticleModule>(
-  "../../content/log/*.{md,svx}",
+  "../../content/log/*/index.{md,svx}",
   { eager: true }
 );
 
 const components = new Map(
   Object.entries(modules).map(([path, module]) => [
-    fileName(path).replace(extensionPattern, ""),
+    articleFileName(path).replace(extensionPattern, ""),
     module.default,
   ])
 );

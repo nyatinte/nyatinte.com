@@ -1,11 +1,13 @@
 html[data-home-theme="light"] {
   --home-scheme: light;
+  color-scheme: light;
 }
 
 html[data-home-theme="dark"] {
   --home-scheme: dark;
   --home-initial-orbit: 180deg;
   --home-initial-aurora-opacity: 0.22;
+  color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -15,8 +17,7 @@ html[data-home-theme="dark"] {
   }
 }
 
-html:has(.home),
-html:has(.log) {
+:root {
   --home-background: light-dark(
     oklch(88.02% 0.036 216.59),
     oklch(23.64% 0.0423 254.98)
@@ -84,20 +85,4 @@ html:has(.log) {
   --home-focus-inner: oklch(100% 0 0);
   --home-focus-outer: oklch(31.6% 0.0526 240.84);
   color-scheme: light dark;
-}
-
-html[data-home-theme="light"]:has(.home) {
-  color-scheme: light;
-}
-
-html[data-home-theme="dark"]:has(.home) {
-  color-scheme: dark;
-}
-
-html[data-home-theme="light"]:has(.log) {
-  color-scheme: light;
-}
-
-html[data-home-theme="dark"]:has(.log) {
-  color-scheme: dark;
 }

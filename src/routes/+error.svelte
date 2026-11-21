@@ -59,6 +59,8 @@
     text-decoration: none;
     border: 1px solid var(--home-nav-border, oklch(37% 0.05 232 / 14%));
     border-radius: 999px;
+    /* エラーページにはテーマ切り替えボタンがないため、ホバーをグローバル遷移でフェードさせない。 */
+    transition: none;
   }
 
   .back-link:hover {

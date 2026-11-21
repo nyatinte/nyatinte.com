@@ -2,9 +2,11 @@ const articlePath = /^\/log\/[a-z0-9]+(?:-[a-z0-9]+)*$/u;
 const trailingSlash = /\/$/u;
 
 export function shouldStartArticleTransition(from: string, to: string) {
+  const normalizedFrom = from.replace(trailingSlash, "");
+  const normalizedTo = to.replace(trailingSlash, "");
   return (
-    from.replace(trailingSlash, "") === "/log" &&
-    articlePath.test(to.replace(trailingSlash, ""))
+    (normalizedFrom === "/log" && articlePath.test(normalizedTo)) ||
+    (articlePath.test(normalizedFrom) && normalizedTo === "/log")
   );
 }
 
