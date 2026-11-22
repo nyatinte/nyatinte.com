@@ -1,6 +1,6 @@
 import { markdownContentType } from "./constants";
 
-export function appendVary(
+function appendVary(
   existing: string | null | undefined,
   value: string
 ): string {
@@ -14,7 +14,7 @@ export function appendVary(
   return [...values].join(", ");
 }
 
-export function markdownAlternateLink(canonicalUrl: string): string {
+function markdownAlternateLink(canonicalUrl: string): string {
   return `<${canonicalUrl}>; rel="alternate"; type="text/markdown"`;
 }
 

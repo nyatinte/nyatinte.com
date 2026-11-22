@@ -72,7 +72,7 @@ const imageReference = z
     }
   }, "Use a local image, a site path, or an http(s) URL");
 
-export const articleFrontmatterSchema = z
+const articleFrontmatterSchema = z
   .object({
     date: isoDate,
     description: singleLine,

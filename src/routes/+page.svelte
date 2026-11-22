@@ -3,38 +3,23 @@
   import latinRegular from "../lib/assets/fonts/mplus1p-regular-latin.woff2";
   import IcebergScene from "../lib/components/iceberg-scene.svelte";
   import JsonLd from "../lib/components/json-ld.svelte";
+  import PageMeta from "../lib/components/page-meta.svelte";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
 </script>
 
 <JsonLd graphs={data.jsonLd} />
+<PageMeta
+  canonicalUrl={data.canonicalUrl}
+  description={data.siteDescription}
+  image={data.image}
+  includeRss={false}
+  ogTitle="nyatinte.com"
+  title="nyatinte"
+/>
 
 <svelte:head>
-  <title>nyatinte</title>
-  <meta content={data.siteDescription} name="description">
-  <link href={data.canonicalUrl} rel="canonical">
-  <meta content="nyatinte.com" property="og:title">
-  <meta content={data.siteDescription} property="og:description">
-  <meta content={data.canonicalUrl} property="og:url">
-  <meta content="website" property="og:type">
-  <meta content={data.ogImageUrl} property="og:image">
-  <meta content="image/png" property="og:image:type">
-  <meta content="1200" property="og:image:width">
-  <meta content="630" property="og:image:height">
-  <meta
-    content="氷河にいる親子ペンギンと nyatinte.com の文字"
-    property="og:image:alt"
-  >
-  <meta content="summary_large_image" name="twitter:card">
-  <meta content="@nyatinte" name="twitter:site">
-  <meta content="nyatinte.com" name="twitter:title">
-  <meta content={data.siteDescription} name="twitter:description">
-  <meta content={data.ogImageUrl} name="twitter:image">
-  <meta
-    content="氷河にいる親子ペンギンと nyatinte.com の文字"
-    name="twitter:image:alt"
-  >
   <link
     as="image"
     fetchpriority="high"

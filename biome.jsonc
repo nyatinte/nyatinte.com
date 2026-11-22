@@ -2,15 +2,11 @@
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": ["ultracite/biome/core", "ultracite/biome/svelte"],
   "files": {
-    "includes": [
-      "**/*.{js,jsx,mjs,cjs,ts,tsx,json,jsonc,css,svelte}",
-      "!drizzle/meta"
-    ]
+    "includes": ["**/*.{js,jsx,mjs,cjs,ts,tsx,json,jsonc,css,svelte}"]
   },
   "linter": {
     "includes": [
       "**/*.{js,jsx,mjs,cjs,ts,tsx,json,jsonc,css,svelte}",
-      "!drizzle/meta",
       "!**/.agents/**",
       "!skills-lock.json"
     ]
@@ -18,7 +14,6 @@
   "formatter": {
     "includes": [
       "**/*.{js,jsx,mjs,cjs,ts,tsx,json,jsonc,css,svelte}",
-      "!drizzle/meta",
       "!**/.agents/**",
       "!skills-lock.json"
     ]
@@ -26,7 +21,6 @@
   "assist": {
     "includes": [
       "**/*.{js,jsx,mjs,cjs,ts,tsx,json,jsonc,css,svelte}",
-      "!drizzle/meta",
       "!**/.agents/**",
       "!skills-lock.json"
     ]

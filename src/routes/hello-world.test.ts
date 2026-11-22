@@ -31,8 +31,7 @@ function expectMarkdownAlternatePath(link: string | null, pathname: string) {
   const href = link?.match(markdownAlternateHrefPattern)?.[1];
   expect(href).toBeDefined();
   const parsed = new URL(href ?? "");
-  const expectedPath = pathname === "/" ? "/" : pathname;
-  expect(parsed.pathname).toBe(expectedPath);
+  expect(parsed.pathname).toBe(pathname);
   const allowedHosts = new Set(["nyatinte.com", new URL(targetUrl).hostname]);
   expect(allowedHosts.has(parsed.hostname)).toBe(true);
 }
@@ -373,4 +372,17 @@ test("公開ページに X のカード用タグが揃っている", async () =>
       expect(body, `${path}: ${name}`).toContain(`name="${name}"`);
     }
   }
+});
+
+test("ホームは独自のタイトルで X のカードを出し、RSS は持たない", async () => {
+  const body = await fetch(new URL("/", targetUrl)).then((response) =>
+    response.text()
+  );
+
+  expect(body).toContain("<title>nyatinte</title>");
+  expect(body).toContain('content="nyatinte.com" property="og:title"');
+  expect(body).toContain('content="nyatinte.com" name="twitter:title"');
+  expect(body).toContain('property="og:image:alt"');
+  expect(body).toContain('name="twitter:image:alt"');
+  expect(body).not.toContain('type="application/rss+xml"');
 });

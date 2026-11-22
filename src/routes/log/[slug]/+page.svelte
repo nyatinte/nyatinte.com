@@ -20,11 +20,7 @@
 <PageMeta
   canonicalUrl={data.canonicalUrl}
   description={data.article.description}
-  imageAlt={data.image.alt}
-  imageHeight={data.image.height}
-  imageType={data.image.type}
-  imageUrl={data.image.url}
-  imageWidth={data.image.width}
+  image={data.image}
   ogType="article"
   {title}
 />

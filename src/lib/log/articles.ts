@@ -1,7 +1,5 @@
 import { articlesFromSources } from "./frontmatter";
 
-export type { Article } from "./frontmatter";
-
 const rawFiles = import.meta.glob<string>(
   "../../content/log/*/index.{md,svx}",
   {

@@ -42,7 +42,7 @@ export function extractHeadings(markdown: string): TocHeading[] {
     if (fence) {
       continue;
     }
-    const match = line.match(headingPattern) as RegExpMatchArray | null;
+    const match = line.match(headingPattern);
     if (match === null) {
       continue;
     }

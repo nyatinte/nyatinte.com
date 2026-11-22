@@ -1,6 +1,6 @@
 import type { Handle } from "@sveltejs/kit/hooks";
 import { wantsMarkdown } from "./lib/server/agent-ready/accept";
-import { productionSiteHref } from "./lib/server/agent-ready/constants";
+import { canonicalSiteUrl } from "./lib/server/agent-ready/constants";
 import {
   agentResponseHeaders,
   markdownResponse,
@@ -9,7 +9,7 @@ import { renderAgentMarkdown } from "./lib/server/agent-ready/markdown";
 import { matchAgentRoute } from "./lib/server/agent-ready/routes";
 import { legacyDoneLocation } from "./lib/server/legacy-redirect";
 
-const jsonLdScriptPattern = /<script type="application\/ld\+json">/gu;
+const jsonLdScriptTag = '<script type="application/ld+json">';
 const cspNoncePattern = /'nonce-([^']+)'/u;
 const agentReadMethods = new Set(["GET", "HEAD"]);
 
@@ -56,10 +56,9 @@ async function finalizeHtmlResponse(
     .get("content-security-policy")
     ?.match(cspNoncePattern)?.[1];
   let body = await response.text();
-  if (nonce && jsonLdScriptPattern.test(body)) {
-    jsonLdScriptPattern.lastIndex = 0;
+  if (nonce && body.includes(jsonLdScriptTag)) {
     body = body.replaceAll(
-      '<script type="application/ld+json">',
+      jsonLdScriptTag,
       `<script type="application/ld+json" nonce="${nonce}">`
     );
   }
@@ -105,11 +104,11 @@ export const handle: Handle = async ({ event, resolve }) => {
   }
 
   return finalizeHtmlResponse(response, (headers) => {
-    const canonicalUrl = productionSiteHref(route.canonicalPath);
     const enriched = agentResponseHeaders({
-      canonicalUrl,
+      canonicalUrl: canonicalSiteUrl(route.canonicalPath),
       existingVary: headers.get("Vary"),
-      includeAlternateLink: !wantsMarkdown(event.request),
+      // markdown を希望するリクエストは上の分岐で返しているため、常に HTML になる。
+      includeAlternateLink: true,
     });
     for (const [key, value] of enriched.entries()) {
       headers.set(key, value);
