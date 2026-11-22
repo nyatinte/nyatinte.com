@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
+  import { page } from "$app/state";
   import type {
     SearchResponse,
     SearchResult,
@@ -9,7 +11,7 @@
   const loadEngine = () =>
     import("../search/zb-client").then((module) => module.searchZbSearch);
 
-  let query = $state("");
+  const query = $derived(page.url.searchParams.get("q") ?? "");
   let settledQuery = $state("");
   let status = $state<SearchStatus>("idle");
   let message = $state("");
@@ -72,9 +74,21 @@
   }
 
   function onInput(event: Event) {
-    query = (event.currentTarget as HTMLInputElement).value;
-    refresh(query);
+    const { value } = event.currentTarget as HTMLInputElement;
+    const next = new URL(page.url.href);
+    if (value.trim()) {
+      next.searchParams.set("q", value);
+    } else {
+      next.searchParams.delete("q");
+    }
+    // SvelteKit 3 の replaceState は page.shallow.url しか更新しないため、
+    // page.url を正本に保つ goto でスクロールとフォーカスを維持したまま置き換える。
+    goto(next, { replace: true, reset: false });
   }
+
+  $effect(() => {
+    refresh(query);
+  });
 
   function onFocus() {
     engine().catch(() => {
@@ -105,7 +119,6 @@
 >
   <label class="log-search-label" for="log-search-input">記事を検索</label>
   <input
-    aria-label="記事を検索"
     autocomplete="off"
     id="log-search-input"
     name="q"
@@ -119,7 +132,8 @@
     {statusText}
   </p>
   {#if settledQuery !== "" && results.length > 0}
-    <ol class="log-search-results" data-search-results>
+    <!-- biome-ignore lint/a11y/noRedundantRoles: Safari drops the list role when list-style is none. -->
+    <ol class="log-search-results" data-search-results role="list">
       {#each results as item (item.slug)}
         <li data-search-result-slug={item.slug}>
           <a href={item.url}>{item.title}</a>
@@ -137,6 +151,8 @@
         </li>
       {/each}
     </ol>
+  {:else if status === "empty"}
+    <p class="log-search-empty"><a href="/log">すべての記事を見る</a></p>
   {/if}
 </section>
 
@@ -190,8 +206,13 @@
     text-underline-offset: 0.18em;
   }
 
-  .log-search-results a:hover {
+  .log-search-results a:hover,
+  .log-search-empty a:hover {
     color: var(--home-accent);
+  }
+
+  .log-search-empty {
+    margin: 0.5rem 0 0;
   }
 
   .log-search-excerpt {
