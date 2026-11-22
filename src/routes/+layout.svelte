@@ -5,6 +5,7 @@
   import { onMount } from "svelte";
   import { onNavigate } from "$app/navigation";
   import { page } from "$app/state";
+  import BackToTop from "../lib/components/back-to-top.svelte";
   import HomeNavigation from "../lib/components/home-navigation.svelte";
   import {
     type HomeTheme,
@@ -93,6 +94,7 @@
   {#if page.status < 400}
     <HomeNavigation {toggleTheme} />
     <span aria-live="polite" class="theme-announcement">{themeMessage}</span>
+    <BackToTop />
   {/if}
   {@render children()}
 </div>
