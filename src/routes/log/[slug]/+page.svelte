@@ -49,7 +49,7 @@
             </p>
           {/if}
         </div>
-        <CopyMdxButton source={data.article.source} />
+        <CopyMdxButton source={data.copyMarkdown} />
       </div>
     </div>
     <div class="article-body">

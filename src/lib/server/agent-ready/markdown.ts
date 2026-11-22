@@ -2,6 +2,7 @@ import { articles, getArticle } from "../../log/articles";
 import { logDescription, logTitle } from "../../log/constants";
 import { formatLogDate } from "../../log/format-date";
 import type { Article } from "../../log/frontmatter";
+import { stripSvelteBlocks } from "../../log/strip-svelte-blocks";
 import { canonicalSiteUrl, siteIdentity } from "./constants";
 import type { AgentRoute } from "./routes";
 
@@ -58,7 +59,7 @@ function renderArticleMarkdown(article: Article): string {
   if (article.updated) {
     lines.push(`更新日: ${formatLogDate(article.updated)}`);
   }
-  const body = article.body.trim();
+  const body = stripSvelteBlocks(article.body).trim();
   if (body) {
     lines.push("", body);
   }

@@ -1,6 +1,7 @@
 import { error } from "@sveltejs/kit";
 import { getArticle } from "../../../lib/log/articles";
 import { resolveArticleImage } from "../../../lib/log/og-image";
+import { stripSvelteBlocks } from "../../../lib/log/strip-svelte-blocks";
 import { extractHeadings } from "../../../lib/log/toc";
 import { canonicalSiteUrl } from "../../../lib/server/agent-ready/constants";
 import { createArticleJsonLd } from "../../../lib/server/agent-ready/json-ld";
@@ -15,6 +16,7 @@ export const load: PageServerLoad = ({ params }) => {
   return {
     article,
     canonicalUrl: canonicalSiteUrl(`/log/${article.slug}`),
+    copyMarkdown: stripSvelteBlocks(article.source),
     headings: extractHeadings(article.body),
     image: resolveArticleImage({
       image: article.image,

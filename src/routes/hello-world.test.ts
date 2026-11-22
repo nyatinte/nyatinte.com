@@ -400,6 +400,47 @@ test("published article pages return markdown when requested", async () => {
   expect(body.startsWith("# ")).toBe(true);
 });
 
+test("markdown responses for svx articles omit svelte blocks but keep html and prose", async () => {
+  const cases = [
+    {
+      html: '<figure class="thought before">',
+      prose: "https://x.com/trycua",
+      slug: "cua-computer-use",
+    },
+    {
+      html: '<div class="closing-message">',
+      prose: "AI をはじめとした技術の進化が",
+      slug: "stay-light-in-ai-era",
+    },
+  ];
+
+  const results = await Promise.all(
+    cases.map(async ({ html, prose, slug }) => {
+      const response = await fetch(new URL(`/log/${slug}`, targetUrl), {
+        headers: { Accept: "text/markdown" },
+      });
+      return {
+        body: await response.text(),
+        contentType: response.headers.get("content-type"),
+        html,
+        prose,
+        status: response.status,
+      };
+    })
+  );
+
+  for (const { body, contentType, html, prose, status } of results) {
+    expect(status).toBe(200);
+    expect(contentType).toContain("text/markdown");
+    expect(body.startsWith("# ")).toBe(true);
+    expect(body).not.toContain("<style");
+    expect(body).not.toContain("<script");
+    expect(body).not.toContain("<XPostCard");
+    expect(body).toContain(html);
+    expect(body).toContain(prose);
+  }
+});
+
 test("home and the log share a 1200 × 630 OGP image", async () => {
   const home = await fetch(new URL("/", targetUrl));
   const log = await fetch(new URL("/log", targetUrl));
