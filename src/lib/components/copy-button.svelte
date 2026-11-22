@@ -13,8 +13,12 @@
   const currentIcon = $derived(message === copyFeedback.success ? check : icon);
   const currentLabel = $derived(message || label);
 
-  // 結果は少し表示してから元のラベルへ戻す。表示中に再度コピーしたら引き直す。
+  // text が変わったら前の結果を捨て、表示中は少し待ってから元のラベルへ戻す。
   $effect(() => {
+    if (result && result.text !== text) {
+      result = null;
+      return;
+    }
     if (!message) {
       return;
     }
@@ -29,6 +33,9 @@
   async function copy() {
     const target = text;
     const next = await copyText(target);
+    if (text !== target) {
+      return;
+    }
     // 同じ文言が続いても読み上げられるように、いったん空にする。
     result = null;
     await tick();
