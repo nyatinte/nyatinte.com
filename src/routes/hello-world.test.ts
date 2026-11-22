@@ -26,6 +26,8 @@ const ogImageAltPattern =
   /<meta content="([^"]*)" property="og:image:alt"\s*\/?>/u;
 const twitterImageAltPattern =
   /<meta content="([^"]*)" name="twitter:image:alt"\s*\/?>/u;
+const backToTopButtonPattern =
+  /<button[^>]*aria-label="ページの先頭へ戻る"[^>]*>/u;
 const markdownAlternateHrefPattern =
   /<([^>]+)>;\s*rel="alternate";\s*type="text\/markdown"/;
 
@@ -205,6 +207,27 @@ test("missing article slugs return 404 markdown", async () => {
   expect(response.status).toBe(404);
   expect(response.headers.get("content-type")).toContain("text/markdown");
   expect(body).toContain("記事が見つかりません");
+});
+
+test("スクロールする公開ページは先頭へ戻るボタンを隠して描画する", async () => {
+  const slug = await publishedArticleSlug();
+  expect(slug).toBeTruthy();
+  const paths = ["/log", `/log/${slug}`];
+  const bodies = await Promise.all(
+    paths.map(async (path) => {
+      const response = await fetch(new URL(path, targetUrl));
+      return [path, await response.text()] as const;
+    })
+  );
+  for (const [path, body] of bodies) {
+    const button = body.match(backToTopButtonPattern)?.[0];
+    expect(button, path).toBeDefined();
+    expect(button, path).toContain("hidden");
+  }
+
+  const missing = await fetch(new URL("/definitely-missing", targetUrl));
+  expect(missing.status).toBe(404);
+  expect(await missing.text()).not.toContain("ページの先頭へ戻る");
 });
 
 test("former achievement URLs redirect to the log", async () => {
