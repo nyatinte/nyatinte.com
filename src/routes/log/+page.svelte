@@ -5,6 +5,7 @@
   import RssLink from "../../lib/components/rss-link.svelte";
   import { logDescription, logTitle } from "../../lib/log/constants";
   import { formatLogDate } from "../../lib/log/format-date";
+  import { logPageTitle } from "../../lib/log/pagination";
   import {
     articleDateTransitionName,
     articleTransitionName,
@@ -12,11 +13,7 @@
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
-  const title = $derived(
-    data.currentPage > 1
-      ? `${logTitle}（${data.currentPage}ページ目） | nyatinte.com`
-      : `${logTitle} | nyatinte.com`
-  );
+  const title = $derived(logPageTitle(data.currentPage));
 </script>
 
 <JsonLd graphs={data.jsonLd} />

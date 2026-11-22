@@ -13,7 +13,7 @@
     <li>
       {#if currentPage > 1}
         <a
-          aria-label={`前のページ（${currentPage - 1}ページ目）`}
+          aria-label={`前へ（${currentPage - 1}ページ目）`}
           href={logPageHref(currentPage - 1)}
           rel="prev"
           >前へ</a
@@ -38,7 +38,7 @@
     <li>
       {#if currentPage < totalPages}
         <a
-          aria-label={`次のページ（${currentPage + 1}ページ目）`}
+          aria-label={`次へ（${currentPage + 1}ページ目）`}
           href={logPageHref(currentPage + 1)}
           rel="next"
           >次へ</a
@@ -70,8 +70,9 @@
     display: flex;
   }
 
-  a,
-  span {
+  /* 直下だけに当てる。入れ子の .sr-only に 44px の箱が残らないようにする。 */
+  li > a,
+  li > span {
     display: inline-flex;
     align-items: center;
     justify-content: center;

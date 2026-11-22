@@ -2,6 +2,7 @@ import { expect, test } from "vite-plus/test";
 import {
   logPageCount,
   logPageHref,
+  logPageTitle,
   paginateArticles,
   paginationItems,
   parseLogPageParam,
@@ -82,4 +83,21 @@ test("keeps the current page in the list for every valid page", () => {
   for (let currentPage = 1; currentPage <= 20; currentPage += 1) {
     expect(paginationItems(currentPage, 20)).toContain(currentPage);
   }
+});
+
+test("builds the page title for the first page and later pages", () => {
+  expect(logPageTitle(1)).toBe("ログ | nyatinte.com");
+  expect(logPageTitle(2)).toBe("ログ（2ページ目） | nyatinte.com");
+  expect(logPageTitle(12)).toBe("ログ（12ページ目） | nyatinte.com");
+});
+
+test("shows a second page even when the site has one page of articles", () => {
+  const articles = Array.from({ length: 11 }, (_, index) => `article-${index}`);
+  const totalPages = logPageCount(articles.length);
+
+  expect(totalPages).toBe(2);
+  expect(paginateArticles(articles, 1)).toHaveLength(10);
+  expect(paginateArticles(articles, 2)).toEqual(["article-10"]);
+  expect(paginationItems(2, totalPages)).toEqual([1, 2]);
+  expect(logPageHref(2)).toBe("/log?page=2");
 });

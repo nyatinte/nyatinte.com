@@ -1,3 +1,5 @@
+import { logTitle } from "./constants";
+
 export const LOG_PAGE_SIZE = 10;
 
 const positiveIntegerPattern = /^[1-9]\d*$/u;
@@ -38,6 +40,12 @@ export function paginateArticles<T>(
 
 export function logPageHref(page: number) {
   return page === 1 ? "/log" : `/log?page=${page}`;
+}
+
+export function logPageTitle(currentPage: number) {
+  return currentPage > 1
+    ? `${logTitle}（${currentPage}ページ目） | nyatinte.com`
+    : `${logTitle} | nyatinte.com`;
 }
 
 function visiblePageNumbers(currentPage: number, totalPages: number) {
