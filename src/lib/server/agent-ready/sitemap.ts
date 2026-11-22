@@ -1,14 +1,6 @@
 import { articles } from "../../log/articles";
+import { escapeXml } from "../../xml";
 import { canonicalSiteUrl } from "./constants";
-
-function escapeXml(value: string) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&apos;");
-}
 
 function urlEntry(pathname: string, lastmod: string) {
   const location = canonicalSiteUrl(pathname);

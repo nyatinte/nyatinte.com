@@ -17,11 +17,7 @@
 <PageMeta
   canonicalUrl={data.canonicalUrl}
   description={logDescription}
-  imageAlt={data.image.alt}
-  imageHeight={data.image.height}
-  imageType={data.image.type}
-  imageUrl={data.image.url}
-  imageWidth={data.image.width}
+  image={data.image}
   {title}
 />
 

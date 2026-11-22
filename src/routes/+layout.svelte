@@ -7,6 +7,7 @@
   import { page } from "$app/state";
   import HomeNavigation from "../lib/components/home-navigation.svelte";
   import {
+    type HomeTheme,
     homeThemeMessage,
     nextHomeTheme,
     persistHomeTheme,
@@ -17,7 +18,7 @@
   import { shouldStartArticleTransition } from "../lib/log/view-transition";
 
   let { children } = $props();
-  let theme = $state<"light" | "dark" | null>(null);
+  let theme = $state<HomeTheme | null>(null);
   let themeMessage = $state("");
   let orbitTurn = $state<number | null>(null);
 

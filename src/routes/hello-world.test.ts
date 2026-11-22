@@ -22,6 +22,10 @@ const publishedArticleSlugPattern =
   /<loc>https:\/\/nyatinte\.com\/log\/([a-z0-9-]+)<\/loc>/u;
 const metaDescriptionPattern =
   /<meta content="([^"]*)" name="description"\s*\/?>/u;
+const ogImageAltPattern =
+  /<meta content="([^"]*)" property="og:image:alt"\s*\/?>/u;
+const twitterImageAltPattern =
+  /<meta content="([^"]*)" name="twitter:image:alt"\s*\/?>/u;
 const markdownAlternateHrefPattern =
   /<([^>]+)>;\s*rel="alternate";\s*type="text\/markdown"/;
 
@@ -31,8 +35,7 @@ function expectMarkdownAlternatePath(link: string | null, pathname: string) {
   const href = link?.match(markdownAlternateHrefPattern)?.[1];
   expect(href).toBeDefined();
   const parsed = new URL(href ?? "");
-  const expectedPath = pathname === "/" ? "/" : pathname;
-  expect(parsed.pathname).toBe(expectedPath);
+  expect(parsed.pathname).toBe(pathname);
   const allowedHosts = new Set(["nyatinte.com", new URL(targetUrl).hostname]);
   expect(allowedHosts.has(parsed.hostname)).toBe(true);
 }
@@ -356,9 +359,12 @@ test("home and the log share a 1200 × 630 OGP image", async () => {
 });
 
 test("公開ページに X のカード用タグが揃っている", async () => {
+  const slug = await publishedArticleSlug();
+  expect(slug).toBeTruthy();
   const bodies = await Promise.all(
-    ["/", "/log"].map(async (path) => {
+    ["/", "/log", `/log/${slug}`].map(async (path) => {
       const response = await fetch(new URL(path, targetUrl));
+      expect(response.status, path).toBe(200);
       return [path, await response.text()] as const;
     })
   );
@@ -369,8 +375,29 @@ test("公開ページに X のカード用タグが揃っている", async () =>
       "twitter:title",
       "twitter:description",
       "twitter:image",
+      "twitter:image:alt",
     ]) {
       expect(body, `${path}: ${name}`).toContain(`name="${name}"`);
     }
+    const alt = body.match(twitterImageAltPattern)?.[1];
+    expect(alt, `${path}: twitter:image:alt content`).toBeTruthy();
+    expect(body.match(ogImageAltPattern)?.[1], `${path}: og:image:alt`).toBe(
+      alt
+    );
   }
+});
+
+test("ホームは独自のタイトルで X のカードと RSS 自動検出を出す", async () => {
+  const body = await fetch(new URL("/", targetUrl)).then((response) =>
+    response.text()
+  );
+
+  expect(body).toContain("<title>nyatinte</title>");
+  expect(body).toContain('content="nyatinte.com" property="og:title"');
+  expect(body).toContain('content="nyatinte.com" name="twitter:title"');
+  expect(body).toContain('property="og:image:alt"');
+  expect(body).toContain('name="twitter:image:alt"');
+  expect(body).toContain(
+    '<link href="https://nyatinte.com/log/rss.xml" rel="alternate" title="ログ" type="application/rss+xml"'
+  );
 });

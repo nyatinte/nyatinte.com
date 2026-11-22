@@ -1,7 +1,3 @@
-import { minLength, pipe, safeParse, string } from "valibot";
-
-const acceptHeaderSchema = pipe(string(), minLength(1));
-
 interface AcceptRange {
   q: number;
   type: string;
@@ -45,7 +41,7 @@ export function prefersMarkdown(accept: string): boolean {
 
 export function wantsMarkdown(request: Request): boolean {
   const accept = request.headers.get("accept");
-  if (!(accept && safeParse(acceptHeaderSchema, accept).success)) {
+  if (!accept) {
     return false;
   }
   return prefersMarkdown(accept);

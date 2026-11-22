@@ -9,7 +9,7 @@ function linkLine(label: string, href: string) {
   return `- [${label}](${href})`;
 }
 
-function markdownLabel(label: string) {
+export function markdownLabel(label: string) {
   return label.replaceAll("]", "\\]");
 }
 
@@ -82,7 +82,7 @@ function renderNotFoundMarkdown(message: string): string {
   ].join("\n");
 }
 
-export interface MarkdownRenderResult {
+interface MarkdownRenderResult {
   body: string;
   canonicalUrl: string;
   status: number;

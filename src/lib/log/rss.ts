@@ -2,18 +2,10 @@ import {
   canonicalSiteUrl,
   siteIdentity,
 } from "../server/agent-ready/constants";
+import { escapeXml } from "../xml";
 import { logDescription, logTitle } from "./constants";
 import { rssDate } from "./format-date";
 import type { Article } from "./frontmatter";
-
-function escapeXml(value: string) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&apos;");
-}
 
 function itemXml(article: Article) {
   const link = canonicalSiteUrl(`/log/${article.slug}`);

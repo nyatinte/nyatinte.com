@@ -128,7 +128,7 @@
       selectAt(event);
     }
   }}
-  onpointerup={(event) => {
+  onpointerup={() => {
     if (dragging) {
       jump(labelIndex);
     }
@@ -136,7 +136,7 @@
   }}
   class:visible={visible}
 >
-  {#each headings as heading, index (heading.id)}
+  {#each headings as heading (heading.id)}
     <div
       class:active={active === heading.id}
       class:short={heading.depth === 3}
