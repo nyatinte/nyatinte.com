@@ -1,6 +1,7 @@
 <script lang="ts">
   import JsonLd from "../../lib/components/json-ld.svelte";
   import PageMeta from "../../lib/components/page-meta.svelte";
+  import RssLink from "../../lib/components/rss-link.svelte";
   import { logDescription, logTitle } from "../../lib/log/constants";
   import { formatLogDate } from "../../lib/log/format-date";
   import {
@@ -24,6 +25,7 @@
 <main class="log-index">
   <h1>{logTitle}</h1>
   <p class="lead">{logDescription}</p>
+  <div class="subscribe"><RssLink /></div>
   {#if data.articles.length === 0}
     <p>記事はまだありません。</p>
   {:else}
@@ -62,8 +64,12 @@
   }
 
   .lead {
-    margin: 0.8rem 0 2.5rem;
+    margin: 0.8rem 0 1rem;
     font-size: 1.05rem;
+  }
+
+  .subscribe {
+    margin: 0 0 2.5rem;
   }
 
   ol {
