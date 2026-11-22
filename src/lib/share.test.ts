@@ -1,11 +1,5 @@
 import { expect, test } from "vite-plus/test";
-import { xShareText, xShareUrl } from "./share";
-
-test("X シェアのテキストに記事タイトルとサイト名を入れる", () => {
-  expect(xShareText("Svelte 5 の runes")).toBe(
-    "Svelte 5 の runes | nyatinte.com"
-  );
-});
+import { xShareUrl } from "./share";
 
 test("X シェア URL にタイトルと記事の URL をエンコードして載せる", () => {
   const href = xShareUrl({
