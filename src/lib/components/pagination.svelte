@@ -4,7 +4,7 @@
   let { currentPage, totalPages }: { currentPage: number; totalPages: number } =
     $props();
 
-  const items = $derived(paginationItems(currentPage, totalPages));
+  const pages = $derived(paginationItems(totalPages));
 </script>
 
 <nav aria-label="ページネーション" class="pagination">
@@ -22,16 +22,14 @@
         <span aria-disabled="true" class="disabled">前へ</span>
       {/if}
     </li>
-    {#each items as item}
+    {#each pages as page (page)}
       <li>
-        {#if item === "ellipsis"}
-          <span aria-hidden="true" class="ellipsis">…</span>
-        {:else if item === currentPage}
+        {#if page === currentPage}
           <span aria-current="page"
-            >{item}<span class="sr-only">ページ目</span></span
+            >{page}<span class="sr-only">ページ目</span></span
           >
         {:else}
-          <a aria-label={`${item}ページ目`} href={logPageHref(item)}>{item}</a>
+          <a aria-label={`${page}ページ目`} href={logPageHref(page)}>{page}</a>
         {/if}
       </li>
     {/each}
@@ -95,11 +93,6 @@
     font-weight: 700;
     background: var(--home-nav-current);
     border-color: var(--home-nav-border);
-  }
-
-  .ellipsis {
-    min-inline-size: 1.5rem;
-    padding-inline: 0;
   }
 
   .disabled {

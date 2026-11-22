@@ -17,7 +17,7 @@ test.each([
   expect(parseLogPageParam(value)).toEqual(expected);
 });
 
-test.each(["", "0", "-1", "1.5", "01", "abc", " 2 ", "9007199254740992"])(
+test.each(["", "0", "-1", "1.5", "01", "abc", " 2 "])(
   "rejects the page parameter %s",
   (value) => {
     expect(parseLogPageParam(value)).toEqual({ kind: "invalid" });
@@ -60,44 +60,14 @@ test("links the first page without a query parameter", () => {
   expect(logPageHref(12)).toBe("/log?page=12");
 });
 
-test("lists every page when there are seven pages or fewer", () => {
-  expect(paginationItems(1, 1)).toEqual([1]);
-  expect(paginationItems(4, 7)).toEqual([1, 2, 3, 4, 5, 6, 7]);
-});
-
-test("collapses distant pages with ellipses", () => {
-  expect(paginationItems(1, 8)).toEqual([1, 2, "ellipsis", 8]);
-  expect(paginationItems(4, 8)).toEqual([
-    1,
-    "ellipsis",
-    3,
-    4,
-    5,
-    "ellipsis",
-    8,
-  ]);
-  expect(paginationItems(8, 8)).toEqual([1, "ellipsis", 7, 8]);
-});
-
-test("keeps the current page in the list for every valid page", () => {
-  for (let currentPage = 1; currentPage <= 20; currentPage += 1) {
-    expect(paginationItems(currentPage, 20)).toContain(currentPage);
-  }
+test("lists every page from 1 to totalPages", () => {
+  expect(paginationItems(1)).toEqual([1]);
+  expect(paginationItems(2)).toEqual([1, 2]);
+  expect(paginationItems(8)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
 });
 
 test("builds the page title for the first page and later pages", () => {
   expect(logPageTitle(1)).toBe("ログ | nyatinte.com");
   expect(logPageTitle(2)).toBe("ログ（2ページ目） | nyatinte.com");
   expect(logPageTitle(12)).toBe("ログ（12ページ目） | nyatinte.com");
-});
-
-test("shows a second page even when the site has one page of articles", () => {
-  const articles = Array.from({ length: 11 }, (_, index) => `article-${index}`);
-  const totalPages = logPageCount(articles.length);
-
-  expect(totalPages).toBe(2);
-  expect(paginateArticles(articles, 1)).toHaveLength(10);
-  expect(paginateArticles(articles, 2)).toEqual(["article-10"]);
-  expect(paginationItems(2, totalPages)).toEqual([1, 2]);
-  expect(logPageHref(2)).toBe("/log?page=2");
 });

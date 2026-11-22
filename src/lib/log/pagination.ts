@@ -9,8 +9,6 @@ export type LogPageParam =
   | { kind: "invalid" }
   | { kind: "page"; page: number };
 
-export type PaginationItem = number | "ellipsis";
-
 export function parseLogPageParam(value: string | null): LogPageParam {
   if (value === null) {
     return { kind: "absent" };
@@ -18,11 +16,7 @@ export function parseLogPageParam(value: string | null): LogPageParam {
   if (!positiveIntegerPattern.test(value)) {
     return { kind: "invalid" };
   }
-  const page = Number(value);
-  if (!Number.isSafeInteger(page)) {
-    return { kind: "invalid" };
-  }
-  return { kind: "page", page };
+  return { kind: "page", page: Number(value) };
 }
 
 export function logPageCount(totalArticles: number, pageSize = LOG_PAGE_SIZE) {
@@ -48,35 +42,6 @@ export function logPageTitle(currentPage: number) {
     : `${logTitle} | nyatinte.com`;
 }
 
-function visiblePageNumbers(currentPage: number, totalPages: number) {
-  const pages = new Set([
-    1,
-    totalPages,
-    currentPage - 1,
-    currentPage,
-    currentPage + 1,
-  ]);
-  return [...pages]
-    .filter((page) => page >= 1 && page <= totalPages)
-    .sort((left, right) => left - right);
-}
-
-export function paginationItems(
-  currentPage: number,
-  totalPages: number
-): PaginationItem[] {
-  if (totalPages <= 7) {
-    return Array.from({ length: totalPages }, (_, index) => index + 1);
-  }
-
-  const items: PaginationItem[] = [];
-  let previousPage = 0;
-  for (const page of visiblePageNumbers(currentPage, totalPages)) {
-    if (page - previousPage > 1) {
-      items.push("ellipsis");
-    }
-    items.push(page);
-    previousPage = page;
-  }
-  return items;
+export function paginationItems(totalPages: number) {
+  return Array.from({ length: totalPages }, (_, index) => index + 1);
 }

@@ -1,5 +1,6 @@
 import adapter from "@sveltejs/adapter-cloudflare";
 import { sveltekit } from "@sveltejs/kit/vite";
+import { svelte } from "@sveltejs/vite-plugin-svelte";
 import { varlockVitePlugin } from "@varlock/vite-integration";
 import { mdsvex } from "mdsvex";
 import type { PreprocessorGroup } from "svelte/compiler";
@@ -53,7 +54,14 @@ export default defineConfig(({ mode }) => ({
   },
   plugins:
     mode === "test"
-      ? []
+      ? [
+          svelte({
+            compilerOptions: {
+              runes: true,
+            },
+            configFile: false,
+          }),
+        ]
       : [
           logFrontmatterPlugin(),
           varlockVitePlugin(),
