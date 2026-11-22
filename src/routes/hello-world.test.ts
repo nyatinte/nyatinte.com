@@ -269,6 +269,57 @@ test("GET /log/rss.xml lists articles", async () => {
   expect(body).toContain("/log/template");
 });
 
+test("the log list keeps pagination hidden while one page is enough", async () => {
+  const response = await fetch(new URL("/log", targetUrl));
+  const body = await response.text();
+
+  expect(response.status).toBe(200);
+  expect(body).toContain('role="list"');
+  expect(body).not.toContain('aria-label="ページネーション"');
+});
+
+test("the first log page canonicalizes to /log", async () => {
+  const response = await fetch(new URL("/log?page=1", targetUrl), {
+    redirect: "manual",
+  });
+
+  expect(response.status).toBe(301);
+  expect(response.headers.get("location")).toBe("/log");
+});
+
+test("the first log page keeps other query parameters when redirecting", async () => {
+  const response = await fetch(new URL("/log?page=1&q=test", targetUrl), {
+    redirect: "manual",
+  });
+
+  expect(response.status).toBe(301);
+  expect(response.headers.get("location")).toBe("/log?q=test");
+});
+
+test.each(["0", "-1", "1.5", "abc", "999"])(
+  "invalid log page %s returns 404",
+  async (page) => {
+    const response = await fetch(
+      new URL(`/log?page=${encodeURIComponent(page)}`, targetUrl)
+    );
+    const body = await response.text();
+
+    expect(response.status).toBe(404);
+    expect(body).toContain("ページが見つかりません");
+  }
+);
+
+test("the log list still returns every article as markdown", async () => {
+  const response = await fetch(new URL("/log", targetUrl), {
+    headers: { Accept: "text/markdown" },
+  });
+  const body = await response.text();
+
+  expect(response.status).toBe(200);
+  expect(response.headers.get("content-type")).toContain("text/markdown");
+  expect(body).toContain(canonicalSiteUrl("/log/template"));
+});
+
 test("robots.txt advertises the sitemap and content signals", async () => {
   const response = await fetch(new URL("/robots.txt", targetUrl));
   const body = await response.text();

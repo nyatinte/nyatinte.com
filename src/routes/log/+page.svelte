@@ -1,6 +1,7 @@
 <script lang="ts">
   import JsonLd from "../../lib/components/json-ld.svelte";
   import PageMeta from "../../lib/components/page-meta.svelte";
+  import Pagination from "../../lib/components/pagination.svelte";
   import RssLink from "../../lib/components/rss-link.svelte";
   import { logDescription, logTitle } from "../../lib/log/constants";
   import { formatLogDate } from "../../lib/log/format-date";
@@ -11,7 +12,11 @@
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
-  const title = `${logTitle} | nyatinte.com`;
+  const title = $derived(
+    data.currentPage > 1
+      ? `${logTitle}（${data.currentPage}ページ目） | nyatinte.com`
+      : `${logTitle} | nyatinte.com`
+  );
 </script>
 
 <JsonLd graphs={data.jsonLd} />
@@ -45,6 +50,9 @@
         </li>
       {/each}
     </ol>
+    {#if data.totalPages > 1}
+      <Pagination currentPage={data.currentPage} totalPages={data.totalPages} />
+    {/if}
   {/if}
 </main>
 
