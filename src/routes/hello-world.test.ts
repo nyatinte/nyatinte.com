@@ -22,6 +22,10 @@ const publishedArticleSlugPattern =
   /<loc>https:\/\/nyatinte\.com\/log\/([a-z0-9-]+)<\/loc>/u;
 const metaDescriptionPattern =
   /<meta content="([^"]*)" name="description"\s*\/?>/u;
+const ogImageAltPattern =
+  /<meta content="([^"]*)" property="og:image:alt"\s*\/?>/u;
+const twitterImageAltPattern =
+  /<meta content="([^"]*)" name="twitter:image:alt"\s*\/?>/u;
 const markdownAlternateHrefPattern =
   /<([^>]+)>;\s*rel="alternate";\s*type="text\/markdown"/;
 
@@ -355,9 +359,12 @@ test("home and the log share a 1200 × 630 OGP image", async () => {
 });
 
 test("公開ページに X のカード用タグが揃っている", async () => {
+  const slug = await publishedArticleSlug();
+  expect(slug).toBeTruthy();
   const bodies = await Promise.all(
-    ["/", "/log"].map(async (path) => {
+    ["/", "/log", `/log/${slug}`].map(async (path) => {
       const response = await fetch(new URL(path, targetUrl));
+      expect(response.status, path).toBe(200);
       return [path, await response.text()] as const;
     })
   );
@@ -368,9 +375,15 @@ test("公開ページに X のカード用タグが揃っている", async () =>
       "twitter:title",
       "twitter:description",
       "twitter:image",
+      "twitter:image:alt",
     ]) {
       expect(body, `${path}: ${name}`).toContain(`name="${name}"`);
     }
+    const alt = body.match(twitterImageAltPattern)?.[1];
+    expect(alt, `${path}: twitter:image:alt content`).toBeTruthy();
+    expect(body.match(ogImageAltPattern)?.[1], `${path}: og:image:alt`).toBe(
+      alt
+    );
   }
 });
 
