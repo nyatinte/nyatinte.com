@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ArticleShare from "../../../lib/components/article-share.svelte";
   import ArticleToc from "../../../lib/components/article-toc.svelte";
   import CopyMdxButton from "../../../lib/components/copy-mdx-button.svelte";
   import JsonLd from "../../../lib/components/json-ld.svelte";
@@ -58,6 +59,7 @@
           <Body />
         </div>
       {/if}
+      <ArticleShare title={data.article.title} url={data.canonicalUrl} />
     </div>
   </main>
   {#if data.headings.length}
