@@ -1,8 +1,12 @@
 <script lang="ts">
+  import { replaceState } from "$app/navigation";
+  import { page } from "$app/state";
   import JsonLd from "../../lib/components/json-ld.svelte";
+  import LogSearch from "../../lib/components/log-search.svelte";
   import PageMeta from "../../lib/components/page-meta.svelte";
   import { logDescription, logTitle } from "../../lib/log/constants";
   import { formatLogDate } from "../../lib/log/format-date";
+  import { searchArticles } from "../../lib/log/search";
   import {
     articleDateTransitionName,
     articleTransitionName,
@@ -11,6 +15,21 @@
 
   let { data }: PageProps = $props();
   const title = `${logTitle} | nyatinte.com`;
+
+  let typedQuery = $state<string | null>(null);
+  const query = $derived(typedQuery ?? data.query);
+  const visibleArticles = $derived(searchArticles(data.articles, query));
+
+  function updateQuery(value: string) {
+    typedQuery = value;
+    const url = new URL(page.url.href);
+    if (value.trim()) {
+      url.searchParams.set("q", value);
+    } else {
+      url.searchParams.delete("q");
+    }
+    replaceState(url, page.state);
+  }
 </script>
 
 <JsonLd graphs={data.jsonLd} />
@@ -31,22 +50,36 @@
   {#if data.articles.length === 0}
     <p>記事はまだありません。</p>
   {:else}
-    <!-- biome-ignore lint/a11y/noRedundantRoles: Safari drops the list role when list-style is none. -->
-    <ol role="list">
-      {#each data.articles as article (article.slug)}
-        <li>
-          <time
-            datetime={article.date}
-            style:view-transition-name={articleDateTransitionName(article.slug)}
-            >{formatLogDate(article.date)}</time
-          >
-          <h2 style:view-transition-name={articleTransitionName(article.slug)}>
-            <a href={`/log/${article.slug}`}>{article.title}</a>
-          </h2>
-          <p>{article.description}</p>
-        </li>
-      {/each}
-    </ol>
+    <LogSearch
+      onQueryChange={updateQuery}
+      {query}
+      resultCount={visibleArticles.length}
+      totalCount={data.articles.length}
+    />
+    {#if visibleArticles.length === 0}
+      <p class="empty">
+        「{query}」に一致する記事はありません。キーワードを変えて試してください。
+      </p>
+    {:else}
+      <!-- biome-ignore lint/a11y/noRedundantRoles: Safari drops the list role when list-style is none. -->
+      <ol role="list">
+        {#each visibleArticles as article (article.slug)}
+          <li>
+            <time
+              datetime={article.date}
+              style:view-transition-name={articleDateTransitionName(article.slug)}
+              >{formatLogDate(article.date)}</time
+            >
+            <h2
+              style:view-transition-name={articleTransitionName(article.slug)}
+            >
+              <a href={`/log/${article.slug}`}>{article.title}</a>
+            </h2>
+            <p>{article.description}</p>
+          </li>
+        {/each}
+      </ol>
+    {/if}
   {/if}
 </main>
 
@@ -68,6 +101,10 @@
   .lead {
     margin: 0.8rem 0 2.5rem;
     font-size: 1.05rem;
+  }
+
+  .empty {
+    margin: 0;
   }
 
   ol {

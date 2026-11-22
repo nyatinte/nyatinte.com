@@ -229,6 +229,40 @@ test("GET /sitemap.xml lists core URLs", async () => {
   expect(body).toContain("<lastmod>");
 });
 
+test("発信した記事の一覧からキーワードで記事を探せる", async () => {
+  const body = await fetch(new URL("/log", targetUrl)).then((response) =>
+    response.text()
+  );
+
+  expect(body).toContain("<search");
+  expect(body).toContain('name="q"');
+  expect(body).toContain('id="log-search-input"');
+  expect(body).toContain('role="status"');
+  expect(body).toContain('href="/log/cua-computer-use"');
+});
+
+test("クエリに一致する記事だけを SSR で絞り込む", async () => {
+  const response = await fetch(new URL("/log?q=Cua", targetUrl));
+  const body = await response.text();
+
+  expect(response.status).toBe(200);
+  expect(body).toContain('href="/log/cua-computer-use"');
+  expect(body).not.toContain('href="/log/template"');
+
+  const canonical = new URL(body.match(canonicalPattern)?.[1] ?? "");
+  expect(canonical.pathname).toBe("/log");
+  expect(canonical.search).toBe("");
+});
+
+test("一致する記事がないクエリでも 200 と案内を返す", async () => {
+  const response = await fetch(new URL("/log?q=no-such-article", targetUrl));
+  const body = await response.text();
+
+  expect(response.status).toBe(200);
+  expect(body).toContain("一致する記事はありません");
+  expect(body).not.toContain('href="/log/template"');
+});
+
 test("GET /log/rss.xml lists articles", async () => {
   const response = await fetch(new URL("/log/rss.xml", targetUrl));
   const body = await response.text();
