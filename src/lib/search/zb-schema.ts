@@ -13,17 +13,27 @@ export const ZB_SEARCH_PROPERTIES = [
   "content",
 ] as const;
 
+const letterDotLetter = /(?<=\p{L})\.(?=\p{L})/gu;
+
 /**
- * The Japanese tokenizer keeps the original case. Lowercasing the tokens at
- * both index and query time makes `Bot` and `bot` match without altering the
- * original title, description, or content returned by the search.
+ * Normalizes before the stock Japanese tokenizer runs so that index and query
+ * tokens agree across Node and browser `Intl.Segmenter` implementations.
+ *
+ * NFKC folds full-width letters and digits into their ASCII forms. Letter-dot-
+ * letter sequences (`Next.js`, `index.md`) become spaces because the runtimes
+ * split them differently on `.`; other dots (`V4.1`, `1.5`) are kept. Lowercasing
+ * the tokens at both index and query time makes `Bot` and `bot` match without
+ * altering the original title, description, or content returned by the search.
  */
-export function createCaseInsensitiveJapaneseTokenizer() {
+export function createSearchTokenizer() {
   const tokenizer = createTokenizer();
   const { tokenize } = tokenizer;
   tokenizer.tokenize = (input, language, property, withCache) =>
-    tokenize(input, language, property, withCache).map((token) =>
-      token.toLowerCase()
-    );
+    tokenize(
+      input.normalize("NFKC").replace(letterDotLetter, " "),
+      language,
+      property,
+      withCache
+    ).map((token) => token.toLowerCase());
   return tokenizer;
 }

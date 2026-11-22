@@ -80,6 +80,7 @@ function markIntervals(text: string, tokens: string[]) {
 export function excerptSegments(content: string, query: string) {
   const tokens = query
     .trim()
+    .normalize("NFKC")
     .toLowerCase()
     .split(querySeparator)
     .filter(Boolean);

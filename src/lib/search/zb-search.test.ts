@@ -4,7 +4,7 @@ import { loadArticlesFromDirectory } from "../log/directory";
 import { buildZbSearchIndex } from "./zb-build";
 import { excerptSegments, extractPlainText } from "./zb-extract";
 import {
-  createCaseInsensitiveJapaneseTokenizer,
+  createSearchTokenizer,
   ZB_SCHEMA,
   ZB_SEARCH_PROPERTIES,
 } from "./zb-schema";
@@ -12,7 +12,7 @@ import {
 const articles = loadArticlesFromDirectory("src/content/log");
 const index = buildZbSearchIndex("src/content/log");
 const database = create({
-  components: { tokenizer: createCaseInsensitiveJapaneseTokenizer() },
+  components: { tokenizer: createSearchTokenizer() },
   schema: ZB_SCHEMA,
 });
 loadBinarySync(database, index.bytes);
@@ -70,6 +70,14 @@ test("search results keep the original title casing", async () => {
 
 test("url-only slug terms do not match article text", async () => {
   expect(await slugs("stay-light-in-ai-era")).toEqual([]);
+});
+test("letter-dot-letter and full-width queries match across runtimes", async () => {
+  expect(await slugs("Next.js")).toEqual(["stay-light-in-ai-era"]);
+  expect(await slugs("index.md")).toEqual(["template"]);
+  expect(await slugs("V4.1")).toEqual(["stay-light-in-ai-era"]);
+  expect(await slugs("1.5")).toEqual([]);
+  expect(await slugs("ｃｕａ")).toEqual(["cua-computer-use"]);
+  expect(await slugs("ＡＩ")).toEqual(["stay-light-in-ai-era"]);
 });
 
 test("the template article is searchable through frontmatter, MDX, and paths", async () => {

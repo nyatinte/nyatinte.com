@@ -1,7 +1,7 @@
 import { create, insert, saveBinarySync } from "zbsearch";
 import { loadArticlesFromDirectory } from "../log/directory";
 import { extractPlainText } from "./zb-extract";
-import { createCaseInsensitiveJapaneseTokenizer, ZB_SCHEMA } from "./zb-schema";
+import { createSearchTokenizer, ZB_SCHEMA } from "./zb-schema";
 
 export function buildZbSearchIndex(directory: string) {
   const articles = loadArticlesFromDirectory(directory);
@@ -9,7 +9,7 @@ export function buildZbSearchIndex(directory: string) {
     throw new Error(`No articles in ${directory}`);
   }
   const db = create({
-    components: { tokenizer: createCaseInsensitiveJapaneseTokenizer() },
+    components: { tokenizer: createSearchTokenizer() },
     schema: ZB_SCHEMA,
   });
   for (const article of articles) {

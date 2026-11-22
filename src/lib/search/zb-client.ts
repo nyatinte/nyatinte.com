@@ -2,7 +2,7 @@ import { type AnyZBSearch, create, loadBinary, search } from "zbsearch";
 import type { SearchResponse, SearchResult } from "./types";
 import { excerptSegments } from "./zb-extract";
 import {
-  createCaseInsensitiveJapaneseTokenizer,
+  createSearchTokenizer,
   ZB_SCHEMA,
   ZB_SEARCH_PROPERTIES,
 } from "./zb-schema";
@@ -45,7 +45,7 @@ function loadDatabase() {
       throw new Error(`GET ${indexUrl} returned ${response.status}`);
     }
     const database = create({
-      components: { tokenizer: createCaseInsensitiveJapaneseTokenizer() },
+      components: { tokenizer: createSearchTokenizer() },
       schema: ZB_SCHEMA,
     });
     await loadBinary(database, new Uint8Array(await response.arrayBuffer()));
