@@ -7,7 +7,7 @@ import type { PageServerLoad } from "./$types";
 
 const sharedOgImage = new URL(ogImage, canonicalSiteUrl("/")).href;
 
-export const load: PageServerLoad = ({ url }) => {
+export const load: PageServerLoad = () => {
   const image = resolveArticleImage({ sharedUrl: sharedOgImage });
   return {
     articles: articles.map((article) => ({
@@ -20,6 +20,5 @@ export const load: PageServerLoad = ({ url }) => {
     canonicalUrl: canonicalSiteUrl("/log"),
     image,
     jsonLd: createLogJsonLd(),
-    query: url.searchParams.get("q")?.trim() ?? "",
   };
 };

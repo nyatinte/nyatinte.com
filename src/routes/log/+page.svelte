@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { afterNavigate, replaceState } from "$app/navigation";
+  import { goto } from "$app/navigation";
   import { page } from "$app/state";
   import JsonLd from "../../lib/components/json-ld.svelte";
   import LogSearch from "../../lib/components/log-search.svelte";
@@ -16,25 +16,17 @@
   let { data }: PageProps = $props();
   const title = `${logTitle} | nyatinte.com`;
 
-  let typedQuery = $state<string | null>(null);
-  const query = $derived(typedQuery ?? data.query);
+  const query = $derived(page.url.searchParams.get("q") ?? "");
   const visibleArticles = $derived(searchArticles(data.articles, query));
 
-  // 同じ /log への遷移ではコンポーネントが再利用され、入力中の値が残る。
-  // 遷移後は URL の ?q= を正として入力欄と絞り込みを戻す。
-  afterNavigate(() => {
-    typedQuery = null;
-  });
-
   function updateQuery(value: string) {
-    typedQuery = value;
     const url = new URL(page.url.href);
     if (value.trim()) {
       url.searchParams.set("q", value);
     } else {
       url.searchParams.delete("q");
     }
-    replaceState(url, page.state);
+    goto(url, { replace: true, reset: false });
   }
 </script>
 
