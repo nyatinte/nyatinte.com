@@ -14,7 +14,6 @@
   canonicalUrl={data.canonicalUrl}
   description={data.siteDescription}
   image={data.image}
-  includeRss={false}
   ogTitle="nyatinte.com"
   title="nyatinte"
 />

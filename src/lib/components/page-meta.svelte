@@ -5,7 +5,6 @@
     canonicalUrl,
     description,
     image,
-    includeRss = true,
     ogTitle,
     ogType = "website",
     title,
@@ -13,7 +12,6 @@
     canonicalUrl: string;
     description: string;
     image: ResolvedOgImage;
-    includeRss?: boolean;
     ogTitle?: string;
     ogType?: "article" | "website";
     title: string;
@@ -26,14 +24,12 @@
   <title>{title}</title>
   <meta content={description} name="description">
   <link href={canonicalUrl} rel="canonical">
-  {#if includeRss}
-    <link
-      href="https://nyatinte.com/log/rss.xml"
-      rel="alternate"
-      title="ログ"
-      type="application/rss+xml"
-    >
-  {/if}
+  <link
+    href="https://nyatinte.com/log/rss.xml"
+    rel="alternate"
+    title="ログ"
+    type="application/rss+xml"
+  >
   <meta content={shareTitle} property="og:title">
   <meta content={description} property="og:description">
   <meta content={canonicalUrl} property="og:url">

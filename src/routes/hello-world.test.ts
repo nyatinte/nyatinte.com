@@ -387,7 +387,7 @@ test("公開ページに X のカード用タグが揃っている", async () =>
   }
 });
 
-test("ホームは独自のタイトルで X のカードを出し、RSS は持たない", async () => {
+test("ホームは独自のタイトルで X のカードと RSS 自動検出を出す", async () => {
   const body = await fetch(new URL("/", targetUrl)).then((response) =>
     response.text()
   );
@@ -397,5 +397,7 @@ test("ホームは独自のタイトルで X のカードを出し、RSS は持�
   expect(body).toContain('content="nyatinte.com" name="twitter:title"');
   expect(body).toContain('property="og:image:alt"');
   expect(body).toContain('name="twitter:image:alt"');
-  expect(body).not.toContain('type="application/rss+xml"');
+  expect(body).toContain(
+    '<link href="https://nyatinte.com/log/rss.xml" rel="alternate" title="ログ" type="application/rss+xml"'
+  );
 });
