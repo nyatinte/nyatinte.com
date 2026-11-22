@@ -25,9 +25,7 @@
       >X でシェア<span class="share-action-sr">（新しいタブで開く）</span></span
     >
   </a>
-  {#key url}
-    <CopyButton icon={linkIcon} label="リンクをコピー" text={url} />
-  {/key}
+  <CopyButton icon={linkIcon} label="リンクをコピー" text={url} />
 </div>
 
 <style>

@@ -27,11 +27,12 @@
   });
 
   async function copy() {
-    const next = await copyText(text);
+    const target = text;
+    const next = await copyText(target);
     // 同じ文言が続いても読み上げられるように、いったん空にする。
     result = null;
     await tick();
-    result = { message: next, text };
+    result = { message: next, text: target };
   }
 </script>
 
