@@ -24,6 +24,7 @@ const metaDescriptionPattern =
   /<meta content="([^"]*)" name="description"\s*\/?>/u;
 const markdownAlternateHrefPattern =
   /<([^>]+)>;\s*rel="alternate";\s*type="text\/markdown"/;
+const clearSearchLinkPattern = /<a href="\/log"[^>]*>すべての記事を見る<\/a>/;
 
 function expectMarkdownAlternatePath(link: string | null, pathname: string) {
   expect(link).toContain('rel="alternate"');
@@ -260,6 +261,7 @@ test("一致する記事がないクエリでも 200 と案内を返す", async 
 
   expect(response.status).toBe(200);
   expect(body).toContain("一致する記事はありません");
+  expect(body).toMatch(clearSearchLinkPattern);
   expect(body).not.toContain('href="/log/template"');
 });
 

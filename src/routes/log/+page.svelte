@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { replaceState } from "$app/navigation";
+  import { afterNavigate, replaceState } from "$app/navigation";
   import { page } from "$app/state";
   import JsonLd from "../../lib/components/json-ld.svelte";
   import LogSearch from "../../lib/components/log-search.svelte";
@@ -19,6 +19,12 @@
   let typedQuery = $state<string | null>(null);
   const query = $derived(typedQuery ?? data.query);
   const visibleArticles = $derived(searchArticles(data.articles, query));
+
+  // 同じ /log への遷移ではコンポーネントが再利用され、入力中の値が残る。
+  // 遷移後は URL の ?q= を正として入力欄と絞り込みを戻す。
+  afterNavigate(() => {
+    typedQuery = null;
+  });
 
   function updateQuery(value: string) {
     typedQuery = value;
@@ -58,7 +64,8 @@
     />
     {#if visibleArticles.length === 0}
       <p class="empty">
-        「{query}」に一致する記事はありません。キーワードを変えて試してください。
+        「{query}」に一致する記事はありません。
+        <a href="/log">すべての記事を見る</a>
       </p>
     {:else}
       <!-- biome-ignore lint/a11y/noRedundantRoles: Safari drops the list role when list-style is none. -->

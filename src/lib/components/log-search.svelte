@@ -123,7 +123,7 @@
       input {
         flex: 1 1 auto;
         min-inline-size: 0;
-        block-size: 2.5rem;
+        block-size: 2.75rem;
         padding: 0;
         font: inherit;
         color: inherit;
