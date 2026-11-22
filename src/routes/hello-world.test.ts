@@ -30,6 +30,7 @@ const backToTopButtonPattern =
   /<button[^>]*aria-label="ページの先頭へ戻る"[^>]*>/u;
 const markdownAlternateHrefPattern =
   /<([^>]+)>;\s*rel="alternate";\s*type="text\/markdown"/;
+const xIntentHrefPattern = /href="(https:\/\/x\.com\/intent\/post\?[^"]+)"/u;
 
 function expectMarkdownAlternatePath(link: string | null, pathname: string) {
   expect(link).toContain('rel="alternate"');
@@ -339,6 +340,51 @@ test("published article pages expose BlogPosting JSON-LD", async () => {
   expect(body).toContain(`view-transition-name: log-title-${slug}`);
   expect(body).toContain('type="application/rss+xml"');
   expect(body).toContain('href="https://nyatinte.com/log/rss.xml"');
+});
+
+test("記事ページに X シェアとリンクコピーを出す", async () => {
+  const slug = await publishedArticleSlug();
+  expect(slug).toBeTruthy();
+  const body = await fetch(new URL(`/log/${slug}`, targetUrl)).then(
+    (response) => response.text()
+  );
+  const href = body.match(xIntentHrefPattern)?.[1];
+  expect(href).toBeDefined();
+
+  const shareUrl = new URL((href ?? "").replaceAll("&amp;", "&"));
+  expect(shareUrl.searchParams.get("url")).toBe(
+    canonicalSiteUrl(`/log/${slug}`)
+  );
+  const text = shareUrl.searchParams.get("text") ?? "";
+  expect(text.length).toBeGreaterThan("| nyatinte.com".length);
+  expect(text.endsWith(" | nyatinte.com")).toBe(true);
+
+  expect(body).toContain('rel="noopener noreferrer"');
+  expect(body).toContain('target="_blank"');
+  expect(body).toContain("X でシェア");
+  expect(body).toContain("リンクをコピー");
+  expect(body).toContain('aria-label="記事の共有"');
+});
+
+test("記事以外のページには共有ボタンを出さない", async () => {
+  const bodies = await Promise.all(
+    ["/", "/log"].map(async (path) =>
+      fetch(new URL(path, targetUrl)).then((response) => response.text())
+    )
+  );
+  for (const body of bodies) {
+    expect(body).not.toContain("x.com/intent/post");
+    expect(body).not.toContain("リンクをコピー");
+  }
+});
+
+test("存在しない記事には共有 UI を出さない", async () => {
+  const response = await fetch(new URL("/log/not-a-real-slug", targetUrl));
+  const body = await response.text();
+
+  expect(response.status).toBe(404);
+  expect(body).not.toContain("x.com/intent/post");
+  expect(body).not.toContain("リンクをコピー");
 });
 
 test("published article pages return markdown when requested", async () => {
