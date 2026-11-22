@@ -92,6 +92,29 @@ test("agent markdown for stay-light-in-ai-era drops svelte blocks but keeps html
   expect(body).not.toContain("\n\n\n");
 });
 
+test("HTML content-length matches the body after JSON-LD nonce injection", async () => {
+  const html =
+    '<html><head><script type="application/ld+json">{"@type":"Thing"}</script></head><body>日本語</body></html>';
+  const response = await handle({
+    event: eventFor("http://127.0.0.1:8787/"),
+    resolve: async () =>
+      new Response(html, {
+        headers: {
+          "content-length": String(new TextEncoder().encode(html).byteLength),
+          "content-security-policy": "script-src 'self' 'nonce-abc';",
+          "content-type": "text/html; charset=utf-8",
+        },
+        status: 200,
+      }),
+  });
+
+  const body = await response.text();
+  expect(body).toContain('<script type="application/ld+json" nonce="abc">');
+  expect(response.headers.get("content-length")).toBe(
+    String(new TextEncoder().encode(body).byteLength)
+  );
+});
+
 test("redirects former achievement paths before rendering", async () => {
   const response = await handle({
     event: eventFor("http://127.0.0.1:8787/done/old"),
