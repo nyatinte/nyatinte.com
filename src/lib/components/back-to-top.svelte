@@ -1,10 +1,6 @@
 <script lang="ts">
   import arrowUp from "@tabler/icons/outline/arrow-up.svg?url";
-  import {
-    backToTopScrollBehavior,
-    findBackToTopFocusTarget,
-    shouldShowBackToTop,
-  } from "../back-to-top";
+  import { backToTopScrollBehavior, shouldShowBackToTop } from "../back-to-top";
 
   let scrollY = $state(0);
   const visible = $derived(shouldShowBackToTop(scrollY));
@@ -13,37 +9,15 @@
     return matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
-  // 先頭へ戻るとボタンは隠れるため、フォーカスをヘッダーのサイト名か見出しへ移して読み上げ位置を保つ。
-  function focusPageStart() {
-    const target = findBackToTopFocusTarget((selector) =>
-      document.querySelector<HTMLElement>(selector)
-    );
-    if (!target) {
-      return;
-    }
-    // リンクなど元からフォーカスできる要素には tabindex を足さない。
-    const needsTabIndex = !target.matches(
-      "a[href], button, input, select, textarea, [tabindex]"
-    );
-    if (needsTabIndex) {
-      target.tabIndex = -1;
-      target.addEventListener(
-        "blur",
-        () => {
-          target.removeAttribute("tabindex");
-        },
-        { once: true }
-      );
-    }
-    target.focus({ preventScroll: true });
-  }
-
   function backToTop() {
     window.scrollTo({
       behavior: backToTopScrollBehavior(prefersReducedMotion()),
       top: 0,
     });
-    focusPageStart();
+    // 先頭へ戻るとボタンは隠れるため、フォーカスをヘッダーのサイト名へ移して読み上げ位置を保つ。
+    document
+      .querySelector<HTMLElement>("header .wordmark")
+      ?.focus({ preventScroll: true });
   }
 </script>
 
