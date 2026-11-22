@@ -31,6 +31,8 @@ const backToTopButtonPattern =
 const markdownAlternateHrefPattern =
   /<([^>]+)>;\s*rel="alternate";\s*type="text\/markdown"/;
 const xIntentHrefPattern = /href="(https:\/\/x\.com\/intent\/post\?[^"]+)"/u;
+const rssAutodiscoveryLinkPattern =
+  /<link [^>]*href="https:\/\/nyatinte\.com\/log\/rss\.xml"[^>]*>/u;
 
 function expectMarkdownAlternatePath(link: string | null, pathname: string) {
   expect(link).toContain('rel="alternate"');
@@ -481,12 +483,31 @@ test("公開ページは RSS フィードを自動検出用に示す", async () 
     })
   );
   for (const [path, body] of bodies) {
-    expect(body, path).toContain(
-      '<link href="https://nyatinte.com/log/rss.xml" rel="alternate"'
-    );
-    expect(body, path).toContain('type="application/rss+xml"');
+    const [link] = body.match(rssAutodiscoveryLinkPattern) ?? [];
+    expect(link, path).toBeDefined();
+    expect(link, path).toContain('rel="alternate"');
+    expect(link, path).toContain('type="application/rss+xml"');
+    // 従来の page-meta と同じ title を保つ。
+    expect(link, path).toContain('title="ログ"');
     // 重複して出力しない。
     expect(body.match(/rel="alternate"/gu), path).toHaveLength(1);
+  }
+});
+
+test("404 の HTML には RSS の自動検出 link を出さない", async () => {
+  const bodies = await Promise.all(
+    ["/definitely-missing", "/log/not-a-real-slug"].map(async (path) => {
+      const response = await fetch(new URL(path, targetUrl), {
+        headers: { Accept: "text/html" },
+      });
+      return [path, response, await response.text()] as const;
+    })
+  );
+  for (const [path, response, body] of bodies) {
+    expect(response.status, path).toBe(404);
+    expect(response.headers.get("content-type"), path).toContain("text/html");
+    expect(body, path).not.toMatch(rssAutodiscoveryLinkPattern);
+    expect(body, path).not.toContain('type="application/rss+xml"');
   }
 });
 
