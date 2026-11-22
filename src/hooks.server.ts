@@ -62,6 +62,10 @@ async function finalizeHtmlResponse(
       `<script type="application/ld+json" nonce="${nonce}">`
     );
   }
+  headers.set(
+    "content-length",
+    String(new TextEncoder().encode(body).byteLength)
+  );
   return new Response(body, {
     headers,
     status: response.status,
