@@ -18,7 +18,7 @@
   },
   "type": "module",
   "scripts": {
-    "build": "wrangler types --include-main-module=false && svelte-kit sync && vp build",
+    "build": "wrangler types --include-main-module=false && svelte-kit sync && vp build && pnpm search:index",
     "check": "node --test scripts/test-parse-wrangler-version-id.mjs && wrangler types --include-main-module=false && svelte-kit sync && ultracite check && pnpm run lint:svelte && vp check --no-fmt --no-lint && svelte-check --tsconfig ./tsconfig.json",
     "check:ci": "APP_ENV=test CF_SEND_TELEMETRY=false sh -c 'pnpm check && pnpm build && pnpm test:http'",
     "deploy": "sh scripts/deploy-worker.sh",
@@ -28,6 +28,7 @@
     "lint:svelte": "eslint \"src/**/*.{svelte,svelte.js,svelte.ts}\"",
     "prepare": "svelte-kit sync && vp config --no-agent --hooks",
     "preview": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --port 4173",
+    "search:index": "tsx scripts/build-zbsearch.ts",
     "test": "vp test --run",
     "test:http": "APP_ENV=test CF_SEND_TELEMETRY=false sh scripts/test-built-worker.sh",
     "vitals": "svelte-vitals --no-animation"
@@ -35,9 +36,11 @@
   "dependencies": {
     "@modelcontextprotocol/server": "2.4.0",
     "@tabler/icons": "^3.51.0",
+    "@zbsearch/tokenizers": "4.0.4",
     "jose": "6.2.17",
     "valibot": "1.5.0",
     "yaml": "2.9.1",
+    "zbsearch": "4.0.4",
     "zod": "4.6.7"
   },
   "devDependencies": {
@@ -56,6 +59,7 @@
     "svelte": "5.57.3",
     "svelte-check": "4.7.8",
     "svelte-vitals": "0.55.5",
+    "tsx": "4.23.15",
     "typescript": "6.0.3",
     "ultracite": "7.12.0",
     "varlock": "1.25.0",

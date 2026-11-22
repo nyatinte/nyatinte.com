@@ -590,3 +590,12 @@ test("HEAD /log/rss.xml はヘッダーだけを返す", async () => {
   expect(response.headers.get("content-type")).toContain("application/rss+xml");
   expect(await response.text()).toBe("");
 });
+
+test("built Worker serves the ZBSearch binary index", async () => {
+  const response = await fetch(new URL("/zbsearch/index.zbsb", targetUrl));
+  expect(response.status).toBe(200);
+  expect(response.headers.get("content-type")).toContain(
+    "application/octet-stream"
+  );
+  expect((await response.arrayBuffer()).byteLength).toBeGreaterThan(1000);
+});
