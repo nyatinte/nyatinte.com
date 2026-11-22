@@ -83,7 +83,17 @@
     }
     // SvelteKit 3 の replaceState は page.shallow.url しか更新しないため、
     // page.url を正本に保つ goto でスクロールとフォーカスを維持したまま置き換える。
-    goto(next, { replace: true, reset: false });
+    goto(next, { replace: true, reset: false }).catch((error: unknown) => {
+      if (
+        error instanceof Error &&
+        (error.message === "navigation aborted" ||
+          error.message === "navigation cancelled")
+      ) {
+        // 次の入力やページ遷移がこの URL 同期を中断した場合は最新の状態を優先する。
+        return;
+      }
+      throw error;
+    });
   }
 
   $effect(() => {
