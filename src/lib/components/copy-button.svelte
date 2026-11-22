@@ -7,7 +7,9 @@
     $props();
 
   const resetDelay = 2000;
-  let message = $state("");
+  // どの text への結果かを覚えておき、text が変わったら表示を戻す。
+  let result = $state<{ message: string; text: string } | null>(null);
+  const message = $derived(result?.text === text ? result.message : "");
   const currentIcon = $derived(message === copyFeedback.success ? check : icon);
   const currentLabel = $derived(message || label);
 
@@ -17,7 +19,7 @@
       return;
     }
     const timer = setTimeout(() => {
-      message = "";
+      result = null;
     }, resetDelay);
     return () => {
       clearTimeout(timer);
@@ -27,9 +29,9 @@
   async function copy() {
     const next = await copyText(text);
     // 同じ文言が続いても読み上げられるように、いったん空にする。
-    message = "";
+    result = null;
     await tick();
-    message = next;
+    result = { message: next, text };
   }
 </script>
 

@@ -378,6 +378,15 @@ test("記事以外のページには共有ボタンを出さない", async () =>
   }
 });
 
+test("存在しない記事には共有 UI を出さない", async () => {
+  const response = await fetch(new URL("/log/not-a-real-slug", targetUrl));
+  const body = await response.text();
+
+  expect(response.status).toBe(404);
+  expect(body).not.toContain("x.com/intent/post");
+  expect(body).not.toContain("リンクをコピー");
+});
+
 test("published article pages return markdown when requested", async () => {
   const slug = await publishedArticleSlug();
   expect(slug).toBeTruthy();

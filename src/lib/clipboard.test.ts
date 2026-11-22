@@ -21,12 +21,10 @@ test("書き込みが拒否されたら失敗を知らせる", async () => {
   );
 });
 
-test("クリップボードが使えない環境でも失敗を知らせる", async () => {
-  const write: ClipboardWriter = () => {
-    throw new Error("clipboard is unavailable");
-  };
+test("navigator.clipboard が無い環境では失敗を知らせる", async () => {
+  expect(navigator.clipboard).toBeUndefined();
 
-  await expect(copyText("https://nyatinte.com/log/a", write)).resolves.toBe(
+  await expect(copyText("https://nyatinte.com/log/a")).resolves.toBe(
     copyFeedback.failure
   );
 });

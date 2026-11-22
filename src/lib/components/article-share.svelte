@@ -8,7 +8,8 @@
   const shareUrl = $derived(xShareUrl({ title, url }));
 </script>
 
-<section aria-label="記事の共有" class="share">
+<!-- biome-ignore lint/a11y/useSemanticElements: fieldset はフォームの部品をまとめる要素で、共有リンクのまとまりには合わない。 -->
+<div aria-label="記事の共有" class="share" role="group">
   <a
     class="share-action"
     href={shareUrl}
@@ -27,7 +28,7 @@
   {#key url}
     <CopyButton icon={linkIcon} label="リンクをコピー" text={url} />
   {/key}
-</section>
+</div>
 
 <style>
   .share {
