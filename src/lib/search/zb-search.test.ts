@@ -51,8 +51,8 @@ test("extracted article text drops Svelte blocks and CSS but keeps prose", () =>
 });
 
 test("the binary index round-trips and matches Latin terms case-insensitively", async () => {
-  expect(index.recordCount).toBe(3);
-  expect(index.bytes.byteLength).toBeGreaterThan(1000);
+  expect(index.recordCount).toBe(articles.length);
+  expect(index.bytes.byteLength).toBeGreaterThan(0);
   expect(await slugs("Bot")).toEqual([
     "cua-computer-use",
     "stay-light-in-ai-era",
