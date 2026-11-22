@@ -31,6 +31,8 @@ const backToTopButtonPattern =
 const markdownAlternateHrefPattern =
   /<([^>]+)>;\s*rel="alternate";\s*type="text\/markdown"/;
 const xIntentHrefPattern = /href="(https:\/\/x\.com\/intent\/post\?[^"]+)"/u;
+const rssAutodiscoveryLinkPattern =
+  /<link [^>]*href="https:\/\/nyatinte\.com\/log\/rss\.xml"[^>]*>/u;
 
 function expectMarkdownAlternatePath(link: string | null, pathname: string) {
   expect(link).toContain('rel="alternate"');
@@ -469,4 +471,81 @@ test("ホームは独自のタイトルで X のカードと RSS 自動検出を
   expect(body).toContain(
     '<link href="https://nyatinte.com/log/rss.xml" rel="alternate" title="ログ" type="application/rss+xml"'
   );
+});
+
+test("公開ページは RSS フィードを自動検出用に示す", async () => {
+  const slug = await publishedArticleSlug();
+  expect(slug).toBeTruthy();
+  const bodies = await Promise.all(
+    ["/", "/log", `/log/${slug}`].map(async (path) => {
+      const response = await fetch(new URL(path, targetUrl));
+      return [path, await response.text()] as const;
+    })
+  );
+  for (const [path, body] of bodies) {
+    const [link] = body.match(rssAutodiscoveryLinkPattern) ?? [];
+    expect(link, path).toBeDefined();
+    expect(link, path).toContain('rel="alternate"');
+    expect(link, path).toContain('type="application/rss+xml"');
+    // 従来の page-meta と同じ title を保つ。
+    expect(link, path).toContain('title="ログ"');
+    // 重複して出力しない。
+    expect(body.match(/rel="alternate"/gu), path).toHaveLength(1);
+  }
+});
+
+test("404 の HTML には RSS の自動検出 link を出さない", async () => {
+  const bodies = await Promise.all(
+    ["/definitely-missing", "/log/not-a-real-slug"].map(async (path) => {
+      const response = await fetch(new URL(path, targetUrl), {
+        headers: { Accept: "text/html" },
+      });
+      return [path, response, await response.text()] as const;
+    })
+  );
+  for (const [path, response, body] of bodies) {
+    expect(response.status, path).toBe(404);
+    expect(response.headers.get("content-type"), path).toContain("text/html");
+    expect(body, path).not.toMatch(rssAutodiscoveryLinkPattern);
+    expect(body, path).not.toContain('type="application/rss+xml"');
+  }
+});
+
+test("ログのページに目に見える RSS リンクがある", async () => {
+  const slug = await publishedArticleSlug();
+  expect(slug).toBeTruthy();
+  const bodies = await Promise.all(
+    ["/log", `/log/${slug}`].map(async (path) => {
+      const response = await fetch(new URL(path, targetUrl));
+      return [path, await response.text()] as const;
+    })
+  );
+  for (const [path, body] of bodies) {
+    expect(body, path).toContain('href="/log/rss.xml"');
+    expect(body, path).toContain("RSS で購読");
+  }
+});
+
+test("GET /log/rss.xml は購読に必要な要素を返す", async () => {
+  const body = await fetch(new URL("/log/rss.xml", targetUrl)).then(
+    (response) => response.text()
+  );
+
+  expect(body).toContain('xmlns:atom="http://www.w3.org/2005/Atom"');
+  expect(body).toContain(
+    '<atom:link href="https://nyatinte.com/log/rss.xml" rel="self" type="application/rss+xml" />'
+  );
+  expect(body).toContain("<language>ja</language>");
+  expect(body).toContain("<lastBuildDate>");
+  expect(body).toContain('<guid isPermaLink="true">');
+});
+
+test("HEAD /log/rss.xml はヘッダーだけを返す", async () => {
+  const response = await fetch(new URL("/log/rss.xml", targetUrl), {
+    method: "HEAD",
+  });
+
+  expect(response.status).toBe(200);
+  expect(response.headers.get("content-type")).toContain("application/rss+xml");
+  expect(await response.text()).toBe("");
 });

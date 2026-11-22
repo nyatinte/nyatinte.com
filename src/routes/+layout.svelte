@@ -17,6 +17,7 @@
   } from "../lib/home-theme";
   import { HOME_THEME_COLOR } from "../lib/home-theme-color";
   import { homeTransitionDirection } from "../lib/home-transition";
+  import { logRssUrl, logTitle } from "../lib/log/constants";
   import { shouldStartArticleTransition } from "../lib/log/view-transition";
 
   let { children } = $props();
@@ -85,6 +86,15 @@
     >
   {:else}
     <meta content={HOME_THEME_COLOR[theme]} name="theme-color">
+  {/if}
+  {#if page.status < 400}
+    <!-- RSS の自動検出は全ページ共通なので、ページごとではなくルートで出す。 -->
+    <link
+      href={logRssUrl}
+      rel="alternate"
+      title={logTitle}
+      type="application/rss+xml"
+    >
   {/if}
 </svelte:head>
 

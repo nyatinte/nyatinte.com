@@ -4,6 +4,7 @@
   import CopyMdxButton from "../../../lib/components/copy-mdx-button.svelte";
   import JsonLd from "../../../lib/components/json-ld.svelte";
   import PageMeta from "../../../lib/components/page-meta.svelte";
+  import RssLink from "../../../lib/components/rss-link.svelte";
   import { articleComponent } from "../../../lib/log/components";
   import { formatLogDate } from "../../../lib/log/format-date";
   import {
@@ -60,6 +61,7 @@
         </div>
       {/if}
       <ArticleShare title={data.article.title} url={data.canonicalUrl} />
+      <div class="subscribe"><RssLink /></div>
     </div>
   </main>
   {#if data.headings.length}
@@ -131,6 +133,12 @@
   .description {
     margin: 0 0 2rem;
     font-size: 1.05rem;
+  }
+
+  .subscribe {
+    padding-block-start: 1.5rem;
+    margin-block-start: 3rem;
+    border-block-start: 1px solid var(--home-nav-border);
   }
 
   .prose :global(p),
