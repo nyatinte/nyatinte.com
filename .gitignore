@@ -27,3 +27,6 @@ worker-configuration.d.ts
 .DS_Store
 *.log
 .vitest/
+
+# mutation testing cache
+.mutator/
