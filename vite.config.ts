@@ -3,11 +3,35 @@ import { sveltekit } from "@sveltejs/kit/vite";
 import { varlockVitePlugin } from "@varlock/vite-integration";
 import { mdsvex } from "mdsvex";
 import type { PreprocessorGroup } from "svelte/compiler";
+import type { Plugin } from "vite";
 import { defineConfig } from "vite-plus";
 import { remarkHeadingIds } from "./src/lib/log/remark-heading-ids";
 import { logFrontmatterPlugin } from "./src/lib/log/vite-plugin";
+import { buildZbSearchIndex } from "./src/lib/search/zb-build";
 
 const pathSeparatorPattern = /[/\\]/;
+
+function zbSearchDevMiddleware(): Plugin {
+  return {
+    configureServer(server) {
+      server.middlewares.use((request, response, next) => {
+        if ((request.url?.split("?")[0] ?? "") !== "/zbsearch/index.zbsb") {
+          next();
+          return;
+        }
+        try {
+          const { bytes } = buildZbSearchIndex("src/content/log");
+          response.setHeader("Content-Type", "application/octet-stream");
+          response.setHeader("Cache-Control", "no-store");
+          response.end(Buffer.from(bytes));
+        } catch (error) {
+          next(error);
+        }
+      });
+    },
+    name: "zbsearch-dev",
+  };
+}
 
 function svelteMarkdown(): PreprocessorGroup {
   const processor = mdsvex({
@@ -55,6 +79,7 @@ export default defineConfig(({ mode }) => ({
     mode === "test"
       ? []
       : [
+          zbSearchDevMiddleware(),
           logFrontmatterPlugin(),
           varlockVitePlugin(),
           sveltekit({

@@ -590,3 +590,57 @@ test("HEAD /log/rss.xml はヘッダーだけを返す", async () => {
   expect(response.headers.get("content-type")).toContain("application/rss+xml");
   expect(await response.text()).toBe("");
 });
+
+const logArticleSlugs = [
+  "cua-computer-use",
+  "stay-light-in-ai-era",
+  "template",
+];
+
+test("built Worker serves the ZBSearch binary index", async () => {
+  const response = await fetch(new URL("/zbsearch/index.zbsb", targetUrl));
+  expect(response.status).toBe(200);
+  expect(response.headers.get("content-type")).toContain(
+    "application/octet-stream"
+  );
+  expect(response.headers.get("cache-control")).toBe("no-store");
+  expect((await response.arrayBuffer()).byteLength).toBeGreaterThan(1000);
+});
+
+test("GET /log renders the search UI and the no-JS article list", async () => {
+  const response = await fetch(new URL("/log", targetUrl));
+  const body = await response.text();
+
+  expect(response.status).toBe(200);
+  expect(body).toContain('name="q"');
+  expect(body).toContain('id="log-search-input"');
+  expect(body).toContain('role="status"');
+  for (const slug of logArticleSlugs) {
+    expect(body).toContain(`/log/${slug}`);
+  }
+});
+
+test("GET /log?q=Cua reflects the query without changing the canonical URL", async () => {
+  const body = await fetch(new URL("/log?q=Cua", targetUrl)).then((response) =>
+    response.text()
+  );
+
+  expect(body).toContain('value="Cua"');
+  expect(body.match(canonicalPattern)?.[1]).toBe("https://nyatinte.com/log");
+  for (const slug of logArticleSlugs) {
+    expect(body).toContain(`/log/${slug}`);
+  }
+});
+
+test("GET /log with no matching query keeps the canonical URL and article list", async () => {
+  const response = await fetch(
+    new URL(`/log?q=${encodeURIComponent("存在しない語")}`, targetUrl)
+  );
+  const body = await response.text();
+
+  expect(response.status).toBe(200);
+  expect(body.match(canonicalPattern)?.[1]).toBe("https://nyatinte.com/log");
+  for (const slug of logArticleSlugs) {
+    expect(body).toContain(`/log/${slug}`);
+  }
+});
