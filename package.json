@@ -61,7 +61,7 @@
     "mdsvex": "0.12.8",
     "svelte": "5.57.3",
     "svelte-check": "4.7.8",
-    "svelte-vitals": "0.55.5",
+    "svelte-vitals": "0.57.1",
     "tsx": "4.23.15",
     "typescript": "6.0.3",
     "varlock": "1.25.0",
