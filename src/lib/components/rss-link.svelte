@@ -3,10 +3,6 @@
   import { logRssPath } from "../log/constants";
 </script>
 
-<!--
-  フィードは XML なのでクライアント遷移させず、プリロードもしない。
-  SvelteKit のデータ取得に巻き込まないための指定。
--->
 <a
   class="rss"
   data-sveltekit-preload-data="off"

@@ -68,7 +68,6 @@
     display: flex;
   }
 
-  /* 直下だけに当てる。入れ子の .sr-only に 44px の箱が残らないようにする。 */
   li > a,
   li > span {
     display: inline-flex;

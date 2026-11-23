@@ -7,13 +7,11 @@
     $props();
 
   const resetDelay = 2000;
-  // どの text への結果かを覚えておき、text が変わったら表示を戻す。
   let result = $state<{ message: string; text: string } | null>(null);
   const message = $derived(result?.text === text ? result.message : "");
   const currentIcon = $derived(message === copyFeedback.success ? check : icon);
   const currentLabel = $derived(message || label);
 
-  // text が変わったら前の結果を捨て、表示中は少し待ってから元のラベルへ戻す。
   $effect(() => {
     if (result && result.text !== text) {
       result = null;
@@ -36,7 +34,6 @@
     if (text !== target) {
       return;
     }
-    // 同じ文言が続いても読み上げられるように、いったん空にする。
     result = null;
     await tick();
     result = { message: next, text: target };

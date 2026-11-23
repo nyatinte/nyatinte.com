@@ -90,7 +90,6 @@
         (error.message === "navigation aborted" ||
           error.message === "navigation cancelled")
       ) {
-        // 次の入力やページ遷移がこの URL 同期を中断した場合は最新の状態を優先する。
         return;
       }
       throw error;
@@ -111,9 +110,7 @@
   });
 
   function onFocus() {
-    engine().catch(() => {
-      // The input handler reports a broken engine.
-    });
+    engine().catch(() => undefined);
   }
 
   const statusText = $derived.by(() => {

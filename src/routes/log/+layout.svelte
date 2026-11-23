@@ -13,7 +13,6 @@
 
 <style>
   @media (prefers-reduced-motion: no-preference) {
-    /* ドキュメント間遷移は /log のみに適用する。 */
     @view-transition {
       navigation: auto;
     }
