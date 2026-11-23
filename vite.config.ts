@@ -68,6 +68,27 @@ export default defineConfig(({ mode }) => ({
     fmt: false,
     lint: false,
   },
+  fmt: {
+    endOfLine: "lf",
+    ignorePatterns: [
+      ".agents/**",
+      ".svelte-kit/**",
+      ".wrangler/**",
+      "**/*.svelte",
+      "AGENTS.md",
+      "build/**",
+      "dist/**",
+      "pnpm-lock.yaml",
+      "skills-lock.json",
+      "worker-configuration.d.ts",
+    ],
+    printWidth: 80,
+    singleQuote: false,
+    sortPackageJson: false,
+    svelte: false,
+    tabWidth: 2,
+    useTabs: false,
+  },
   lint,
   plugins:
     mode === "test"

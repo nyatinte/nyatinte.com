@@ -25,6 +25,10 @@
     "dev": "vp dev",
     "dev:worker": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --local --port ${PORT:-8787}",
     "fix": "vp lint --fix",
+    "fmt": "vp fmt && pnpm run fmt:svelte",
+    "fmt:check": "vp fmt --check && pnpm run fmt:svelte:check",
+    "fmt:svelte": "git ls-files -z -- '*.svelte' | xargs -0 rsvelte-fmt --print-width 80 --tab-width 2",
+    "fmt:svelte:check": "git ls-files -z -- '*.svelte' | xargs -0 rsvelte-fmt --check --print-width 80 --tab-width 2",
     "lint": "vp lint --deny-warnings",
     "prepare": "svelte-kit sync && vp config --no-agent --hooks",
     "preview": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --port 4173",
@@ -46,6 +50,7 @@
   "devDependencies": {
     "@modelcontextprotocol/client": "2.4.0",
     "@nkzw/oxlint-config": "3.0.2",
+    "@rsvelte/fmt": "0.7.27",
     "@rsvelte/oxlint-plugin": "0.2.6",
     "@sveltejs/adapter-cloudflare": "8.0.2",
     "@sveltejs/kit": "3.2.0",
