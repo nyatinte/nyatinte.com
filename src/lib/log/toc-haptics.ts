@@ -17,6 +17,6 @@ export function pulseHaptic() {
       input.dispatchEvent(new Event("change", { bubbles: true }));
     }
   } catch {
-    // Haptics are best-effort and must never block navigation.
+    // Browser Vibration API or iOS Safari switch dispatch may throw in restricted contexts.
   }
 }
