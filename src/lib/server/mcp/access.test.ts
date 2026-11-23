@@ -62,9 +62,15 @@ test("rejects requests without an Access JWT", async () => {
     ACCESS_TEAM_DOMAIN: "https://unit-test.cloudflareaccess.com",
   });
 
-  expect(result).toBeInstanceOf(Response);
-  expect((result as Response).status).toBe(401);
-  expect((result as Response).headers.get("cache-control")).toBe("no-store");
+  expect(result).toEqual({
+    ok: false,
+    response: expect.any(Response),
+  });
+  if (result.ok) {
+    throw new Error("expected an authentication failure");
+  }
+  expect(result.response.status).toBe(401);
+  expect(result.response.headers.get("cache-control")).toBe("no-store");
 });
 
 test("accepts a signed Access JWT for the configured issuer and audience", async () => {
@@ -77,11 +83,13 @@ test("accepts a signed Access JWT for the configured issuer and audience", async
   });
 
   expect(result).toMatchObject({
-    clientId: "access-user-123",
-    scopes: [],
-    token,
+    ok: true,
+    auth: {
+      clientId: "access-user-123",
+      scopes: [],
+      token,
+    },
   });
-  expect(result).not.toBeInstanceOf(Response);
 });
 
 test("accepts a signed service token with an empty subject and client ID", async () => {
@@ -96,7 +104,10 @@ test("accepts a signed service token with an empty subject and client ID", async
     ACCESS_AUDIENCE: AUDIENCE,
     ACCESS_TEAM_DOMAIN: issuer,
   });
-  expect(result).toMatchObject({ clientId: "service-client.access", token });
+  expect(result).toMatchObject({
+    ok: true,
+    auth: { clientId: "service-client.access", token },
+  });
 });
 
 test.each([
@@ -113,8 +124,11 @@ test.each([
       ACCESS_AUDIENCE: AUDIENCE,
       ACCESS_TEAM_DOMAIN: issuer,
     });
-    expect(result).toBeInstanceOf(Response);
-    expect((result as Response).status).toBe(401);
+    expect(result.ok).toBe(false);
+    if (result.ok) {
+      throw new Error("expected an authentication failure");
+    }
+    expect(result.response.status).toBe(401);
   },
 );
 
@@ -130,8 +144,11 @@ test.each([
     ACCESS_TEAM_DOMAIN: teamDomain,
   });
 
-  expect(result).toBeInstanceOf(Response);
-  expect((result as Response).status).toBe(401);
+  expect(result.ok).toBe(false);
+  if (result.ok) {
+    throw new Error("expected an authentication failure");
+  }
+  expect(result.response.status).toBe(401);
 });
 
 test("fails closed when Access configuration is missing", async () => {
@@ -140,8 +157,11 @@ test("fails closed when Access configuration is missing", async () => {
     {},
   );
 
-  expect(result).toBeInstanceOf(Response);
-  expect((result as Response).status).toBe(503);
+  expect(result.ok).toBe(false);
+  if (result.ok) {
+    throw new Error("expected an authentication failure");
+  }
+  expect(result.response.status).toBe(503);
 });
 
 test("rejects requests from untrusted hosts before authenticating", async () => {

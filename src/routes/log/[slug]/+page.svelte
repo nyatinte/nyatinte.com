@@ -125,7 +125,7 @@
     min-width: 0;
   }
 
-  @media (max-width: 706px) {
+  @media (width <= 706px) {
     .article-body {
       padding-inline-end: 2rem;
     }
@@ -190,7 +190,7 @@
     block-size: auto;
   }
 
-  @media (min-width: 1150px) {
+  @media (width >= 1150px) {
     .layout {
       display: grid;
       grid-template-columns: minmax(1rem, 1fr) minmax(0, 40rem) minmax(
@@ -226,7 +226,7 @@
   }
 
   a:focus-visible {
-    outline: 2px solid currentColor;
+    outline: 2px solid currentcolor;
     outline-offset: 4px;
   }
 </style>

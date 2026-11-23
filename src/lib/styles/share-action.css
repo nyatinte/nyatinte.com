@@ -21,14 +21,14 @@
   }
 
   .share-action:focus-visible {
-    outline: 2px solid currentColor;
+    outline: 2px solid currentcolor;
     outline-offset: 4px;
   }
 
   .share-action-icon {
     inline-size: 0.875rem;
     block-size: 0.875rem;
-    background-color: currentColor;
+    background-color: currentcolor;
     mask-repeat: no-repeat;
     mask-position: center;
     mask-size: contain;

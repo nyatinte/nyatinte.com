@@ -53,3 +53,16 @@ test("does nothing when the activation API is missing", () => {
   skipUnrelatedDocumentTransition(ev);
   expect(skipTransition).not.toHaveBeenCalled();
 });
+
+test("keeps the list-to-article transition when activation URLs are URL objects", () => {
+  const skipTransition = vi.fn();
+  const ev = Object.assign(new Event("pageswap"), {
+    activation: {
+      entry: { url: new URL("https://nyatinte.com/log/template") },
+      from: { url: new URL("https://nyatinte.com/log") },
+    },
+    viewTransition: { skipTransition },
+  });
+  skipUnrelatedDocumentTransition(ev);
+  expect(skipTransition).not.toHaveBeenCalled();
+});

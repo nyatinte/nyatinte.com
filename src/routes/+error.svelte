@@ -28,9 +28,9 @@
     justify-items: center;
     min-block-size: 100svh;
     padding: 2rem 1.25rem;
-    color: var(--home-foreground, oklch(32% 0.025 150));
+    color: var(--home-foreground, oklch(32% 0.025 150deg));
     text-align: center;
-    background: var(--home-background, oklch(98% 0.006 100));
+    background: var(--home-background, oklch(98% 0.006 100deg));
   }
 
   .wordmark {
@@ -57,17 +57,17 @@
     padding: 0.6rem 0.9rem;
     color: inherit;
     text-decoration: none;
-    border: 1px solid var(--home-nav-border, oklch(37% 0.05 232 / 14%));
+    border: 1px solid var(--home-nav-border, oklch(37% 0.05 232deg / 14%));
     border-radius: 999px;
     transition: none;
   }
 
   .back-link:hover {
-    background: var(--home-nav-background, oklch(97% 0.01 211 / 86%));
+    background: var(--home-nav-background, oklch(97% 0.01 211deg / 86%));
   }
 
   a:focus-visible {
-    outline: 2px solid currentColor;
+    outline: 2px solid currentcolor;
     outline-offset: 4px;
   }
 </style>

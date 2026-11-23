@@ -18,10 +18,10 @@ export async function handleMcpRequest(
     return headerError;
   }
 
-  const authInfo = await authenticateAccessRequest(request, environment);
-  if (authInfo instanceof Response) {
-    return authInfo;
+  const auth = await authenticateAccessRequest(request, environment);
+  if (!auth.ok) {
+    return auth.response;
   }
 
-  return handleSiteMcpRequest(request, authInfo);
+  return handleSiteMcpRequest(request, auth.auth);
 }
