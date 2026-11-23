@@ -20,6 +20,7 @@ pnpm dev
 | `pnpm check:ci`      | check、build、HTTP テストを実行（pre-push hook が実行）              |
 | `pnpm test:http`     | ビルド済み Worker を起動して HTTP テストを実行（デフォルト `:8788`） |
 | `pnpm run fix`       | vp lint による修正                                                   |
+| `pnpm run lint`      | vp lint と Stylelint を実行                                          |
 | `pnpm run fmt`       | vp fmt と @rsvelte/fmt で整形                                        |
 | `pnpm run fmt:check` | 整形済みかを確認                                                     |
 | `pnpm build`         | SvelteKit Worker のビルド                                            |
