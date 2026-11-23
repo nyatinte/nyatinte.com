@@ -20,10 +20,6 @@ function itemXml(article: Article) {
   ].join("\n");
 }
 
-/**
- * 最終更新日。記事が 1 件もないときは空文字を返し、`<lastBuildDate>` を省く。
- * 並び順は公開日の降順なので、更新日も含めて最大値を自分で求める。
- */
 function latestUpdatedDate(items: Article[]) {
   return items.reduce((latest, item) => {
     const candidate = item.updated ?? item.date;

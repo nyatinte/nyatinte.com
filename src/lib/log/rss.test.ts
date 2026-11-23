@@ -78,7 +78,6 @@ test("uses the newest updated date for lastBuildDate", () => {
   expect(xml).toContain(
     "<lastBuildDate>Tue, 04 Mar 2025 00:00:00 GMT</lastBuildDate>"
   );
-  // pubDate は公開日のまま。
   expect(xml).toContain("<pubDate>Tue, 31 Dec 2024 00:00:00 GMT</pubDate>");
 });
 

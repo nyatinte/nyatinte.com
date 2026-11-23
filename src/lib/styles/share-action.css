@@ -1,8 +1,3 @@
-/*
- * 記事の共有・コピーで使うピル型のアクション。
- * 見た目を一箇所にまとめ、CopyButton / ArticleShare / CopyMdxButton で共有する。
- * テーマ切り替えのフェードは theme-transition.css に任せる。
- */
 @layer components {
   .share-action {
     display: inline-flex;

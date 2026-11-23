@@ -18,11 +18,6 @@ const emphasis = /[*_~]+/gu;
 const whitespace = /\s+/gu;
 const querySeparator = /\s+/u;
 
-/**
- * Reduces an article body to the prose a reader sees. Svelte-only blocks,
- * markup, links, code fences, and list/heading syntax are removed while the
- * visible text inside HTML tags is kept.
- */
 export function extractPlainText(source: string) {
   return source
     .replace(scriptBlock, "")
@@ -76,7 +71,6 @@ function markIntervals(text: string, tokens: string[]) {
   return merged;
 }
 
-/** Slices a ~140-character window around the first query match. */
 export function excerptSegments(content: string, query: string) {
   const tokens = query
     .trim()

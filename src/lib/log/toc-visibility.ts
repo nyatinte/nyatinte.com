@@ -9,10 +9,8 @@ interface TocVisibility {
   visible: boolean;
 }
 
-/** First heading must reach this fraction of the viewport before the scrubber appears. */
 const showThresholdRatio = 0.4;
 
-/** Headings at or above this fraction have entered the reading zone; the last of those is active. */
 const readingZoneRatio = 0.2;
 
 export function getTocVisibility({

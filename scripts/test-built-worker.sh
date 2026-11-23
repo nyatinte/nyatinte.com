@@ -1,7 +1,4 @@
 #!/usr/bin/env sh
-# Start the already-built Worker, wait until it responds, then run the test suite.
-# Used by `pnpm test:http`; `pnpm check:ci` runs check, build, and these HTTP tests via the pre-push hook.
-# The port defaults to 8788 so a local `pnpm dev:worker` on 8787 can keep running.
 
 set -eu
 
@@ -37,7 +34,7 @@ cleanup() {
   _pids=""
   if [ -n "${_root}" ]; then
     _pids=$(collect_tree "${_root}")
-    # Word-split the collected pid list on purpose.
+    # POSIX sh has no arrays; word-split the collected pid list on purpose.
     # shellcheck disable=SC2086
     signal_pids TERM ${_pids}
   fi
@@ -80,7 +77,6 @@ if curl --fail --silent --max-time 1 "${url}/" >/dev/null 2>&1; then
   exit 1
 fi
 
-# Start the built Worker using the shared `pnpm dev:worker` command.
 PORT="${port}" pnpm dev:worker \
   >"${log_file}" 2>&1 &
 worker_pid=$!

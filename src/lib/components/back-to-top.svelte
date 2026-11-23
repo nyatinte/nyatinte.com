@@ -14,7 +14,6 @@
       behavior: backToTopScrollBehavior(prefersReducedMotion()),
       top: 0,
     });
-    // 先頭へ戻るとボタンは隠れるため、フォーカスをヘッダーのサイト名へ移して読み上げ位置を保つ。
     document
       .querySelector<HTMLElement>("header .wordmark")
       ?.focus({ preventScroll: true });
@@ -53,7 +52,6 @@
       border: 1px solid var(--home-nav-border);
       border-radius: 3rem;
     }
-    /* 作者の display 指定は hidden 属性より優先されるため、明示的に消す。 */
     .back-to-top[hidden] {
       display: none;
     }
@@ -79,14 +77,12 @@
         background: CanvasText;
       }
     }
-    /* モバイルの下部固定ナビの上へ逃がす。 */
     @media (width <= 700px) and (height > 420px) {
       .back-to-top {
         inset-block-end: calc(max(1rem, env(safe-area-inset-bottom)) + 4.5rem);
         inset-inline-end: max(1rem, env(safe-area-inset-right));
       }
     }
-    /* 高さが低いとナビは通常配置に戻るので、元の位置へ下げる。 */
     @media (height <= 420px) {
       .back-to-top {
         inset-block-end: max(0.75rem, env(safe-area-inset-bottom));

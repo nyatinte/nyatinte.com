@@ -579,9 +579,7 @@ test("公開ページは RSS フィードを自動検出用に示す", async () 
     expect(link, path).toBeDefined();
     expect(link, path).toContain('rel="alternate"');
     expect(link, path).toContain('type="application/rss+xml"');
-    // 従来の page-meta と同じ title を保つ。
     expect(link, path).toContain('title="ログ"');
-    // 重複して出力しない。
     expect(body.match(/rel="alternate"/gu), path).toHaveLength(1);
   }
 });
