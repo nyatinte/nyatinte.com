@@ -1,5 +1,7 @@
 # AGENTS.md
 
+レビューや判断の基準は [CODING_STANDARDS.md](CODING_STANDARDS.md) を参照する。
+
 ## プロダクト
 
 `nyatinte.com` の個人サイト。`/log` で、わからなかったことを調べて書いた記事を公開する。閲覧はログイン不要。記事はエージェントとの会話を Markdown か MDX に書き出し、`src/content/log/<slug>/index.md` または `index.svx` に置く。記事用の OGP 画像も同じディレクトリに置ける。X での OGP を重視する。
@@ -20,14 +22,6 @@
 - `wrangler.jsonc` を Worker 設定と型生成の正本とする。本番デプロイは Varlock Wrangler で既存の変数とシークレットを保持する。
 - ホームとほかのページの間、ログ一覧と記事の間（どちらの向きも）の移動では、ルートレイアウトの `onNavigate` が `document.startViewTransition` を呼ぶ。API がないときと `prefers-reduced-motion: reduce` のときは呼ばない。`/log` 以下のドキュメント間遷移はログレイアウトの `@view-transition` で有効にする。これも `prefers-reduced-motion: no-preference` のときだけで、一覧と記事の間以外の移動はガードでスキップする。`::view-transition` の CSS はルートレイアウトにまとめる。
 - `/llms.txt`、`Accept: text/markdown`、`Link` の `rel=alternate` は記事向けに残す。RSS は `/log/rss.xml`。サイトマップは `/sitemap.xml`。
-
-## コメント方針
-
-- コードが何をしているかを説明するコメントは書かない。名前や構造で意図が伝わるように書く。
-- 残してよいのは、こちらで変えられない外部要因（外部 API・ブラウザ・ライブラリの仕様や不具合、ライセンス表記、ツールのディレクティブ）に紐づく理由だけとする。理由を書くときは、対象となる外部仕様・製品名を明記する。
-- 順序や不変条件などの制約はコメントに書かず、型・テスト・lint で強制する。
-- `TODO` / `FIXME` / `XXX` やコメントアウトしたコードは残さない。
-- lint 等の抑制ディレクティブ（`biome-ignore` など）はまず根本修正を検討し、変えられない理由で残す場合にのみ具体的な理由を添える。
 
 ## スキル
 
@@ -59,11 +53,7 @@
 - PR はマージコミットでマージする（squash・rebase は使わない）。Stack は `gh stack merge --yes --merge`、単体は `gh pr merge --merge`。
 - push 前に、Vite+ の pre-push hook が `pnpm check:ci`（check、build、ビルド済み Worker への HTTP テスト）を走らせる。変更がルートの `README.md`・`AGENTS.md`・`CLAUDE.md` と `docs/**`・`.agents/**` だけのときは hook がスキップする。飛ばす場合は `git push --no-verify` を使う。GitHub Actions の Verify をこの処理に揃える作業は #114。
 - 破壊的な操作（削除・履歴改変・force push）は先に確認を取る。
-- TypeScript は関数と値で構成し、class 宣言は使わない。
-- Valibot の各項目に `description` と `examples` を付ける。
-- 300 行を超えるファイルは役割に沿って分割を検討する。
-- 全ページに共通する処理・スタイル（テーマのトークンと切り替えの transition、Reduce Motion の扱い、ヘッダー・ナビ、`theme-color` などの head、View Transition の設定）は、ルートレイアウトか共有の場所（`src/lib/styles/`、`src/lib/components/` など）に置き、ページやレイアウトごとにコピーしない。テーマ切り替えのフェードは `src/lib/styles/theme-transition.css` が `.site` 配下の背景色・枠線色と、`.site` 直下の要素（ページの面とヘッダー）の文字色に自動で付ける。ページやコンポーネントでテーマ色の transition を書かない。グローバル CSS が届かないところだけ例外として個別に書く。`.site` の外にある `html`/`body` の背景（ログレイアウト）と、継承されるため全要素には付けられない `fill`/`stroke`、シーン固有の回転や透明度（氷山シーン）がそれにあたる。例外でも長さとイージングは `--home-theme-duration` と `--home-theme-easing` を使う。逆に、グローバルのフェードを付けたくない要素（テーマ切り替えボタンのないエラーページの戻るリンクなど）は、その要素に `transition: none` を明示する。`color` の transition は入れ子にしない（Chrome で子孫側の変化が遅れる）。
-- 判断に迷ったら本ファイルの決定事項を確認し、決定がなければ相談する。
+- 判断に迷ったら [CODING_STANDARDS.md](CODING_STANDARDS.md) と本ファイルの決定事項を確認し、決定がなければ相談する。
 
 ## 権利と MVP の範囲
 
