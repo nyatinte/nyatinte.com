@@ -1,6 +1,49 @@
 import type { RequestEvent } from "@sveltejs/kit";
-import { expect, test } from "vite-plus/test";
+import { expect, test, vi } from "vite-plus/test";
 import { handle } from "./hooks.server";
+
+const codeBlockArticle = vi.hoisted(() => {
+  const body = [
+    "コードブロックの例です。",
+    "",
+    "```html",
+    "<style>",
+    "  .inside-code { color: red; }",
+    "</style>",
+    "```",
+    "",
+    "インデントしたコードブロックの例です。",
+    "",
+    "    <style>",
+    "      .inside-indented-code { color: green; }",
+    "    </style>",
+    "",
+    "コードブロックの外の style は消えます。",
+    "",
+    "<style>",
+    "  .outside-code { color: blue; }",
+    "</style>",
+  ].join("\n");
+  return {
+    body,
+    date: "2026-01-01",
+    description: "コードブロック内の style を保持する。",
+    slug: "code-block-style",
+    source: `---\ntitle: コードブロック内の style\ndescription: コードブロック内の style を保持する。\ndate: 2026-01-01\n---\n\n${body}`,
+    title: "コードブロック内の style",
+  };
+});
+
+vi.mock("./lib/log/articles", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./lib/log/articles")>();
+  return {
+    ...actual,
+    getArticle: (slug: string) =>
+      slug === codeBlockArticle.slug
+        ? codeBlockArticle
+        : actual.getArticle(slug),
+  };
+});
 
 function eventFor(url: string, accept = "text/html"): RequestEvent {
   const request = new Request(url, { headers: { Accept: accept } });
@@ -125,4 +168,24 @@ test("redirects former achievement paths before rendering", async () => {
 
   expect(response.status).toBe(301);
   expect(response.headers.get("location")).toBe("/log");
+});
+
+test("agent markdown keeps style inside markdown code blocks and drops top-level style", async () => {
+  const response = await handle({
+    event: eventFor(
+      "http://127.0.0.1:8787/log/code-block-style",
+      "text/markdown"
+    ),
+    resolve: () => {
+      throw new Error("resolve should not run");
+    },
+  });
+  const body = await response.text();
+
+  expect(response.status).toBe(200);
+  expect(body).toContain("<style>\n  .inside-code { color: red; }\n</style>");
+  expect(body).toContain(
+    "    <style>\n      .inside-indented-code { color: green; }\n    </style>"
+  );
+  expect(body).not.toContain(".outside-code");
 });

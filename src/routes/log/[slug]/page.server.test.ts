@@ -1,6 +1,50 @@
-import { expect, test } from "vite-plus/test";
+import { expect, test, vi } from "vite-plus/test";
 import { load } from "./+page.server";
 import type { PageData } from "./$types";
+
+const codeBlockArticle = vi.hoisted(() => {
+  const body = [
+    "コードブロックの例です。",
+    "",
+    "```html",
+    "<style>",
+    "  .inside-code { color: red; }",
+    "</style>",
+    "```",
+    "",
+    "インデントしたコードブロックの例です。",
+    "",
+    "    <style>",
+    "      .inside-indented-code { color: green; }",
+    "    </style>",
+    "",
+    "コードブロックの外の style は消えます。",
+    "",
+    "<style>",
+    "  .outside-code { color: blue; }",
+    "</style>",
+  ].join("\n");
+  return {
+    body,
+    date: "2026-01-01",
+    description: "コードブロック内の style を保持する。",
+    slug: "code-block-style",
+    source: `---\ntitle: コードブロック内の style\ndescription: コードブロック内の style を保持する。\ndate: 2026-01-01\n---\n\n${body}`,
+    title: "コードブロック内の style",
+  };
+});
+
+vi.mock("../../../lib/log/articles", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("../../../lib/log/articles")>();
+  return {
+    ...actual,
+    getArticle: (slug: string) =>
+      slug === codeBlockArticle.slug
+        ? codeBlockArticle
+        : actual.getArticle(slug),
+  };
+});
 
 function resultFor(slug: string) {
   return load({ params: { slug } } as Parameters<typeof load>[0]) as PageData;
@@ -38,4 +82,16 @@ test("copy markdown for markdown-only articles keeps the source unchanged", asyn
   const result = await resultFor("template");
 
   expect(result.copyMarkdown).toBe(result.article.source);
+});
+
+test("copy markdown keeps style inside markdown code blocks and drops top-level style", async () => {
+  const result = await resultFor("code-block-style");
+
+  expect(result.copyMarkdown).toContain(
+    "<style>\n  .inside-code { color: red; }\n</style>"
+  );
+  expect(result.copyMarkdown).toContain(
+    "    <style>\n      .inside-indented-code { color: green; }\n    </style>"
+  );
+  expect(result.copyMarkdown).not.toContain(".outside-code");
 });
