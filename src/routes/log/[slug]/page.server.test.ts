@@ -77,9 +77,11 @@ test("copy markdown for stay-light-in-ai-era drops every svelte block but keeps 
   expect(result.copyMarkdown).not.toContain("</script>");
   expect(result.copyMarkdown).not.toContain("<XPostCard");
   expect(result.copyMarkdown.startsWith("---\n")).toBe(true);
-  expect(result.copyMarkdown).toContain('<div class="closing-message">');
-  expect(result.copyMarkdown).toContain("<img");
-  expect(result.copyMarkdown).toContain("<p>");
+  expect(result.copyMarkdown).toContain(":::x-post");
+  expect(result.copyMarkdown).toContain("Claude Code に Code Mode 来たんだ");
+  expect(result.copyMarkdown).toContain(":::closing");
+  expect(result.copyMarkdown).toContain("飛びつきます");
+  expect(result.copyMarkdown).not.toContain('<div class="closing-message">');
   expect(result.copyMarkdown).toContain("AI をはじめとした技術の進化が");
   expect(result.copyMarkdown).not.toContain("\n\n\n");
 });

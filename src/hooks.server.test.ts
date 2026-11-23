@@ -137,7 +137,11 @@ test("agent markdown for stay-light-in-ai-era drops svelte blocks but keeps html
   expect(body).not.toContain("<script");
   expect(body).not.toContain("</script>");
   expect(body).not.toContain("<XPostCard");
-  expect(body).toContain('<div class="closing-message">');
+  expect(body).toContain(":::x-post");
+  expect(body).toContain("Claude Code に Code Mode 来たんだ");
+  expect(body).toContain(":::closing");
+  expect(body).toContain("飛びつきます");
+  expect(body).not.toContain('<div class="closing-message">');
   expect(body).toContain("AI をはじめとした技術の進化が");
   expect(body).not.toContain("\n\n\n");
 });

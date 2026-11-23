@@ -12,7 +12,7 @@
 
 <div class="closing-message">
   <img alt="" height="128" src={image} width="90" />
-  <p>{@render children()}</p>
+  {@render children()}
 </div>
 
 <style>
@@ -28,14 +28,14 @@
     height: auto;
     margin-top: 1.4rem;
   }
-  .closing-message p {
+  .closing-message :global(p) {
     position: relative;
     margin: 0;
     padding: 1rem 1.35rem;
     background: var(--home-nav-background);
     border-radius: 1.4rem;
   }
-  .closing-message p::before {
+  .closing-message :global(p)::before {
     position: absolute;
     top: 1.6rem;
     left: -0.7rem;

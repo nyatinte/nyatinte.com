@@ -461,7 +461,7 @@ test("markdown responses for svx articles omit svelte blocks but keep html and p
       slug: "cua-computer-use",
     },
     {
-      html: '<div class="closing-message">',
+      html: ":::closing",
       prose: "AI をはじめとした技術の進化が",
       slug: "stay-light-in-ai-era",
     },

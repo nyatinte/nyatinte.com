@@ -33,7 +33,8 @@
       >
       <span aria-hidden="true" class="mark">𝕏</span>
     </header>
-    <p>{text}{@render children?.()}</p>
+    {#if text}<p>{text}</p>{/if}
+    {@render children?.()}
     <img alt={imageAlt} class="post-image" src={image} />
     <small class="date">{date} · Xで見る</small>
   </a>
@@ -79,7 +80,8 @@
     font-size: 1.3rem;
     font-weight: 700;
   }
-  p {
+  p,
+  a :global(p) {
     margin: 0;
     white-space: pre-line;
   }

@@ -5,12 +5,6 @@ date: 2026-11-18
 image: ./og.png
 ---
 
-<script>
-  import XPostCard from '../../../lib/components/x-post-card.svelte';
-  import nyatinteAvatar from './nyatinte-avatar.jpg';
-  import codeModeImage from './code-mode-post.png';
-</script>
-
 AI をはじめとした技術の進化がこれだけ早い時代に、一つのツールに固執して、新しいものに触れる機会を失うのはあまりにももったいない。
 
 すでに〇〇というツールで満足しているから…という主張も理解できるが、個人的にはそれだけを理由に新しいものを試さないのは、本当にもったいないと思う！
@@ -50,16 +44,10 @@ AI 時代になって学習も効率的になっているが、人間そのも�
 
 最近の自分の例だと Claude Code に Code Mode (ツール呼び出しをまとめるやつ) が来たとき、これ Pi Agent のやつだという更新ができた。
 
-<XPostCard
-  href="https://x.com/nyatinte/status/2121577812138266721"
-  author="nyatinte"
-  handle="nyatinte"
-  avatar={nyatinteAvatar}
-  text={'Claude Code に Code Mode 来たんだ\nPi とかで使っていたのでようやく来たか感'}
-  image={codeModeImage}
-  imageAlt="通常のツール呼び出しと Code Mode の流れを比較した図"
-  date="2026年11月14日"
-/>
+:::x-post{href="https://x.com/nyatinte/status/2121577812138266721" author=nyatinte handle=nyatinte date="2026年11月14日" avatar=./nyatinte-avatar.jpg image=./code-mode-post.png imageAlt="通常のツール呼び出しと Code Mode の流れを比較した図"}
+Claude Code に Code Mode 来たんだ  
+Pi とかで使っていたのでようやく来たか感
+:::
 
 これも Claude Code のアップデートの土台と、[Pi Agent](https://pi.dev/) という関連する土台があったからこそ、すんなり理解できた。何なら Code Mode という概念自体も [Cloudflare](https://blog.cloudflare.com/code-mode/) や [Anthropic](https://t.co/GUwqWTXo6e) の 2025 後半に出したこの辺の記事を見ていると、あーこれが MCP のみならず Tool Call に適用されたのね、と理解できる。
 
@@ -101,15 +89,6 @@ AI 時代で大きく変わったこととして、とりあえず引っ越す�
 
 大 AI 時代だから身軽になれ、とりあえず Muse 知っているのに試してないやつは試せ。Grok Bot 興味あるけど試してない人は一歩踏み出してみよう。
 
-<div class="closing-message">
-  <img src="/images/chick-penguin.png" alt="" width="90" height="128" />
-  <p>面白いものがあったら自分に教えてください、飛びつきます！！</p>
-</div>
-
-<style>
-  .closing-message { display: flex; align-items: flex-start; gap: 0.5rem; margin: 2rem 0; }
-  .closing-message img { flex: 0 0 auto; width: clamp(3.75rem, 16vw, 5.625rem); height: auto; margin-top: 1.4rem; }
-  .closing-message p { position: relative; margin: 0; padding: 1rem 1.35rem; border-radius: 1.4rem; background: var(--home-nav-background); }
-  .closing-message p::before { content: ''; position: absolute; top: 1.6rem; left: -0.7rem; width: 1rem; height: 1rem; background: var(--home-nav-background); clip-path: polygon(100% 0, 100% 100%, 0 100%); }
-
-</style>
+:::closing
+面白いものがあったら自分に教えてください、飛びつきます！！
+:::
