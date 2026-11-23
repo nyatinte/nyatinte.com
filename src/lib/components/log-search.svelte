@@ -6,6 +6,7 @@
     SearchResult,
     SearchStatus,
   } from "../search/types";
+  import LogArticleTitle from "./log-article-title.svelte";
 
   const engineLabel = "zbsearch";
   const loadEngine = () =>
@@ -146,7 +147,7 @@
     <ol class="log-search-results" data-search-results role="list">
       {#each results as item (item.slug)}
         <li data-search-result-slug={item.slug}>
-          <a href={item.url}>{item.title}</a>
+          <LogArticleTitle href={item.url} title={item.title} />
           {#if item.excerptSegments.length > 0}
             <p class="log-search-excerpt">
               {#each item.excerptSegments as segment}
@@ -210,13 +211,6 @@
     list-style: none;
   }
 
-  .log-search-results a {
-    color: inherit;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.18em;
-  }
-
-  .log-search-results a:hover,
   .log-search-empty a:hover {
     color: var(--home-accent);
   }
