@@ -39,7 +39,7 @@ export function buildRssXml(items: Array<Article>) {
   ];
   if (lastBuildDate) {
     channel.push(
-      `    <lastBuildDate>${escapeXml(rssDate(lastBuildDate))}</lastBuildDate>`
+      `    <lastBuildDate>${escapeXml(rssDate(lastBuildDate))}</lastBuildDate>`,
     );
   }
   return [

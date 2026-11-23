@@ -17,7 +17,7 @@ test("クリップボードへ書き込めたら成功を知らせる", async ()
 
 test("書き込みが拒否されたら失敗を知らせる", async () => {
   await expect(copyText("https://nyatinte.com/log/a", write)).resolves.toBe(
-    copyFeedback.failure
+    copyFeedback.failure,
   );
 });
 
@@ -25,6 +25,6 @@ test("navigator.clipboard が無い環境では失敗を知らせる", async () 
   expect(navigator.clipboard).toBeUndefined();
 
   await expect(copyText("https://nyatinte.com/log/a")).resolves.toBe(
-    copyFeedback.failure
+    copyFeedback.failure,
   );
 });

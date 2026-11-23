@@ -18,7 +18,7 @@
   let { data }: PageProps = $props();
   const title = $derived(logPageTitle(data.currentPage));
   const searching = $derived(
-    (page.url.searchParams.get("q") ?? "").trim() !== ""
+    (page.url.searchParams.get("q") ?? "").trim() !== "",
   );
 </script>
 
@@ -45,8 +45,9 @@
           <li>
             <time
               datetime={article.date}
-              style:view-transition-name={articleDateTransitionName(article.slug)}
-              >{formatLogDate(article.date)}</time
+              style:view-transition-name={articleDateTransitionName(
+                article.slug,
+              )}>{formatLogDate(article.date)}</time
             >
             <LogArticleTitle
               href={`/log/${article.slug}`}

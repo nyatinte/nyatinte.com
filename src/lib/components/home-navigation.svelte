@@ -9,10 +9,10 @@
 
   const isHome = $derived(page.url.pathname === "/");
   const isLogIndex = $derived(
-    page.url.pathname === "/log" || page.url.pathname === "/log/"
+    page.url.pathname === "/log" || page.url.pathname === "/log/",
   );
   const isLogArticle = $derived(
-    page.url.pathname.startsWith("/log/") && !isLogIndex
+    page.url.pathname.startsWith("/log/") && !isLogIndex,
   );
   const isLog = $derived(isLogIndex || isLogArticle);
   const logAriaCurrent = $derived.by(() => {
@@ -37,10 +37,7 @@
       title="ホーム"
       class:current={isHome}
     >
-      <span
-        aria-hidden="true"
-        class="icon"
-        style:mask-image={`url("${house}")`}
+      <span aria-hidden="true" class="icon" style:mask-image={`url("${house}")`}
       ></span>
       <span class="sr-only">ホーム</span>
     </a>
@@ -57,10 +54,7 @@
       href="https://x.com/nyatinte"
       title="X: @nyatinte"
     >
-      <span
-        aria-hidden="true"
-        class="icon"
-        style:mask-image={`url("${x}")`}
+      <span aria-hidden="true" class="icon" style:mask-image={`url("${x}")`}
       ></span>
       <span class="sr-only">X: @nyatinte</span>
     </a>

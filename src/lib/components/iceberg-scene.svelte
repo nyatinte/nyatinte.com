@@ -118,18 +118,18 @@
       aria-label="親ペンギンをバウンス"
       class="penguin adult"
       onclick={() => {
-    adultTaps += 1;
-    message = `親ペンギンを押しました（${adultTaps}回）`;
-  }}
+        adultTaps += 1;
+        message = `親ペンギンを押しました（${adultTaps}回）`;
+      }}
       type="button"
     ></button>
     <button
       aria-label="子ペンギンをバウンス"
       class="penguin chick"
       onclick={() => {
-    chickTaps += 1;
-    message = `子ペンギンを押しました（${chickTaps}回）`;
-  }}
+        chickTaps += 1;
+        message = `子ペンギンを押しました（${chickTaps}回）`;
+      }}
       type="button"
     ></button>
   </div>

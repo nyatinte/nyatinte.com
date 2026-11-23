@@ -14,14 +14,14 @@ test("wantsMarkdown reads the Accept request header", () => {
     wantsMarkdown(
       new Request("https://example.com/", {
         headers: { Accept: "text/markdown" },
-      })
-    )
+      }),
+    ),
   ).toBe(true);
   expect(
     wantsMarkdown(
       new Request("https://example.com/", {
         headers: { Accept: "text/html, text/markdown;q=0.1" },
-      })
-    )
+      }),
+    ),
   ).toBe(false);
 });

@@ -46,13 +46,13 @@ function response(status: number, message: string): Response {
     {
       headers: { "cache-control": "no-store" },
       status,
-    }
+    },
   );
 }
 
 export async function authenticateAccessRequest(
   request: Request,
-  environment: AccessEnvironment
+  environment: AccessEnvironment,
 ): Promise<AuthInfo | Response> {
   const token = request.headers.get("Cf-Access-Jwt-Assertion");
   if (!token) {
@@ -66,7 +66,7 @@ export async function authenticateAccessRequest(
   if (!(audience && issuer)) {
     return response(
       503,
-      "Cloudflare Access is not configured for this service."
+      "Cloudflare Access is not configured for this service.",
     );
   }
 

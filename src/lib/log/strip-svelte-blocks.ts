@@ -80,7 +80,7 @@ function consumeFenceLine(
   state: ScanState,
   line: string,
   content: string,
-  fence: CodeFence
+  fence: CodeFence,
 ) {
   state.code += line;
   if (closesFence(content, fence)) {
@@ -93,7 +93,7 @@ function consumeFenceLine(
 function consumeIndentedCodeLine(
   state: ScanState,
   line: string,
-  content: string
+  content: string,
 ) {
   if (content.trim() === "" || INDENTED_CODE.test(content)) {
     state.code += line;
@@ -109,7 +109,7 @@ function consumeSvelteLine(
   state: ScanState,
   line: string,
   content: string,
-  svelteTag: string
+  svelteTag: string,
 ) {
   state.text += line;
   if (content.includes(`</${svelteTag}>`)) {

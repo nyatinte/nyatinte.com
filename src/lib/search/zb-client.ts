@@ -80,7 +80,7 @@ export async function searchZbSearch(query: string): Promise<SearchResponse> {
       threshold: 0,
     });
     const results = response.hits.map((hit) =>
-      toResult(toDocument(hit.document), query)
+      toResult(toDocument(hit.document), query),
     );
     return {
       results,

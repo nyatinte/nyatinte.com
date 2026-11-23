@@ -19,7 +19,7 @@ function main() {
         extractAndIndexMs: Math.round(extractAndIndexMs),
         recordCount,
         totalMs: Math.round(performance.now() - startedAt),
-      })
+      }),
     );
   }
 }

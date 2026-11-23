@@ -38,8 +38,9 @@
         <div class="dates">
           <time
             datetime={data.article.date}
-            style:view-transition-name={articleDateTransitionName(data.article.slug)}
-            >{formatLogDate(data.article.date)}</time
+            style:view-transition-name={articleDateTransitionName(
+              data.article.slug,
+            )}>{formatLogDate(data.article.date)}</time
           >
           {#if data.article.updated}
             <p class="updated">

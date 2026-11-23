@@ -9,7 +9,7 @@ const allowedHostnames = ["nyatinte.com", "localhost", "127.0.0.1"];
 
 export async function handleMcpRequest(
   request: Request,
-  environment: AccessEnvironment
+  environment: AccessEnvironment,
 ): Promise<Response> {
   const headerError =
     hostHeaderValidationResponse(request, allowedHostnames) ??

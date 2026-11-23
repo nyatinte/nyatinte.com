@@ -33,7 +33,7 @@ export function createSearchTokenizer() {
       input.normalize("NFKC").replaceAll(letterDotLetter, " "),
       language,
       property,
-      withCache
+      withCache,
     ).map((token) => token.toLowerCase());
   return tokenizer;
 }

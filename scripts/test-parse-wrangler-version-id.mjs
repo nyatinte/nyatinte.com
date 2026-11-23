@@ -12,9 +12,9 @@ const workerTag = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 test("upload 行の Version ID を取り、worker_tag は使わない", () => {
   assert.equal(
     parseVersionId(
-      `${JSON.stringify({ type: "wrangler-session" })}\n${JSON.stringify({ type: "version-upload", version_id: expected, worker_tag: workerTag })}`
+      `${JSON.stringify({ type: "wrangler-session" })}\n${JSON.stringify({ type: "version-upload", version_id: expected, worker_tag: workerTag })}`,
     ),
-    expected
+    expected,
   );
 });
 
@@ -22,9 +22,9 @@ test("最後の upload 行を使い、不正な JSON 行は無視する", () => 
   const next = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
   assert.equal(
     parseVersionId(
-      `not json\n${JSON.stringify({ type: "version-upload", version_id: expected })}\n${JSON.stringify({ type: "version-upload", version_id: next })}`
+      `not json\n${JSON.stringify({ type: "version-upload", version_id: expected })}\n${JSON.stringify({ type: "version-upload", version_id: next })}`,
     ),
-    next
+    next,
   );
 });
 
@@ -50,7 +50,7 @@ test("CLI はファイル無し・空ファイルで失敗する", () => {
           "scripts/parse-wrangler-version-id.mjs",
           file,
         ]).status,
-        0
+        0,
       );
     }
   } finally {

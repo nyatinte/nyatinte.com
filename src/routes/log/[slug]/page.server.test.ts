@@ -88,10 +88,10 @@ test("copy markdown keeps style inside markdown code blocks and drops top-level 
   const result = resultFor("code-block-style");
 
   expect(result.copyMarkdown).toContain(
-    "<style>\n  .inside-code { color: red; }\n</style>"
+    "<style>\n  .inside-code { color: red; }\n</style>",
   );
   expect(result.copyMarkdown).toContain(
-    "    <style>\n      .inside-indented-code { color: green; }\n    </style>"
+    "    <style>\n      .inside-indented-code { color: green; }\n    </style>",
   );
   expect(result.copyMarkdown).not.toContain(".outside-code");
 });

@@ -7,7 +7,9 @@ export function loadArticlesFromDirectory(directory: string) {
   try {
     entries = readdirSync(directory, { withFileTypes: true });
   } catch (error) {
-    throw new Error(`Article directory is missing: ${directory}`, { cause: error });
+    throw new Error(`Article directory is missing: ${directory}`, {
+      cause: error,
+    });
   }
   const sources: Record<string, string> = {};
   for (const entry of entries) {
@@ -19,7 +21,7 @@ export function loadArticlesFromDirectory(directory: string) {
     }
     const files = readdirSync(join(directory, entry.name));
     const articles = files.filter(
-      (name) => name === "index.md" || name === "index.svx"
+      (name) => name === "index.md" || name === "index.svx",
     );
     if (articles.length === 0) {
       throw new Error(`${entry.name}: missing index.md or index.svx`);
@@ -27,7 +29,7 @@ export function loadArticlesFromDirectory(directory: string) {
     for (const name of articles) {
       sources[`${entry.name}/${name}`] = readFileSync(
         join(directory, entry.name, name),
-        "utf8"
+        "utf8",
       );
     }
   }

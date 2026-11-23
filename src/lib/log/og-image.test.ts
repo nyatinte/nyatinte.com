@@ -18,7 +18,7 @@ test("uses a root-relative frontmatter image as an absolute URL", () => {
       image: "/images/generated.png",
       sharedUrl: shared,
       title: "題",
-    })
+    }),
   ).toEqual({
     alt: "題",
     url: "https://nyatinte.com/images/generated.png",

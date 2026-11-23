@@ -6,12 +6,12 @@ const rawFiles = import.meta.glob<string>(
     eager: true,
     import: "default",
     query: "?raw",
-  }
+  },
 );
 
 const images = import.meta.glob<string>(
   "../../content/log/*/*.{png,jpg,jpeg,webp,gif}",
-  { eager: true, import: "default", query: "?url&no-inline" }
+  { eager: true, import: "default", query: "?url&no-inline" },
 );
 
 export const articles = articlesFromSources(rawFiles).map((article) => {

@@ -71,20 +71,20 @@
 </script>
 
 <svelte:head>
-  <meta content="light dark" name="color-scheme">
+  <meta content="light dark" name="color-scheme" />
   {#if theme === null}
     <meta
       content={HOME_THEME_COLOR.light}
       media="(prefers-color-scheme: light)"
       name="theme-color"
-    >
+    />
     <meta
       content={HOME_THEME_COLOR.dark}
       media="(prefers-color-scheme: dark)"
       name="theme-color"
-    >
+    />
   {:else}
-    <meta content={HOME_THEME_COLOR[theme]} name="theme-color">
+    <meta content={HOME_THEME_COLOR[theme]} name="theme-color" />
   {/if}
   {#if page.status < 400}
     <link
@@ -92,7 +92,7 @@
       rel="alternate"
       title={logTitle}
       type="application/rss+xml"
-    >
+    />
   {/if}
 </svelte:head>
 

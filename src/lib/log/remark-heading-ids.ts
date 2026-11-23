@@ -21,7 +21,7 @@ export function remarkHeadingIds() {
           (child) =>
             child.value ??
             child.children?.map((part) => part.value ?? "").join("") ??
-            ""
+            "",
         )
         .join("");
       node.data ??= {};

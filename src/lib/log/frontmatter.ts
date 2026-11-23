@@ -86,7 +86,7 @@ const articleFrontmatterSchema = z
     {
       message: "updated must not be earlier than date",
       path: ["updated"],
-    }
+    },
   );
 
 export interface Article {
@@ -104,7 +104,7 @@ export function parseArticleSource(filename: string, source: string): Article {
   const slug = filename.replace(extensionPattern, "");
   if (slug === filename || !slugPattern.test(slug)) {
     throw new Error(
-      `${filename}: file name must be a slug with a .md or .svx extension`
+      `${filename}: file name must be a slug with a .md or .svx extension`,
     );
   }
   const split = splitFrontmatter(source);
@@ -156,7 +156,7 @@ export function sortArticlesNewestFirst(articles: Array<Article>) {
 
 export function articlesFromSources(sources: Record<string, string>) {
   const articles = Object.entries(sources).map(([path, source]) =>
-    parseArticleSource(articleFileName(path), source)
+    parseArticleSource(articleFileName(path), source),
   );
   const seen = new Set<string>();
   for (const article of articles) {

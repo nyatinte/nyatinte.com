@@ -55,7 +55,7 @@ function svelteMarkdown(): PreprocessorGroup {
         ...result,
         code: result.code.replaceAll(
           '<script context="module">',
-          "<script module>"
+          "<script module>",
         ),
       };
     },

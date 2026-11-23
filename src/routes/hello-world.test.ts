@@ -59,13 +59,13 @@ function nonceFrom(response: Response): string {
 
 function jsonLdGraphs(body: string) {
   return [...body.matchAll(jsonLdScriptBodyPattern)].map((match) =>
-    JSON.parse(match[1] ?? "")
+    JSON.parse(match[1] ?? ""),
   );
 }
 
 async function publishedArticleSlug() {
   const body = await fetch(new URL("/sitemap.xml", targetUrl)).then(
-    (response) => response.text()
+    (response) => response.text(),
   );
   return body.match(publishedArticleSlugPattern)?.[1] ?? null;
 }
@@ -116,7 +116,7 @@ test("GET / sends fresh CSP nonces for every inline script", async () => {
     [secondBody, secondNonce],
   ]) {
     const inlineScripts = (body.match(scriptTagPattern) ?? []).filter(
-      (tag) => !scriptSrcAttributePattern.test(tag)
+      (tag) => !scriptSrcAttributePattern.test(tag),
     );
     expect(inlineScripts.length).toBeGreaterThan(0);
     for (const tag of inlineScripts) {
@@ -130,7 +130,7 @@ test("home preloads self-hosted, immutable Latin fonts", async () => {
   const fonts = [...(await page.text()).matchAll(latinFontPattern)];
   expect(fonts).toHaveLength(2);
   const responses = await Promise.all(
-    fonts.map(([, path]) => fetch(new URL(path, targetUrl)))
+    fonts.map(([, path]) => fetch(new URL(path, targetUrl))),
   );
   for (const response of responses) {
     expect(response.status).toBe(200);
@@ -220,7 +220,7 @@ test("スクロールする公開ページは先頭へ戻るボタンを隠し�
     paths.map(async (path) => {
       const response = await fetch(new URL(path, targetUrl));
       return [path, await response.text()] as const;
-    })
+    }),
   );
   for (const [path, body] of bodies) {
     const button = body.match(backToTopButtonPattern)?.[0];
@@ -236,8 +236,8 @@ test("スクロールする公開ページは先頭へ戻るボタンを隠し�
 test("former achievement URLs redirect to the log", async () => {
   const responses = await Promise.all(
     ["/done", "/done/old-record"].map((path) =>
-      fetch(new URL(path, targetUrl), { redirect: "manual" })
-    )
+      fetch(new URL(path, targetUrl), { redirect: "manual" }),
+    ),
   );
   for (const response of responses) {
     expect(response.status).toBe(301);
@@ -300,13 +300,13 @@ test.each(["0", "-1", "1.5", "abc", "999"])(
   "invalid log page %s returns 404",
   async (page) => {
     const response = await fetch(
-      new URL(`/log?page=${encodeURIComponent(page)}`, targetUrl)
+      new URL(`/log?page=${encodeURIComponent(page)}`, targetUrl),
     );
     const body = await response.text();
 
     expect(response.status).toBe(404);
     expect(body).toContain("ページが見つかりません");
-  }
+  },
 );
 
 test("the log list still returns every article as markdown", async () => {
@@ -328,10 +328,10 @@ test("robots.txt advertises the sitemap and content signals", async () => {
   expect(body).toContain("Sitemap: https://nyatinte.com/sitemap.xml");
   expect(body).toContain("# LLMs: https://nyatinte.com/llms.txt");
   expect(body).toContain(
-    "Content-Signal: search=yes, ai-input=yes, ai-train=no"
+    "Content-Signal: search=yes, ai-input=yes, ai-train=no",
   );
   expect(body.indexOf("Content-Signal")).toBeGreaterThan(
-    body.indexOf("User-agent")
+    body.indexOf("User-agent"),
   );
 });
 
@@ -361,7 +361,7 @@ test("Accept: text/markdown still negotiates HTML on / without hitting /llms.txt
 
 test("home page JSON-LD parses into Person and WebSite graphs", async () => {
   const body = await fetch(new URL("/", targetUrl)).then((response) =>
-    response.text()
+    response.text(),
   );
   const types = jsonLdGraphs(body).map((graph) => graph["@type"]);
   expect(types).toContain("Person");
@@ -370,7 +370,7 @@ test("home page JSON-LD parses into Person and WebSite graphs", async () => {
 
 test("home JSON-LD descriptions match the meta description", async () => {
   const body = await fetch(new URL("/", targetUrl)).then((response) =>
-    response.text()
+    response.text(),
   );
   const metaDescription = body.match(metaDescriptionPattern)?.[1];
   expect(metaDescription).toBe(siteIdentity.description);
@@ -385,7 +385,7 @@ test("published article pages expose BlogPosting JSON-LD", async () => {
   const slug = await publishedArticleSlug();
   expect(slug).toBeTruthy();
   const body = await fetch(new URL(`/log/${slug}`, targetUrl)).then(
-    (response) => response.text()
+    (response) => response.text(),
   );
   const graphs = jsonLdGraphs(body);
   expect(graphs.some((graph) => graph["@type"] === "BlogPosting")).toBe(true);
@@ -399,14 +399,14 @@ test("記事ページに X シェアとリンクコピーを出す", async () =>
   const slug = await publishedArticleSlug();
   expect(slug).toBeTruthy();
   const body = await fetch(new URL(`/log/${slug}`, targetUrl)).then(
-    (response) => response.text()
+    (response) => response.text(),
   );
   const href = body.match(xIntentHrefPattern)?.[1];
   expect(href).toBeDefined();
 
   const shareUrl = new URL((href ?? "").replaceAll("&amp;", "&"));
   expect(shareUrl.searchParams.get("url")).toBe(
-    canonicalSiteUrl(`/log/${slug}`)
+    canonicalSiteUrl(`/log/${slug}`),
   );
   const text = shareUrl.searchParams.get("text") ?? "";
   expect(text.length).toBeGreaterThan("| nyatinte.com".length);
@@ -422,8 +422,8 @@ test("記事ページに X シェアとリンクコピーを出す", async () =>
 test("記事以外のページには共有ボタンを出さない", async () => {
   const bodies = await Promise.all(
     ["/", "/log"].map(async (path) =>
-      fetch(new URL(path, targetUrl)).then((response) => response.text())
-    )
+      fetch(new URL(path, targetUrl)).then((response) => response.text()),
+    ),
   );
   for (const body of bodies) {
     expect(body).not.toContain("x.com/intent/post");
@@ -479,7 +479,7 @@ test("markdown responses for svx articles omit svelte blocks but keep html and p
         prose,
         status: response.status,
       };
-    })
+    }),
   );
 
   for (const { body, contentType, html, prose, status } of results) {
@@ -509,7 +509,7 @@ test("home and the log share a 1200 × 630 OGP image", async () => {
 
   const imageUrl = new URL(homeImage ?? "");
   expect(imageUrl.origin).toBe(
-    new URL(homeBody.match(canonicalPattern)?.[1] ?? "").origin
+    new URL(homeBody.match(canonicalPattern)?.[1] ?? "").origin,
   );
   const response = await fetch(new URL(imageUrl.pathname, targetUrl));
   const image = new DataView(await response.arrayBuffer());
@@ -529,7 +529,7 @@ test("公開ページに X のカード用タグが揃っている", async () =>
       const response = await fetch(new URL(path, targetUrl));
       expect(response.status, path).toBe(200);
       return [path, await response.text()] as const;
-    })
+    }),
   );
   for (const [path, body] of bodies) {
     for (const name of [
@@ -545,14 +545,14 @@ test("公開ページに X のカード用タグが揃っている", async () =>
     const alt = body.match(twitterImageAltPattern)?.[1];
     expect(alt, `${path}: twitter:image:alt content`).toBeTruthy();
     expect(body.match(ogImageAltPattern)?.[1], `${path}: og:image:alt`).toBe(
-      alt
+      alt,
     );
   }
 });
 
 test("ホームは独自のタイトルで X のカードと RSS 自動検出を出す", async () => {
   const body = await fetch(new URL("/", targetUrl)).then((response) =>
-    response.text()
+    response.text(),
   );
 
   expect(body).toContain("<title>nyatinte</title>");
@@ -561,7 +561,7 @@ test("ホームは独自のタイトルで X のカードと RSS 自動検出を
   expect(body).toContain('property="og:image:alt"');
   expect(body).toContain('name="twitter:image:alt"');
   expect(body).toContain(
-    '<link href="https://nyatinte.com/log/rss.xml" rel="alternate" title="ログ" type="application/rss+xml"'
+    '<link href="https://nyatinte.com/log/rss.xml" rel="alternate" title="ログ" type="application/rss+xml"',
   );
 });
 
@@ -572,7 +572,7 @@ test("公開ページは RSS フィードを自動検出用に示す", async () 
     ["/", "/log", `/log/${slug}`].map(async (path) => {
       const response = await fetch(new URL(path, targetUrl));
       return [path, await response.text()] as const;
-    })
+    }),
   );
   for (const [path, body] of bodies) {
     const [link] = body.match(rssAutodiscoveryLinkPattern) ?? [];
@@ -591,7 +591,7 @@ test("404 の HTML には RSS の自動検出 link を出さない", async () =>
         headers: { Accept: "text/html" },
       });
       return [path, response, await response.text()] as const;
-    })
+    }),
   );
   for (const [path, response, body] of bodies) {
     expect(response.status, path).toBe(404);
@@ -608,7 +608,7 @@ test("ログのページに目に見える RSS リンクがある", async () => 
     ["/log", `/log/${slug}`].map(async (path) => {
       const response = await fetch(new URL(path, targetUrl));
       return [path, await response.text()] as const;
-    })
+    }),
   );
   for (const [path, body] of bodies) {
     expect(body, path).toContain('href="/log/rss.xml"');
@@ -618,12 +618,12 @@ test("ログのページに目に見える RSS リンクがある", async () => 
 
 test("GET /log/rss.xml は購読に必要な要素を返す", async () => {
   const body = await fetch(new URL("/log/rss.xml", targetUrl)).then(
-    (response) => response.text()
+    (response) => response.text(),
   );
 
   expect(body).toContain('xmlns:atom="http://www.w3.org/2005/Atom"');
   expect(body).toContain(
-    '<atom:link href="https://nyatinte.com/log/rss.xml" rel="self" type="application/rss+xml" />'
+    '<atom:link href="https://nyatinte.com/log/rss.xml" rel="self" type="application/rss+xml" />',
   );
   expect(body).toContain("<language>ja</language>");
   expect(body).toContain("<lastBuildDate>");
@@ -650,7 +650,7 @@ test("built Worker serves the ZBSearch binary index", async () => {
   const response = await fetch(new URL("/zbsearch/index.zbsb", targetUrl));
   expect(response.status).toBe(200);
   expect(response.headers.get("content-type")).toContain(
-    "application/octet-stream"
+    "application/octet-stream",
   );
   expect(response.headers.get("cache-control")).toBe("no-store");
   expect((await response.arrayBuffer()).byteLength).toBeGreaterThan(1000);
@@ -671,7 +671,7 @@ test("GET /log renders the search UI and the no-JS article list", async () => {
 
 test("GET /log?q=Cua reflects the query, hides the article list, and keeps the canonical URL", async () => {
   const body = await fetch(new URL("/log?q=Cua", targetUrl)).then((response) =>
-    response.text()
+    response.text(),
   );
 
   expect(body).toContain('value="Cua"');
@@ -683,7 +683,7 @@ test("GET /log?q=Cua reflects the query, hides the article list, and keeps the c
 
 test("GET /log?q=Cua renders the clear button", async () => {
   const body = await fetch(new URL("/log?q=Cua", targetUrl)).then((response) =>
-    response.text()
+    response.text(),
   );
 
   expect(body).toContain('aria-label="検索語を消す"');
@@ -692,7 +692,7 @@ test("GET /log?q=Cua renders the clear button", async () => {
 
 test("GET /log without a query does not render the clear button", async () => {
   const body = await fetch(new URL("/log", targetUrl)).then((response) =>
-    response.text()
+    response.text(),
   );
 
   expect(body).not.toContain('aria-label="検索語を消す"');
@@ -700,7 +700,7 @@ test("GET /log without a query does not render the clear button", async () => {
 
 test("GET /log with no matching query hides the article list and keeps the canonical URL", async () => {
   const response = await fetch(
-    new URL(`/log?q=${encodeURIComponent("存在しない語")}`, targetUrl)
+    new URL(`/log?q=${encodeURIComponent("存在しない語")}`, targetUrl),
   );
   const body = await response.text();
 

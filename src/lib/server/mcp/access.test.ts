@@ -23,10 +23,10 @@ async function signedToken(options: {
       Promise.resolve(
         Response.json(
           { keys: [jwk] },
-          { headers: { "cache-control": "public, max-age=60" } }
-        )
-      )
-    )
+          { headers: { "cache-control": "public, max-age=60" } },
+        ),
+      ),
+    ),
   );
 
   const token = await new SignJWT({
@@ -115,7 +115,7 @@ test.each([
     });
     expect(result).toBeInstanceOf(Response);
     expect((result as Response).status).toBe(401);
-  }
+  },
 );
 
 test.each([
@@ -137,7 +137,7 @@ test.each([
 test("fails closed when Access configuration is missing", async () => {
   const result = await authenticateAccessRequest(
     requestWithToken("not-a-jwt"),
-    {}
+    {},
   );
 
   expect(result).toBeInstanceOf(Response);

@@ -146,7 +146,7 @@
       type="search"
       value={query}
       bind:this={inputElement}
-    >
+    />
     {#if query !== ""}
       <button
         aria-label="検索語を消す"
