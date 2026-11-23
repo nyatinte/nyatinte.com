@@ -33,8 +33,9 @@
       >
       <span aria-hidden="true" class="mark">𝕏</span>
     </header>
-    {#if text}<p>{text}</p>{/if}
-    {@render children?.()}
+    {#if text}<p>{text}</p>{:else}
+      <p>{@render children?.()}</p>
+    {/if}
     <img alt={imageAlt} class="post-image" src={image} />
     <small class="date">{date} · Xで見る</small>
   </a>
