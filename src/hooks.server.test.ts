@@ -110,7 +110,9 @@ test("agent markdown for cua-computer-use drops svelte blocks but keeps html and
   expect(body).not.toContain("<script");
   expect(body).not.toContain("</script>");
   expect(body).not.toContain("<XPostCard");
-  expect(body).toContain('<figure class="thought before">');
+  expect(body).toContain(
+    ':::figure{eyebrow=BEFORE title="デスクトップ操作の側面しか見えてなかった Cua" note="Codex Computer Use でよくないか？"}',
+  );
   expect(body).toContain("https://x.com/trycua");
   expect(body).not.toContain("\n\n\n");
 });
