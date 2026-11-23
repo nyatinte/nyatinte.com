@@ -47,13 +47,13 @@ test("transformArticleDirectives converts figure to a Svelte component and injec
 });
 
 test("transformArticleDirectives converts flow lists and nested figure children", () => {
-  const source = `:::figure{title="流れ"}
+  const source = `::::figure{title="流れ"}
 :::flow
 - 左 | 手元の PC<br />またはクラウド VM
 - 中央 | Cua Spaces
 - 右 | 自分・エージェント
 :::
-:::
+::::
 `;
   const result = transformArticleDirectives(
     source,
