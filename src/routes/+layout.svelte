@@ -1,5 +1,4 @@
 <script lang="ts">
-  // CSS レイヤー順を固定するため、この import は先頭に保つ。
   import "../lib/styles/theme-transition.css";
   import "../lib/styles/home-tokens.css";
   import "../lib/styles/share-action.css";
