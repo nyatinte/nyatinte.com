@@ -106,7 +106,7 @@
   }
 
   a:focus-visible {
-    outline: 2px solid currentColor;
+    outline: 2px solid currentcolor;
     outline-offset: 4px;
   }
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  type JsonLdGraph = Record<string, unknown>;
+  import type { JsonLdGraph } from "../server/agent-ready/json-ld";
 
   let { graphs }: { graphs: ReadonlyArray<JsonLdGraph> } = $props();
 

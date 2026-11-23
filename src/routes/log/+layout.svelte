@@ -33,15 +33,13 @@
 
   @media (width <= 700px) {
     .log {
-      padding-block-start: 5rem;
-      padding-block-end: 6rem;
+      padding-block: 5rem 6rem;
     }
   }
 
   @media (height <= 420px) {
     .log {
-      padding-block-start: 0;
-      padding-block-end: 0;
+      padding-block: 0;
     }
   }
 </style>
