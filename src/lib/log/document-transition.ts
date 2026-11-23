@@ -14,7 +14,7 @@ function pathnameOf(url: string | URL | null | undefined) {
   if (!url) {
     return;
   }
-  if (url instanceof URL) {
+  if (typeof url !== "string") {
     return url.pathname;
   }
   const base = "https://nyatinte.com";

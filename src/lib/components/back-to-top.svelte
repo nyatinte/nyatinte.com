@@ -59,13 +59,13 @@
       background: var(--home-nav-current);
     }
     .back-to-top:focus-visible {
-      outline: 2px solid currentColor;
+      outline: 2px solid currentcolor;
       outline-offset: 4px;
     }
     .icon {
       inline-size: 1.25rem;
       block-size: 1.25rem;
-      background: currentColor;
+      background: currentcolor;
       mask-image: var(--back-to-top-icon);
       mask-repeat: no-repeat;
       mask-position: center;

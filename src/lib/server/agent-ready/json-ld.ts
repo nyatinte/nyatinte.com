@@ -67,3 +67,8 @@ export function createArticleJsonLd(article: Article) {
     },
   ] as const;
 }
+
+export type JsonLdGraph =
+  | ReturnType<typeof createHomeJsonLd>[number]
+  | ReturnType<typeof createLogJsonLd>[number]
+  | ReturnType<typeof createArticleJsonLd>[number];

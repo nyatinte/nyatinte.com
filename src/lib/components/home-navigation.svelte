@@ -132,6 +132,12 @@
         border: 0;
         border-radius: 3rem;
       }
+      a:focus-visible,
+      button:focus-visible {
+        outline: 2px solid currentcolor;
+        outline-offset: 4px;
+      }
+
       .navigation a:hover,
       .navigation button:hover,
       .navigation .current {
@@ -143,7 +149,7 @@
       .icon {
         inline-size: 1.25rem;
         block-size: 1.25rem;
-        background: currentColor;
+        background: currentcolor;
         mask-repeat: no-repeat;
         mask-position: center;
         mask-size: contain;
@@ -166,11 +172,6 @@
         font-family: sans-serif;
         white-space: nowrap;
         clip-path: inset(50%);
-      }
-      a:focus-visible,
-      button:focus-visible {
-        outline: 2px solid currentColor;
-        outline-offset: 4px;
       }
       @media (height <= 420px) {
         :scope {
