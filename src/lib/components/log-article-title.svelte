@@ -25,12 +25,12 @@
     text-underline-offset: 0.18em;
   }
 
-  h2 a:hover {
-    color: var(--home-accent);
+  a:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 4px;
   }
 
-  a:focus-visible {
-    outline: 2px solid currentColor;
-    outline-offset: 4px;
+  h2 a:hover {
+    color: var(--home-accent);
   }
 </style>
