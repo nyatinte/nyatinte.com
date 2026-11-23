@@ -50,13 +50,20 @@ function response(status: number, message: string): Response {
   );
 }
 
+export type AccessAuthResult =
+  | { ok: true; auth: AuthInfo }
+  | { ok: false; response: Response };
+
 export async function authenticateAccessRequest(
   request: Request,
   environment: AccessEnvironment,
-): Promise<AuthInfo | Response> {
+): Promise<AccessAuthResult> {
   const token = request.headers.get("Cf-Access-Jwt-Assertion");
   if (!token) {
-    return response(401, "Cloudflare Access authentication is required.");
+    return {
+      ok: false,
+      response: response(401, "Cloudflare Access authentication is required."),
+    };
   }
 
   const audience = environment.ACCESS_AUDIENCE;
@@ -64,10 +71,13 @@ export async function authenticateAccessRequest(
     ? issuerFromTeamDomain(environment.ACCESS_TEAM_DOMAIN)
     : null;
   if (!(audience && issuer)) {
-    return response(
-      503,
-      "Cloudflare Access is not configured for this service.",
-    );
+    return {
+      ok: false,
+      response: response(
+        503,
+        "Cloudflare Access is not configured for this service.",
+      ),
+    };
   }
 
   try {
@@ -84,19 +94,34 @@ export async function authenticateAccessRequest(
         ? payload.common_name
         : undefined);
     if (!(clientId && payload.exp)) {
-      return response(401, "Cloudflare Access authentication failed.");
+      return {
+        ok: false,
+        response: response(401, "Cloudflare Access authentication failed."),
+      };
     }
 
     return {
-      clientId,
-      expiresAt: payload.exp,
-      scopes: [],
-      token,
+      ok: true,
+      auth: {
+        clientId,
+        expiresAt: payload.exp,
+        scopes: [],
+        token,
+      },
     };
   } catch (error) {
     if (error instanceof TypeError) {
-      return response(503, "Cloudflare Access verification is unavailable.");
+      return {
+        ok: false,
+        response: response(
+          503,
+          "Cloudflare Access verification is unavailable.",
+        ),
+      };
     }
-    return response(401, "Cloudflare Access authentication failed.");
+    return {
+      ok: false,
+      response: response(401, "Cloudflare Access authentication failed."),
+    };
   }
 }

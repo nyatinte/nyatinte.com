@@ -2,6 +2,10 @@ import { readFileSync } from "node:fs";
 import { runInNewContext } from "node:vm";
 import { expect, test } from "vite-plus/test";
 
+type ThemeDataset = {
+  homeTheme?: string;
+};
+
 const html = readFileSync(new URL("./app.html", import.meta.url), "utf8");
 const bootstrap = html.match(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/u)?.[1];
 const layout = readFileSync(
@@ -20,7 +24,7 @@ test.each([
   [null, undefined],
 ])("restores only valid saved themes: %s", (saved, expected) => {
   expect(bootstrap).toBeDefined();
-  const dataset: { homeTheme?: string } = {};
+  const dataset: ThemeDataset = {};
   runInNewContext(bootstrap as string, {
     document: { documentElement: { dataset } },
     localStorage: { getItem: () => saved },
