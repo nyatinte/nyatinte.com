@@ -25,7 +25,7 @@
     "dev": "vp dev",
     "dev:worker": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --local --port ${PORT:-8787}",
     "fix": "ultracite fix",
-    "lint:comments": "eslint --ignore-pattern \"**/*.svelte.{ts,js}\" \"src/**/*.{ts,js}\" \"scripts/**/*.{ts,mjs}\"",
+    "lint:comments": "eslint --ignore-pattern \"*.d.ts\" --ignore-pattern \"**/*.svelte.{ts,js}\" \"*.{ts,js,mjs}\" \"src/**/*.{ts,js}\" \"scripts/**/*.{ts,mjs}\"",
     "lint:svelte": "eslint \"src/**/*.{svelte,svelte.js,svelte.ts}\"",
     "prepare": "svelte-kit sync && vp config --no-agent --hooks",
     "preview": "varlock-wrangler dev .svelte-kit/cloudflare/_worker.js --port 4173",

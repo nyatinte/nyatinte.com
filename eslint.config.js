@@ -24,8 +24,8 @@ export default [
     },
   },
   {
-    files: ["src/**/*.{ts,js}", "scripts/**/*.{ts,mjs}"],
-    ignores: ["**/*.svelte.ts", "**/*.svelte.js"],
+    files: ["*.{ts,js,mjs}", "src/**/*.{ts,js}", "scripts/**/*.{ts,mjs}"],
+    ignores: ["*.d.ts", "**/*.svelte.ts", "**/*.svelte.js"],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
