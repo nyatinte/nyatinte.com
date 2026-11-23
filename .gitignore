@@ -1,12 +1,9 @@
-# dependencies
 node_modules/
 
-# build output
 dist/
 .svelte-kit/
 .vite/
 
-# cloudflare
 .cloudflare/
 .wrangler/
 .dev.vars
@@ -17,16 +14,13 @@ dist/
 env.d.ts
 worker-configuration.d.ts
 
-# local agent config and notes
 .claude/
 .config/
 .pi/
 .slim/
 
-# misc
 .DS_Store
 *.log
 .vitest/
 
-# mutation testing cache
 .mutator/

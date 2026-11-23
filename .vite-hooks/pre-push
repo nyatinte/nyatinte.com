@@ -2,10 +2,6 @@
 
 set -eu
 
-# Skip checks for docs-only changes (root README.md, AGENTS.md, CLAUDE.md,
-# docs/**, .agents/**). Aligning the workflow's Verify job with this hook is
-# Issue #114.
-
 is_zero_sha() {
   [ -n "${1:-}" ] || return 1
   case "$1" in
@@ -21,7 +17,6 @@ is_docs_only_path() {
   esac
 }
 
-# Returns 0 when every path is docs-only (or the list is empty).
 is_docs_only_list() {
   while IFS= read -r path || [ -n "${path}" ]; do
     [ -z "${path}" ] && continue
@@ -39,13 +34,11 @@ while read -r local_ref local_sha remote_ref remote_sha || [ -n "${local_sha:-}"
   [ -z "${local_sha:-}" ] && continue
   seen_ref=true
 
-  # Deleting a remote ref: nothing new to verify.
   if is_zero_sha "${local_sha}"; then
     continue
   fi
 
   if is_zero_sha "${remote_sha:-}"; then
-    # New branch or tag: compare against the push remote's trunk.
     trunk="refs/remotes/$1/HEAD"
     if ! git rev-parse --verify --quiet "${trunk}" >/dev/null; then
       trunk="refs/remotes/$1/main"
@@ -59,7 +52,6 @@ while read -r local_ref local_sha remote_ref remote_sha || [ -n "${local_sha:-}"
       break
     fi
   else
-    # Updating an existing remote ref: files introduced versus the remote tip.
     if ! git cat-file -e "${remote_sha}^{commit}" 2>/dev/null; then
       need_check=true
       break
@@ -76,7 +68,6 @@ while read -r local_ref local_sha remote_ref remote_sha || [ -n "${local_sha:-}"
 done
 
 if [ "${seen_ref}" != true ] || [ "${need_check}" = true ]; then
-  # Run the check, build, and HTTP tests used by this pre-push hook.
   pnpm check:ci
   exit $?
 fi
