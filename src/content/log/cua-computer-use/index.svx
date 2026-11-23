@@ -64,13 +64,13 @@ Cua が話題になった時（2026年10月頃？）は、Cua Spaces の文脈�
 - PC やクラウド VM は自分で用意する。エージェントももちろん自前。
 - [Cua Spaces のプラン](https://spaces.cua.ai/pricing) によって、リレー経由で同時に使えるコンピューターの台数やリモート接続時間の枠が変わる。
 
-:::figure{eyebrow=SPACES title="PC とエージェントは自分で用意する" note="Space の種類や接続先によって、利用できる機能は異なる。"}
+::::figure{eyebrow=SPACES title="PC とエージェントは自分で用意する" note="Space の種類や接続先によって、利用できる機能は異なる。"}
 :::flow
 - Cua は提供しない | 手元の PC<br />またはクラウド VM
 - 管理・接続 | Cua Spaces
 - 自分で用意 | 自分・エージェント
 :::
-:::
+::::
 
 - Space は必ずしも VM ではない。コンテナや VM のほか、設定を有効にすれば既存の PC のデスクトップも Space として扱える。
 - [Teleport](https://github.com/trycua/cua/blob/main/docs/content/docs/spaces/guides/teleport-an-app.mdx) では、Space にアプリをインストールし、対応するアプリならファイルやセッションの状態も持ち込める。
