@@ -1,3 +1,4 @@
+import { dirname, relative, sep } from "node:path";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkDirective from "remark-directive";
@@ -49,31 +50,44 @@ interface DirectiveNode extends NodeBase {
   type: "containerDirective" | "leafDirective" | "textDirective";
 }
 
+function toPosixPath(path: string) {
+  return path.split(sep).join("/");
+}
+
+function componentImportPath(filename: string, fromLib: string) {
+  const from = filename ? dirname(filename) : "src/content/log/article";
+  const path = toPosixPath(relative(from, `src/lib/${fromLib}`));
+  if (path.startsWith(".")) {
+    return path;
+  }
+  return `./${path}`;
+}
+
 export const ARTICLE_DIRECTIVES = {
   closing: {
     component: "ArticleClosing",
-    importPath: "$lib/components/article-closing.svelte",
+    fromLib: "components/article-closing.svelte",
     imageProps: ["image"],
     props: ["image"],
     required: [],
   },
   figure: {
     component: "ArticleFigure",
-    importPath: "$lib/components/article-figure.svelte",
+    fromLib: "components/article-figure.svelte",
     imageProps: [],
     props: ["eyebrow", "title", "note"],
     required: ["title"],
   },
   flow: {
     component: "ArticleFlow",
-    importPath: "$lib/components/article-flow.svelte",
+    fromLib: "components/article-flow.svelte",
     imageProps: [],
     props: [],
     required: [],
   },
   "x-post": {
     component: "XPostCard",
-    importPath: "$lib/components/x-post-card.svelte",
+    fromLib: "components/x-post-card.svelte",
     imageProps: ["avatar", "image"],
     props: ["href", "author", "handle", "date", "avatar", "image", "imageAlt"],
     required: [
@@ -430,7 +444,7 @@ function importLines(context: TransformContext) {
   for (const name of names) {
     const definition = ARTICLE_DIRECTIVES[name];
     lines.push(
-      `import ${definition.component} from "${definition.importPath}";`,
+      `import ${definition.component} from "${componentImportPath(context.filename, definition.fromLib)}";`,
     );
   }
   const images = [...context.images.values()].sort((left, right) =>

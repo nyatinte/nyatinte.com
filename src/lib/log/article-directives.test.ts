@@ -35,7 +35,7 @@ test("transformArticleDirectives converts figure to a Svelte component and injec
     "src/content/log/example/index.md",
   );
   expect(result).toContain(
-    'import ArticleFigure from "$lib/components/article-figure.svelte";',
+    'import ArticleFigure from "../../../lib/components/article-figure.svelte";',
   );
   expect(result).toContain(
     '<ArticleFigure eyebrow={"BEFORE"} title={"図のタイトル"} note={"注釈です"}>',
@@ -55,7 +55,10 @@ test("transformArticleDirectives converts flow lists and nested figure children"
 :::
 :::
 `;
-  const result = transformArticleDirectives(source, "article.svx");
+  const result = transformArticleDirectives(
+    source,
+    "src/content/log/example/index.svx",
+  );
   expect(result).toContain("import ArticleFigure from");
   expect(result).toContain("import ArticleFlow from");
   expect(result).toContain('<ArticleFigure title={"流れ"}>');
@@ -78,7 +81,7 @@ test("transformArticleDirectives turns local x-post images into imports", () => 
     "src/content/log/example/index.svx",
   );
   expect(result).toContain(
-    'import XPostCard from "$lib/components/x-post-card.svelte";',
+    'import XPostCard from "../../../lib/components/x-post-card.svelte";',
   );
   expect(result).toContain(
     'import __directive_img_0 from "./nyatinte-avatar.jpg";',
@@ -102,9 +105,12 @@ test("transformArticleDirectives merges imports into an existing script", () => 
 飛びつきます
 :::
 `;
-  const result = transformArticleDirectives(source, "article.svx");
+  const result = transformArticleDirectives(
+    source,
+    "src/content/log/example/index.svx",
+  );
   expect(result).toMatch(
-    /<script>\n {2}import ArticleClosing from "\$lib\/components\/article-closing\.svelte";\n {2}const ready = true;\n<\/script>/u,
+    /<script>\n {2}import ArticleClosing from "..\/..\/..\/lib\/components\/article-closing\.svelte";\n {2}const ready = true;\n<\/script>/u,
   );
   expect(result).toContain("<ArticleClosing>");
   expect(result).toContain("飛びつきます");
