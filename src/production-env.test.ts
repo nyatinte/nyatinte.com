@@ -16,7 +16,6 @@ test("production deployment requires Access configuration", () => {
   const load = (additional: Record<string, string>) =>
     execFileSync(executable, ["load", "--agent"], {
       cwd,
-      // Worker bindings augment ProcessEnv; this subprocess intentionally gets only test variables.
       env: { ...env, ...additional } as unknown as NodeJS.ProcessEnv,
       stdio: "pipe",
     });

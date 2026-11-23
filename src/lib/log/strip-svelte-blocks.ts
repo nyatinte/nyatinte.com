@@ -6,11 +6,6 @@ const SVELTE_BLOCK_PATTERNS = [
 
 const EXCESS_BLANK_LINES = /\r?\n(?:[ \t]*\r?\n){2,}/gu;
 
-/**
- * `.svx` 記事からコピー用・エージェント向け Markdown に混ざる
- * Svelte 専用のブロック（style / script / 自己終了コンポーネント）を取り除く。
- * frontmatter と通常の HTML はそのまま残す。
- */
 export function stripSvelteBlocks(markdown: string): string {
   let result = markdown;
   for (const pattern of SVELTE_BLOCK_PATTERNS) {

@@ -111,7 +111,6 @@ export const handle: Handle = async ({ event, resolve }) => {
     const enriched = agentResponseHeaders({
       canonicalUrl: canonicalSiteUrl(route.canonicalPath),
       existingVary: headers.get("Vary"),
-      // markdown を希望するリクエストは上の分岐で返しているため、常に HTML になる。
       includeAlternateLink: true,
     });
     for (const [key, value] of enriched.entries()) {
