@@ -65,7 +65,7 @@ function svelteMarkdown(): PreprocessorGroup {
 
 export default defineConfig(({ mode }) => ({
   check: {
-    fmt: false,
+    fmt: true,
     lint: false,
   },
   fmt: {
