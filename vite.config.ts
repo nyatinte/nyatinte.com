@@ -5,8 +5,9 @@ import { varlockVitePlugin } from "@varlock/vite-integration";
 import { mdsvex } from "mdsvex";
 import type { PreprocessorGroup } from "svelte/compiler";
 import type { Plugin } from "vite";
+import nkzw from "@nkzw/oxlint-config";
+import rsvelteRecommended from "@rsvelte/oxlint-plugin/recommended.json" with { type: "json" };
 import { defineConfig } from "vite-plus";
-import { lint } from "./oxlint.config";
 import { remarkHeadingIds } from "./src/lib/log/remark-heading-ids";
 import { logFrontmatterPlugin } from "./src/lib/log/vite-plugin";
 import { buildZbSearchIndex } from "./src/lib/search/zb-build";
@@ -62,6 +63,53 @@ function svelteMarkdown(): PreprocessorGroup {
     name: "mdsvex",
   };
 }
+
+const rsvelteRules = rsvelteRecommended.rules as Record<
+  string,
+  "off" | "warn" | "error"
+>;
+
+const lint = {
+  env: { browser: true, builtin: true, es2024: true, node: true },
+  extends: [nkzw],
+  globals: {
+    $bindable: "readonly",
+    $derived: "readonly",
+    $effect: "readonly",
+    $host: "readonly",
+    $inspect: "readonly",
+    $props: "readonly",
+    $state: "readonly",
+  },
+  ignorePatterns: [
+    ".agents/**",
+    "AGENTS.md",
+    "README.md",
+    "skills-lock.json",
+    "worker-configuration.d.ts",
+    "**/*.d.ts",
+  ],
+  jsPlugins: ["@rsvelte/oxlint-plugin"],
+  overrides: [
+    {
+      files: ["scripts/**"],
+      rules: { "no-console": "off" },
+    },
+  ],
+  rules: {
+    ...rsvelteRules,
+    "no-inline-comments": "error",
+    "no-warning-comments": [
+      "error",
+      { location: "anywhere", terms: ["TODO", "FIXME", "XXX"] },
+    ],
+    "svelte/no-at-debug-tags": "off",
+    "svelte/no-at-html-tags": "off",
+    "svelte/no-navigation-without-resolve": "off",
+    "svelte/no-unnecessary-state-wrap": "off",
+    "svelte/require-each-key": "off",
+  },
+};
 
 export default defineConfig(({ mode }) => ({
   check: {

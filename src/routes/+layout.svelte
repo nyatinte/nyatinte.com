@@ -261,12 +261,12 @@
       -webkit-font-smoothing: antialiased;
       font-synthesis: none;
       color-scheme: light;
-      text-rendering: optimizeLegibility;
+      text-rendering: optimizelegibility;
     }
     :global(body) {
       margin: 0;
-      color: oklch(32% 0.025 150);
-      background: oklch(98% 0.006 100);
+      color: oklch(32% 0.025 150deg);
+      background: oklch(98% 0.006 100deg);
     }
   }
 </style>

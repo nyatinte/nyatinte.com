@@ -36,12 +36,10 @@
   }
 
   let labelY = $state(0);
+  let scrubber: HTMLDivElement | undefined;
 
   function selectAt(event: PointerEvent) {
-    const rect =
-      event.currentTarget instanceof HTMLElement
-        ? event.currentTarget.getBoundingClientRect()
-        : null;
+    const rect = scrubber?.getBoundingClientRect();
     if (!rect) {
       return;
     }
@@ -112,6 +110,7 @@
   {/each}
 </nav>
 <div
+  bind:this={scrubber}
   aria-hidden="true"
   class="scrubber"
   onpointercancel={() => {
@@ -237,7 +236,7 @@
     border: 1px solid var(--home-nav-border);
     transform: translateY(-50%);
   }
-  @media (min-width: 1150px) {
+  @media (width >= 1150px) {
     .toc {
       position: sticky;
       top: 2rem;

@@ -34,14 +34,14 @@
   }
 
   .rss:focus-visible {
-    outline: 2px solid currentColor;
+    outline: 2px solid currentcolor;
     outline-offset: 4px;
   }
 
   .icon {
     inline-size: 0.875rem;
     block-size: 0.875rem;
-    background-color: currentColor;
+    background-color: currentcolor;
     mask-image: var(--rss-icon);
     mask-repeat: no-repeat;
     mask-position: center;
