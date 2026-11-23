@@ -262,8 +262,8 @@ importers:
         specifier: 4.7.8
         version: 4.7.8(picomatch@4.0.7)(svelte@5.59.1(@typescript-eslint/types@8.72.2))(typescript@6.0.3)
       svelte-vitals:
-        specifier: 0.55.5
-        version: 0.55.5(@typescript-eslint/types@8.72.2)(citty@0.2.2)(commander@15.1.0)
+        specifier: 0.57.1
+        version: 0.57.1(@typescript-eslint/types@8.72.2)(citty@0.2.2)(commander@15.1.0)
       tsx:
         specifier: 4.23.15
         version: 4.23.15
@@ -337,12 +337,12 @@ packages:
   '@cacheable/utils@2.5.0':
     resolution: {integrity: sha512-buipgOVDkkPXNR5+xBpDw7Zk2n1EvU7qBJCNUcL7rhQ//kfpOXPAvQ511Os0vpLYJ1pZnvudNytkQt2hst3wqA==}
 
-  '@clack/core@1.5.1':
-    resolution: {integrity: sha512-iHTrHA8MtVuLl2TfZySmcKv1qO2PoyC9Z7pfSDozEuV5vtY3/wcOPKJXlqJ5Oq2Cx5DDGQGAMVx6HZfRRoVEbQ==}
+  '@clack/core@1.6.0':
+    resolution: {integrity: sha512-4GZynIB2IIe431odxesswvWTCP6orvqd6e2b07b3VFWBQRqUqIHc/EPIZwFoKS692QBp+ooPuXKaJV8g4kXuYA==}
     engines: {node: '>= 20.12.0'}
 
-  '@clack/prompts@1.8.1':
-    resolution: {integrity: sha512-dlT1m5e/0yUL0kRNcQn7yGLVThkgbB0Ga/1AmfDDC/8ik6AIiSf2QLQO2zPYvefsHP0aFgxO93cVLCCfDp7kzQ==}
+  '@clack/prompts@1.9.0':
+    resolution: {integrity: sha512-tEj8X2No2A1c9NDnZECxiiJ8TP3vmFlN9tLlLeSaMqVW4tUmVG2R4qpv/eP4zymWxnymYLkLcIYVV0VcWj3RCQ==}
     engines: {node: '>= 20.12.0'}
 
   '@cloudflare/kv-asset-handler@0.5.1':
@@ -1288,8 +1288,8 @@ packages:
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
-  '@svelte-vitals/core@0.55.5':
-    resolution: {integrity: sha512-BCEN2ZMWircldU80hFRO3kMXUV4G5wN1oSypZu0/wegcJ0gafngm1lpVMX2fulCvN0O0WJC+WS0rTkQPvGErVQ==}
+  '@svelte-vitals/core@0.57.1':
+    resolution: {integrity: sha512-xdpQYxZ56LEc1TsOiCvCAdfNrUjXGCrU4TVsW3M/p7UnDVsemVU3pXwaslNdG//VGn5tCeNIAV5xK+bZ81v5bA==}
     engines: {node: '>=24.16.0'}
 
   '@sveltejs/acorn-typescript@1.0.13':
@@ -2649,8 +2649,9 @@ packages:
     resolution: {integrity: sha512-2wcC/oGxHis/BoHkkPwldgiPSYcpZK3JU28WoMVv55yHJgcZ8rlXvuG9iZggz+sU1d4bRgIGASwyWqjxu3FM0g==}
     engines: {node: '>=18'}
 
-  sisteransi@1.0.5:
-    resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
+  sisteransi@2.0.0:
+    resolution: {integrity: sha512-2WCqLdt12eN6ehLI50S2/ZxoowXU3DD1KVPRyVP0WEsFahrGZZmCdq1K59qjJljMRIDTwx1D9YaRK+hDneBUMg==}
+    engines: {node: '>=20'}
 
   source-map-js@1.2.2:
     resolution: {integrity: sha512-KGj/8Y43x35aZVDtt+J4mK1hoLGHULMYfSkODJNQjNDC3oW1PqPoxMwo0pLUsWM/UEGzON/NxeHywEfNXNP3Vw==}
@@ -2688,8 +2689,8 @@ packages:
       svelte: ^4.0.0 || ^5.0.0-next.0
       typescript: ^5.0.0 || ^6.0.0
 
-  svelte-vitals@0.55.5:
-    resolution: {integrity: sha512-0IoJ2KzPX3KC85cg3ha9v+c8UCnJ4ii7Oi/3pyG1p2+rOxWuOx0Y47nqYnKeNRMJQITSQFBowJQTHF0C8OXCvQ==}
+  svelte-vitals@0.57.1:
+    resolution: {integrity: sha512-5gPvh1IFT1+/eOdmX4eWUJtYRN8YW9SNmq1Z3tkeWkD7GQ//lOht4yubjiynU8IlXrRb+j3nFnJgWUYu2J1+kA==}
     engines: {node: '>=24.16.0'}
     hasBin: true
 
@@ -3029,17 +3030,18 @@ snapshots:
       hashery: 1.5.1
       keyv: 5.6.0
 
-  '@clack/core@1.5.1':
+  '@clack/core@1.6.0':
     dependencies:
-      fast-wrap-ansi: 0.2.2
-      sisteransi: 1.0.5
-
-  '@clack/prompts@1.8.1':
-    dependencies:
-      '@clack/core': 1.5.1
       fast-string-width: 3.0.2
       fast-wrap-ansi: 0.2.2
-      sisteransi: 1.0.5
+      sisteransi: 2.0.0
+
+  '@clack/prompts@1.9.0':
+    dependencies:
+      '@clack/core': 1.6.0
+      fast-string-width: 3.0.2
+      fast-wrap-ansi: 0.2.2
+      sisteransi: 2.0.0
 
   '@cloudflare/kv-asset-handler@0.5.1': {}
 
@@ -3678,7 +3680,7 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
-  '@svelte-vitals/core@0.55.5(@typescript-eslint/types@8.72.2)':
+  '@svelte-vitals/core@0.57.1(@typescript-eslint/types@8.72.2)':
     dependencies:
       aria-query: 5.3.2
       svelte: 5.59.1(@typescript-eslint/types@8.72.2)
@@ -4878,7 +4880,7 @@ snapshots:
       mrmime: 2.0.1
       totalist: 3.0.1
 
-  sisteransi@1.0.5: {}
+  sisteransi@2.0.0: {}
 
   source-map-js@1.2.2: {}
 
@@ -4930,13 +4932,13 @@ snapshots:
     transitivePeerDependencies:
       - picomatch
 
-  svelte-vitals@0.55.5(@typescript-eslint/types@8.72.2)(citty@0.2.2)(commander@15.1.0):
+  svelte-vitals@0.57.1(@typescript-eslint/types@8.72.2)(citty@0.2.2)(commander@15.1.0):
     dependencies:
-      '@clack/prompts': 1.8.1
+      '@clack/prompts': 1.9.0
       '@gunshi/plugin-completion': 0.37.3(@gunshi/plugin-i18n@0.37.3)(citty@0.2.2)(commander@15.1.0)
       '@gunshi/plugin-i18n': 0.37.3
       '@gunshi/plugin-suggestion': 0.37.3(@gunshi/plugin-i18n@0.37.3)
-      '@svelte-vitals/core': 0.55.5(@typescript-eslint/types@8.72.2)
+      '@svelte-vitals/core': 0.57.1(@typescript-eslint/types@8.72.2)
       gunshi: 0.37.3
       magicast: 0.5.5
       svelte: 5.59.1(@typescript-eslint/types@8.72.2)
