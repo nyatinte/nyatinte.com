@@ -1,19 +1,17 @@
-export interface TocVisibilityInput {
-  headingPositions: { id: string; top: number }[];
+interface TocVisibilityInput {
+  headingPositions: Array<{ id: string; top: number }>;
   scrollMargin?: number;
   viewportHeight: number;
 }
 
-export interface TocVisibility {
+interface TocVisibility {
   activeId: string;
   visible: boolean;
 }
 
-/** First heading must reach this fraction of the viewport before the scrubber appears. */
-export const showThresholdRatio = 0.4;
+const showThresholdRatio = 0.4;
 
-/** Headings at or above this fraction have entered the reading zone; the last of those is active. */
-export const readingZoneRatio = 0.2;
+const readingZoneRatio = 0.2;
 
 export function getTocVisibility({
   headingPositions,

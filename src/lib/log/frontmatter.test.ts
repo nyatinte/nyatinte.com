@@ -40,7 +40,7 @@ date: 2026-01-02
 updated: 2026-02-03
 image: /images/og.png
 ---
-`
+`,
   );
   expect(article).toMatchObject({
     image: "/images/og.png",
@@ -76,14 +76,14 @@ test.each([
 test("sorts articles newest first", () => {
   const older = parseArticleSource(
     "older.md",
-    valid.replace("2026-11-12", "2026-01-01").replace("調べたこと", "古い")
+    valid.replace("2026-11-12", "2026-01-01").replace("調べたこと", "古い"),
   );
   const newer = parseArticleSource(
     "newer.md",
-    valid.replace("調べたこと", "新しい")
+    valid.replace("調べたこと", "新しい"),
   );
   expect(
-    sortArticlesNewestFirst([older, newer]).map((article) => article.slug)
+    sortArticlesNewestFirst([older, newer]).map((article) => article.slug),
   ).toEqual(["newer", "older"]);
 });
 
@@ -92,7 +92,7 @@ test("rejects duplicate slugs", () => {
     articlesFromSources({
       "same.md": valid,
       "same.svx": valid,
-    })
+    }),
   ).toThrow("Duplicate article slug: same");
 });
 
@@ -101,10 +101,10 @@ test("a directory of invalid frontmatter fails validation", () => {
   mkdirSync(join(directory, "broken"));
   writeFileSync(
     join(directory, "broken", "index.md"),
-    "---\ntitle: 題\ndate: 2026-11-12\n---\n"
+    "---\ntitle: 題\ndate: 2026-11-12\n---\n",
   );
   expect(() => loadArticlesFromDirectory(directory)).toThrow(
-    "invalid frontmatter"
+    "invalid frontmatter",
   );
 });
 
@@ -113,7 +113,7 @@ test("article directories use their directory name as the slug", () => {
   mkdirSync(join(directory, "my-post"));
   writeFileSync(
     join(directory, "my-post", "index.md"),
-    valid.replace("---\n\n本文", "image: ./og.jpg\n---\n\n本文")
+    valid.replace("---\n\n本文", "image: ./og.jpg\n---\n\n本文"),
   );
   expect(() => loadArticlesFromDirectory(directory)).toThrow("image not found");
   writeFileSync(join(directory, "my-post", "og.jpg"), "image");
@@ -129,13 +129,13 @@ test("rejects duplicate index files in an article directory", () => {
   writeFileSync(join(directory, "my-post", "index.md"), valid);
   writeFileSync(join(directory, "my-post", "index.svx"), valid);
   expect(() => loadArticlesFromDirectory(directory)).toThrow(
-    "Duplicate article slug: my-post"
+    "Duplicate article slug: my-post",
   );
 });
 
 test("the published log directory is valid", () => {
   const articles = loadArticlesFromDirectory(
-    join(process.cwd(), "src/content/log")
+    join(process.cwd(), "src/content/log"),
   );
   expect(articles.map((article) => article.slug)).toContain("template");
 });

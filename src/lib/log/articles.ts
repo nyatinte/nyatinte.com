@@ -1,19 +1,17 @@
 import { articlesFromSources } from "./frontmatter";
 
-export type { Article } from "./frontmatter";
-
 const rawFiles = import.meta.glob<string>(
   "../../content/log/*/index.{md,svx}",
   {
     eager: true,
     import: "default",
     query: "?raw",
-  }
+  },
 );
 
 const images = import.meta.glob<string>(
   "../../content/log/*/*.{png,jpg,jpeg,webp,gif}",
-  { eager: true, import: "default", query: "?url&no-inline" }
+  { eager: true, import: "default", query: "?url&no-inline" },
 );
 
 export const articles = articlesFromSources(rawFiles).map((article) => {

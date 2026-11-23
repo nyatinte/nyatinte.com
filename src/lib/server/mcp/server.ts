@@ -11,13 +11,13 @@ export function createSiteMcpHandler(): McpHttpHandler {
       const server = new McpServer({ name: "nyatinte.com", version: "1.0.0" });
       return server;
     },
-    { responseMode: "json" }
+    { responseMode: "json" },
   );
 }
 
 export async function handleSiteMcpRequest(
   request: Request,
-  authInfo: AuthInfo
+  authInfo: AuthInfo,
 ): Promise<Response> {
   const handler = createSiteMcpHandler();
   try {

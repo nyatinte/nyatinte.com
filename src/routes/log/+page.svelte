@@ -1,8 +1,14 @@
 <script lang="ts">
+  import { page } from "$app/state";
   import JsonLd from "../../lib/components/json-ld.svelte";
+  import LogArticleTitle from "../../lib/components/log-article-title.svelte";
+  import LogSearch from "../../lib/components/log-search.svelte";
   import PageMeta from "../../lib/components/page-meta.svelte";
+  import Pagination from "../../lib/components/pagination.svelte";
+  import RssLink from "../../lib/components/rss-link.svelte";
   import { logDescription, logTitle } from "../../lib/log/constants";
   import { formatLogDate } from "../../lib/log/format-date";
+  import { logPageTitle } from "../../lib/log/pagination";
   import {
     articleDateTransitionName,
     articleTransitionName,
@@ -10,43 +16,55 @@
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
-  const title = `${logTitle} | nyatinte.com`;
+  const title = $derived(logPageTitle(data.currentPage));
+  const searching = $derived(
+    (page.url.searchParams.get("q") ?? "").trim() !== "",
+  );
 </script>
 
 <JsonLd graphs={data.jsonLd} />
 <PageMeta
   canonicalUrl={data.canonicalUrl}
   description={logDescription}
-  imageAlt={data.image.alt}
-  imageHeight={data.image.height}
-  imageType={data.image.type}
-  imageUrl={data.image.url}
-  imageWidth={data.image.width}
+  image={data.image}
   {title}
 />
 
 <main class="log-index">
   <h1>{logTitle}</h1>
   <p class="lead">{logDescription}</p>
-  {#if data.articles.length === 0}
-    <p>記事はまだありません。</p>
-  {:else}
-    <!-- biome-ignore lint/a11y/noRedundantRoles: Safari drops the list role when list-style is none. -->
-    <ol role="list">
-      {#each data.articles as article (article.slug)}
-        <li>
-          <time
-            datetime={article.date}
-            style:view-transition-name={articleDateTransitionName(article.slug)}
-            >{formatLogDate(article.date)}</time
-          >
-          <h2 style:view-transition-name={articleTransitionName(article.slug)}>
-            <a href={`/log/${article.slug}`}>{article.title}</a>
-          </h2>
-          <p>{article.description}</p>
-        </li>
-      {/each}
-    </ol>
+  <div class="subscribe"><RssLink /></div>
+  <LogSearch />
+  {#if !searching}
+    {#if data.articles.length === 0}
+      <p>記事はまだありません。</p>
+    {:else}
+      <!-- Safari drops the list role when list-style is none. -->
+      <ol role="list">
+        {#each data.articles as article (article.slug)}
+          <li>
+            <time
+              datetime={article.date}
+              style:view-transition-name={articleDateTransitionName(
+                article.slug,
+              )}>{formatLogDate(article.date)}</time
+            >
+            <LogArticleTitle
+              href={`/log/${article.slug}`}
+              title={article.title}
+              transitionName={articleTransitionName(article.slug)}
+            />
+            <p>{article.description}</p>
+          </li>
+        {/each}
+      </ol>
+      {#if data.totalPages > 1}
+        <Pagination
+          currentPage={data.currentPage}
+          totalPages={data.totalPages}
+        />
+      {/if}
+    {/if}
   {/if}
 </main>
 
@@ -66,8 +84,12 @@
   }
 
   .lead {
-    margin: 0.8rem 0 2.5rem;
+    margin: 0.8rem 0 1rem;
     font-size: 1.05rem;
+  }
+
+  .subscribe {
+    margin: 0 0 2.5rem;
   }
 
   ol {
@@ -83,30 +105,7 @@
     letter-spacing: 0.01em;
   }
 
-  h2 {
-    margin: 0.3rem 0 0.45rem;
-    font-size: clamp(1.4rem, 1.2rem + 0.6vw, 1.8rem);
-    font-weight: 600;
-    line-height: 1.3;
-    letter-spacing: -0.03em;
-  }
-
-  h2 a {
-    color: inherit;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.18em;
-  }
-
-  h2 a:hover {
-    color: var(--home-accent);
-  }
-
   li p {
     margin: 0;
-  }
-
-  a:focus-visible {
-    outline: 2px solid currentColor;
-    outline-offset: 4px;
   }
 </style>

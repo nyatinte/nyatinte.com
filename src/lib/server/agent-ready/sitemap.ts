@@ -1,14 +1,6 @@
 import { articles } from "../../log/articles";
+import { escapeXml } from "../../xml";
 import { canonicalSiteUrl } from "./constants";
-
-function escapeXml(value: string) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&apos;");
-}
 
 function urlEntry(pathname: string, lastmod: string) {
   const location = canonicalSiteUrl(pathname);
@@ -27,7 +19,7 @@ export function buildSitemapXml(): string {
     urlEntry("/", siteLastmod),
     urlEntry("/log", siteLastmod),
     ...articles.map((article) =>
-      urlEntry(`/log/${article.slug}`, article.updated ?? article.date)
+      urlEntry(`/log/${article.slug}`, article.updated ?? article.date),
     ),
   ];
   return [

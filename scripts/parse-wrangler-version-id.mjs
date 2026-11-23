@@ -8,17 +8,18 @@ const versionIdPattern = /^[\da-f]{8}-(?:[\da-f]{4}-){3}[\da-f]{12}$/i;
 export function parseVersionId(jsonl) {
   let versionId;
   for (const line of jsonl.split(newlinePattern)) {
+    let entry;
     try {
-      const entry = JSON.parse(line);
-      if (
-        entry?.type === "version-upload" &&
-        typeof entry.version_id === "string" &&
-        entry.version_id.trim()
-      ) {
-        versionId = entry.version_id.trim();
-      }
+      entry = JSON.parse(line);
     } catch {
-      // 不正な JSON 行は無視します。
+      continue;
+    }
+    if (
+      entry?.type === "version-upload" &&
+      typeof entry.version_id === "string" &&
+      entry.version_id.trim()
+    ) {
+      versionId = entry.version_id.trim();
     }
   }
   if (!versionId) {
@@ -26,7 +27,7 @@ export function parseVersionId(jsonl) {
   }
   if (!versionIdPattern.test(versionId)) {
     throw new Error(
-      `version-upload の version_id が UUID 形式ではありません: ${versionId}`
+      `version-upload の version_id が UUID 形式ではありません: ${versionId}`,
     );
   }
   return versionId;

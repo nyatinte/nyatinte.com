@@ -1,8 +1,10 @@
 <script lang="ts">
+  import ArticleShare from "../../../lib/components/article-share.svelte";
   import ArticleToc from "../../../lib/components/article-toc.svelte";
   import CopyMdxButton from "../../../lib/components/copy-mdx-button.svelte";
   import JsonLd from "../../../lib/components/json-ld.svelte";
   import PageMeta from "../../../lib/components/page-meta.svelte";
+  import RssLink from "../../../lib/components/rss-link.svelte";
   import { articleComponent } from "../../../lib/log/components";
   import { formatLogDate } from "../../../lib/log/format-date";
   import {
@@ -20,11 +22,7 @@
 <PageMeta
   canonicalUrl={data.canonicalUrl}
   description={data.article.description}
-  imageAlt={data.image.alt}
-  imageHeight={data.image.height}
-  imageType={data.image.type}
-  imageUrl={data.image.url}
-  imageWidth={data.image.width}
+  image={data.image}
   ogType="article"
   {title}
 />
@@ -40,8 +38,9 @@
         <div class="dates">
           <time
             datetime={data.article.date}
-            style:view-transition-name={articleDateTransitionName(data.article.slug)}
-            >{formatLogDate(data.article.date)}</time
+            style:view-transition-name={articleDateTransitionName(
+              data.article.slug,
+            )}>{formatLogDate(data.article.date)}</time
           >
           {#if data.article.updated}
             <p class="updated">
@@ -52,7 +51,7 @@
             </p>
           {/if}
         </div>
-        <CopyMdxButton source={data.article.source} />
+        <CopyMdxButton source={data.copyMarkdown} />
       </div>
     </div>
     <div class="article-body">
@@ -62,6 +61,8 @@
           <Body />
         </div>
       {/if}
+      <ArticleShare title={data.article.title} url={data.canonicalUrl} />
+      <div class="subscribe"><RssLink /></div>
     </div>
   </main>
   {#if data.headings.length}
@@ -124,7 +125,7 @@
     min-width: 0;
   }
 
-  @media (max-width: 706px) {
+  @media (width <= 706px) {
     .article-body {
       padding-inline-end: 2rem;
     }
@@ -133,6 +134,12 @@
   .description {
     margin: 0 0 2rem;
     font-size: 1.05rem;
+  }
+
+  .subscribe {
+    padding-block-start: 1.5rem;
+    margin-block-start: 3rem;
+    border-block-start: 1px solid var(--home-nav-border);
   }
 
   .prose :global(p),
@@ -183,7 +190,7 @@
     block-size: auto;
   }
 
-  @media (min-width: 1150px) {
+  @media (width >= 1150px) {
     .layout {
       display: grid;
       grid-template-columns: minmax(1rem, 1fr) minmax(0, 40rem) minmax(
@@ -219,7 +226,7 @@
   }
 
   a:focus-visible {
-    outline: 2px solid currentColor;
+    outline: 2px solid currentcolor;
     outline-offset: 4px;
   }
 </style>

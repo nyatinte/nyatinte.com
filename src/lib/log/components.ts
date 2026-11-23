@@ -9,14 +9,14 @@ interface ArticleModule {
 
 const modules = import.meta.glob<ArticleModule>(
   "../../content/log/*/index.{md,svx}",
-  { eager: true }
+  { eager: true },
 );
 
 const components = new Map(
   Object.entries(modules).map(([path, module]) => [
     articleFileName(path).replace(extensionPattern, ""),
     module.default,
-  ])
+  ]),
 );
 
 export function articleComponent(slug: string) {

@@ -9,10 +9,10 @@
 
   const isHome = $derived(page.url.pathname === "/");
   const isLogIndex = $derived(
-    page.url.pathname === "/log" || page.url.pathname === "/log/"
+    page.url.pathname === "/log" || page.url.pathname === "/log/",
   );
   const isLogArticle = $derived(
-    page.url.pathname.startsWith("/log/") && !isLogIndex
+    page.url.pathname.startsWith("/log/") && !isLogIndex,
   );
   const isLog = $derived(isLogIndex || isLogArticle);
   const logAriaCurrent = $derived.by(() => {
@@ -37,10 +37,7 @@
       title="ホーム"
       class:current={isHome}
     >
-      <span
-        aria-hidden="true"
-        class="icon"
-        style:mask-image={`url("${house}")`}
+      <span aria-hidden="true" class="icon" style:mask-image={`url("${house}")`}
       ></span>
       <span class="sr-only">ホーム</span>
     </a>
@@ -57,10 +54,7 @@
       href="https://x.com/nyatinte"
       title="X: @nyatinte"
     >
-      <span
-        aria-hidden="true"
-        class="icon"
-        style:mask-image={`url("${x}")`}
+      <span aria-hidden="true" class="icon" style:mask-image={`url("${x}")`}
       ></span>
       <span class="sr-only">X: @nyatinte</span>
     </a>
@@ -138,6 +132,12 @@
         border: 0;
         border-radius: 3rem;
       }
+      a:focus-visible,
+      button:focus-visible {
+        outline: 2px solid currentcolor;
+        outline-offset: 4px;
+      }
+
       .navigation a:hover,
       .navigation button:hover,
       .navigation .current {
@@ -149,7 +149,7 @@
       .icon {
         inline-size: 1.25rem;
         block-size: 1.25rem;
-        background: currentColor;
+        background: currentcolor;
         mask-repeat: no-repeat;
         mask-position: center;
         mask-size: contain;
@@ -172,11 +172,6 @@
         font-family: sans-serif;
         white-space: nowrap;
         clip-path: inset(50%);
-      }
-      a:focus-visible,
-      button:focus-visible {
-        outline: 2px solid currentColor;
-        outline-offset: 4px;
       }
       @media (height <= 420px) {
         :scope {

@@ -4,7 +4,7 @@
   import { pulseHaptic } from "../log/toc-haptics";
   import { getTocVisibility } from "../log/toc-visibility";
 
-  let { headings }: { headings: TocHeading[] } = $props();
+  let { headings }: { headings: Array<TocHeading> } = $props();
   let active = $state("");
   let visible = $state(false);
   let dragging = $state(false);
@@ -36,12 +36,10 @@
   }
 
   let labelY = $state(0);
+  let scrubber: HTMLDivElement | undefined;
 
   function selectAt(event: PointerEvent) {
-    const rect =
-      event.currentTarget instanceof HTMLElement
-        ? event.currentTarget.getBoundingClientRect()
-        : null;
+    const rect = scrubber?.getBoundingClientRect();
     if (!rect) {
       return;
     }
@@ -51,9 +49,9 @@
         headings.length - 1,
         Math.floor(
           Math.max(0, (event.clientY - rect.top) / rect.height) *
-            headings.length
-        )
-      )
+            headings.length,
+        ),
+      ),
     );
   }
 
@@ -100,19 +98,19 @@
   tabindex="-1"
   type="checkbox"
   {...{ switch: true }}
->
+/>
 <nav aria-label="目次" class="toc">
   <h2>目次</h2>
   {#each headings as heading (heading.id)}
     <a
       aria-current={active === heading.id ? "location" : undefined}
       href="#{heading.id}"
-      class:nested={heading.depth === 3}
-      >{heading.title}</a
+      class:nested={heading.depth === 3}>{heading.title}</a
     >
   {/each}
 </nav>
 <div
+  bind:this={scrubber}
   aria-hidden="true"
   class="scrubber"
   onpointercancel={() => {
@@ -128,15 +126,15 @@
       selectAt(event);
     }
   }}
-  onpointerup={(event) => {
+  onpointerup={() => {
     if (dragging) {
       jump(labelIndex);
     }
     dragging = false;
   }}
-  class:visible={visible}
+  class:visible
 >
-  {#each headings as heading, index (heading.id)}
+  {#each headings as heading (heading.id)}
     <div
       class:active={active === heading.id}
       class:short={heading.depth === 3}
@@ -238,7 +236,7 @@
     border: 1px solid var(--home-nav-border);
     transform: translateY(-50%);
   }
-  @media (min-width: 1150px) {
+  @media (width >= 1150px) {
     .toc {
       position: sticky;
       top: 2rem;

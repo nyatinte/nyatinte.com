@@ -1,14 +1,15 @@
+import { resolveArticleImage } from "../lib/log/og-image";
 import {
   canonicalSiteUrl,
   siteIdentity,
 } from "../lib/server/agent-ready/constants";
 import { createHomeJsonLd } from "../lib/server/agent-ready/json-ld";
+import { resolvePageOgImage } from "../lib/server/og-image";
 import type { PageServerLoad } from "./$types";
-import ogImage from "./og.png";
 
 export const load: PageServerLoad = () => ({
   canonicalUrl: canonicalSiteUrl("/"),
+  image: resolveArticleImage({ sharedUrl: resolvePageOgImage() }),
   jsonLd: createHomeJsonLd(),
-  ogImageUrl: new URL(ogImage, canonicalSiteUrl("/")).href,
   siteDescription: siteIdentity.description,
 });

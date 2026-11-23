@@ -2,6 +2,7 @@ import { articles, getArticle } from "../../log/articles";
 import { logDescription, logTitle } from "../../log/constants";
 import { formatLogDate } from "../../log/format-date";
 import type { Article } from "../../log/frontmatter";
+import { stripSvelteBlocks } from "../../log/strip-svelte-blocks";
 import { canonicalSiteUrl, siteIdentity } from "./constants";
 import type { AgentRoute } from "./routes";
 
@@ -9,8 +10,8 @@ function linkLine(label: string, href: string) {
   return `- [${label}](${href})`;
 }
 
-function markdownLabel(label: string) {
-  return label.replaceAll("]", "\\]");
+export function markdownLabel(label: string) {
+  return label.replaceAll("]", String.raw`\]`);
 }
 
 function renderHomeMarkdown(): string {
@@ -40,7 +41,7 @@ function renderLogListMarkdown(): string {
     lines.push("記事はまだありません。");
   } else {
     lines.push(
-      articles.map((article) => renderArticleSummary(article)).join("\n\n")
+      articles.map((article) => renderArticleSummary(article)).join("\n\n"),
     );
   }
   lines.push("", linkLine("ホーム", canonicalSiteUrl("/")));
@@ -58,14 +59,14 @@ function renderArticleMarkdown(article: Article): string {
   if (article.updated) {
     lines.push(`更新日: ${formatLogDate(article.updated)}`);
   }
-  const body = article.body.trim();
+  const body = stripSvelteBlocks(article.body).trim();
   if (body) {
     lines.push("", body);
   }
   lines.push(
     "",
     linkLine("ログへ", canonicalSiteUrl("/log")),
-    linkLine("ホーム", canonicalSiteUrl("/"))
+    linkLine("ホーム", canonicalSiteUrl("/")),
   );
   return lines.join("\n");
 }
@@ -82,7 +83,7 @@ function renderNotFoundMarkdown(message: string): string {
   ].join("\n");
 }
 
-export interface MarkdownRenderResult {
+interface MarkdownRenderResult {
   body: string;
   canonicalUrl: string;
   status: number;

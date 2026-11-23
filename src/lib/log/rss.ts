@@ -2,18 +2,10 @@ import {
   canonicalSiteUrl,
   siteIdentity,
 } from "../server/agent-ready/constants";
-import { logDescription, logTitle } from "./constants";
+import { escapeXml } from "../xml";
+import { logDescription, logRssUrl, logTitle } from "./constants";
 import { rssDate } from "./format-date";
 import type { Article } from "./frontmatter";
-
-function escapeXml(value: string) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&apos;");
-}
 
 function itemXml(article: Article) {
   const link = canonicalSiteUrl(`/log/${article.slug}`);
@@ -28,15 +20,33 @@ function itemXml(article: Article) {
   ].join("\n");
 }
 
-export function buildRssXml(items: Article[]) {
+function latestUpdatedDate(items: Array<Article>) {
+  return items.reduce((latest, item) => {
+    const candidate = item.updated ?? item.date;
+    return candidate > latest ? candidate : latest;
+  }, "");
+}
+
+export function buildRssXml(items: Array<Article>) {
   const link = canonicalSiteUrl("/log");
-  return [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    '<rss version="2.0">',
-    "  <channel>",
+  const lastBuildDate = latestUpdatedDate(items);
+  const channel = [
     `    <title>${escapeXml(`${logTitle} | ${siteIdentity.name}`)}</title>`,
     `    <link>${escapeXml(link)}</link>`,
     `    <description>${escapeXml(logDescription)}</description>`,
+    `    <language>${escapeXml(siteIdentity.inLanguage)}</language>`,
+    `    <atom:link href="${escapeXml(logRssUrl)}" rel="self" type="application/rss+xml" />`,
+  ];
+  if (lastBuildDate) {
+    channel.push(
+      `    <lastBuildDate>${escapeXml(rssDate(lastBuildDate))}</lastBuildDate>`,
+    );
+  }
+  return [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">',
+    "  <channel>",
+    ...channel,
     ...items.map((article) => itemXml(article)),
     "  </channel>",
     "</rss>",

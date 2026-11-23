@@ -118,18 +118,18 @@
       aria-label="親ペンギンをバウンス"
       class="penguin adult"
       onclick={() => {
-    adultTaps += 1;
-    message = `親ペンギンを押しました（${adultTaps}回）`;
-  }}
+        adultTaps += 1;
+        message = `親ペンギンを押しました（${adultTaps}回）`;
+      }}
       type="button"
     ></button>
     <button
       aria-label="子ペンギンをバウンス"
       class="penguin chick"
       onclick={() => {
-    chickTaps += 1;
-    message = `子ペンギンを押しました（${chickTaps}回）`;
-  }}
+        chickTaps += 1;
+        message = `子ペンギンを押しました（${chickTaps}回）`;
+      }}
       type="button"
     ></button>
   </div>
@@ -161,6 +161,8 @@
         block-size: 100%;
       }
       .aurora {
+        view-transition-name: scene-aurora;
+
         --veil-base: var(--home-aurora-base);
         --veil-folds: linear-gradient(
           105deg,
@@ -229,9 +231,6 @@
       }
       .cloud-right {
         view-transition-name: cloud-right;
-      }
-      .aurora {
-        view-transition-name: scene-aurora;
       }
       .scene-middle {
         view-transition-name: scene-middle;
@@ -389,13 +388,13 @@
           transform: translate(-56%, -50%);
         }
         .adult {
-          inset-inline-start: max(56%, calc(56% - 50vw + 10px));
-          inset-inline-end: max(33%, calc(44% - 50vw + 10px));
+          inset-inline: max(56%, calc(56% - 50vw + 10px))
+            max(33%, calc(44% - 50vw + 10px));
           inline-size: auto;
         }
         .chick {
-          inset-inline-start: max(51%, calc(56% - 50vw + 10px));
-          inset-inline-end: max(43%, calc(44% - 50vw + 10px));
+          inset-inline: max(51%, calc(56% - 50vw + 10px))
+            max(43%, calc(44% - 50vw + 10px));
           inline-size: auto;
         }
       }

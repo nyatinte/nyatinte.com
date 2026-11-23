@@ -1,19 +1,19 @@
 <script lang="ts">
-  type JsonLdGraph = Record<string, unknown>;
+  import type { JsonLdGraph } from "../server/agent-ready/json-ld";
 
-  let { graphs }: { graphs: readonly JsonLdGraph[] } = $props();
+  let { graphs }: { graphs: ReadonlyArray<JsonLdGraph> } = $props();
 
   const closeScript = ["</", "script>"].join("");
 
   function jsonLdScript(graph: JsonLdGraph) {
-    const payload = JSON.stringify(graph).replaceAll("<", "\\u003c");
+    const payload = JSON.stringify(graph).replaceAll("<", String.raw`\u003c`);
     return `<script type="application/ld+json">${payload}${closeScript}`;
   }
 </script>
 
 <svelte:head>
   {#each graphs as graph, index (`${index}:${graph["@type"] ?? "graph"}`)}
-    <!-- JSON は stringify し、< を \u003c に逃がしている。{@html} は JSON-LD の script を head に出すために必要。 -->
+    <!-- Svelte の <svelte:head> は <script> 内の式を展開しないため、JSON-LD は {@html} で出す。 -->
     <!-- svelte-vitals-disable-next-line security/raw-html -->
     {@html jsonLdScript(graph)}
   {/each}

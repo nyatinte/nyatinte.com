@@ -1,10 +1,7 @@
 import { articles } from "../../log/articles";
 import { logDescription, logTitle } from "../../log/constants";
 import { canonicalSiteUrl, siteIdentity } from "./constants";
-
-function markdownLabel(label: string) {
-  return label.replaceAll("]", "\\]");
-}
+import { markdownLabel } from "./markdown";
 
 export function buildLlmsTxt() {
   const lines = [
@@ -24,7 +21,7 @@ export function buildLlmsTxt() {
     lines.push("## Articles", "");
     for (const article of articles) {
       lines.push(
-        `- [${markdownLabel(article.title)}](${canonicalSiteUrl(`/log/${article.slug}`)}): ${article.description}`
+        `- [${markdownLabel(article.title)}](${canonicalSiteUrl(`/log/${article.slug}`)}): ${article.description}`,
       );
     }
     lines.push("");

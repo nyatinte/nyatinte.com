@@ -1,13 +1,9 @@
-import { minLength, pipe, safeParse, string } from "valibot";
-
-const acceptHeaderSchema = pipe(string(), minLength(1));
-
 interface AcceptRange {
   q: number;
   type: string;
 }
 
-function parseAccept(accept: string): AcceptRange[] {
+function parseAccept(accept: string): Array<AcceptRange> {
   return accept
     .split(",")
     .map((part) => {
@@ -26,7 +22,7 @@ function parseAccept(accept: string): AcceptRange[] {
     .filter((range) => range.type && range.q > 0);
 }
 
-function quality(type: string, ranges: AcceptRange[]): number {
+function quality(type: string, ranges: Array<AcceptRange>): number {
   return ranges.find((range) => range.type === type)?.q ?? 0;
 }
 
@@ -45,7 +41,7 @@ export function prefersMarkdown(accept: string): boolean {
 
 export function wantsMarkdown(request: Request): boolean {
   const accept = request.headers.get("accept");
-  if (!(accept && safeParse(acceptHeaderSchema, accept).success)) {
+  if (!accept) {
     return false;
   }
   return prefersMarkdown(accept);

@@ -1,12 +1,14 @@
 <script lang="ts">
-  // CSS レイヤー順を固定するため、この import は先頭に保つ。
   import "../lib/styles/theme-transition.css";
   import "../lib/styles/home-tokens.css";
+  import "../lib/styles/share-action.css";
   import { onMount } from "svelte";
   import { onNavigate } from "$app/navigation";
   import { page } from "$app/state";
+  import BackToTop from "../lib/components/back-to-top.svelte";
   import HomeNavigation from "../lib/components/home-navigation.svelte";
   import {
+    type HomeTheme,
     homeThemeMessage,
     nextHomeTheme,
     persistHomeTheme,
@@ -14,10 +16,11 @@
   } from "../lib/home-theme";
   import { HOME_THEME_COLOR } from "../lib/home-theme-color";
   import { homeTransitionDirection } from "../lib/home-transition";
+  import { logRssUrl, logTitle } from "../lib/log/constants";
   import { shouldStartArticleTransition } from "../lib/log/view-transition";
 
   let { children } = $props();
-  let theme = $state<"light" | "dark" | null>(null);
+  let theme = $state<HomeTheme | null>(null);
   let themeMessage = $state("");
   let orbitTurn = $state<number | null>(null);
 
@@ -68,20 +71,28 @@
 </script>
 
 <svelte:head>
-  <meta content="light dark" name="color-scheme">
+  <meta content="light dark" name="color-scheme" />
   {#if theme === null}
     <meta
       content={HOME_THEME_COLOR.light}
       media="(prefers-color-scheme: light)"
       name="theme-color"
-    >
+    />
     <meta
       content={HOME_THEME_COLOR.dark}
       media="(prefers-color-scheme: dark)"
       name="theme-color"
-    >
+    />
   {:else}
-    <meta content={HOME_THEME_COLOR[theme]} name="theme-color">
+    <meta content={HOME_THEME_COLOR[theme]} name="theme-color" />
+  {/if}
+  {#if page.status < 400}
+    <link
+      href={logRssUrl}
+      rel="alternate"
+      title={logTitle}
+      type="application/rss+xml"
+    />
   {/if}
 </svelte:head>
 
@@ -92,6 +103,7 @@
   {#if page.status < 400}
     <HomeNavigation {toggleTheme} />
     <span aria-live="polite" class="theme-announcement">{themeMessage}</span>
+    <BackToTop />
   {/if}
   {@render children()}
 </div>
@@ -249,12 +261,12 @@
       -webkit-font-smoothing: antialiased;
       font-synthesis: none;
       color-scheme: light;
-      text-rendering: optimizeLegibility;
+      text-rendering: optimizelegibility;
     }
     :global(body) {
       margin: 0;
-      color: oklch(32% 0.025 150);
-      background: oklch(98% 0.006 100);
+      color: oklch(32% 0.025 150deg);
+      background: oklch(98% 0.006 100deg);
     }
   }
 </style>

@@ -1,20 +1,20 @@
 import { markdownContentType } from "./constants";
 
-export function appendVary(
+function appendVary(
   existing: string | null | undefined,
-  value: string
+  value: string,
 ): string {
   const values = new Set(
     (existing ?? "")
       .split(",")
       .map((part) => part.trim())
-      .filter(Boolean)
+      .filter(Boolean),
   );
   values.add(value);
   return [...values].join(", ");
 }
 
-export function markdownAlternateLink(canonicalUrl: string): string {
+function markdownAlternateLink(canonicalUrl: string): string {
   return `<${canonicalUrl}>; rel="alternate"; type="text/markdown"`;
 }
 
@@ -36,7 +36,7 @@ export function markdownResponse(
   options: {
     canonicalUrl: string;
     status: number;
-  }
+  },
 ): Response {
   const headers = agentResponseHeaders({
     canonicalUrl: options.canonicalUrl,

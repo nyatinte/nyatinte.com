@@ -4,6 +4,11 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { expect, test } from "vite-plus/test";
 
+type AccessConfig = {
+  ACCESS_AUDIENCE: string;
+  ACCESS_TEAM_DOMAIN: string;
+};
+
 test("production deployment requires Access configuration", () => {
   const cwd = mkdtempSync(join(tmpdir(), "dotcom-env-"));
   copyFileSync(resolve(".env.schema"), join(cwd, ".env.schema"));
@@ -13,21 +18,20 @@ test("production deployment requires Access configuration", () => {
     HOME: process.env.HOME,
     PATH: process.env.PATH,
   };
-  const load = (additional: Record<string, string>) =>
+  const load = (additional: Partial<AccessConfig>) =>
     execFileSync(executable, ["load", "--agent"], {
       cwd,
-      // Worker bindings augment ProcessEnv; this subprocess intentionally gets only test variables.
-      env: { ...env, ...additional } as unknown as NodeJS.ProcessEnv,
+      env: { ...env, ...additional },
       stdio: "pipe",
     });
   try {
     expect(() => load({})).toThrow();
-    const complete: Record<string, string> = {
+    const complete: AccessConfig = {
       ACCESS_AUDIENCE: "example",
       ACCESS_TEAM_DOMAIN: "https://example.cloudflareaccess.com",
     };
-    for (const key of Object.keys(complete)) {
-      const partial = { ...complete };
+    for (const key of Object.keys(complete) as Array<keyof AccessConfig>) {
+      const partial: Partial<AccessConfig> = { ...complete };
       delete partial[key];
       expect(() => load(partial)).toThrow();
     }
