@@ -8,7 +8,6 @@
   const shareUrl = $derived(xShareUrl({ title, url }));
 </script>
 
-<!-- biome-ignore lint/a11y/useSemanticElements: fieldset はフォームの部品をまとめる要素で、共有リンクのまとまりには合わない。 -->
 <div aria-label="記事の共有" class="share" role="group">
   <a
     class="share-action"

@@ -47,12 +47,12 @@ vi.mock("./lib/log/articles", async (importOriginal) => {
 
 function eventFor(url: string, accept = "text/html"): RequestEvent {
   const request = new Request(url, { headers: { Accept: accept } });
-  return {
+  const event: Partial<RequestEvent> = {
     cookies: {
       delete: () => undefined,
       get: () => undefined,
       getAll: () => [],
-      parse: () => undefined,
+      parse: () => ({ name: "", value: "" }),
       serialize: () => "",
       set: () => undefined,
     },
@@ -63,13 +63,14 @@ function eventFor(url: string, accept = "text/html"): RequestEvent {
     isSubRequest: false,
     locals: {},
     params: {},
-    platform: { env: {} },
+    platform: undefined,
     request,
     route: { id: "/" as const },
     setHeaders: () => undefined,
-    tracing: {},
+    tracing: { current: undefined, enabled: false, root: undefined } as RequestEvent["tracing"],
     url: new URL(request.url),
-  } as unknown as RequestEvent;
+  };
+  return event as RequestEvent;
 }
 
 test("HTML responses use the production origin in the markdown Link header", async () => {

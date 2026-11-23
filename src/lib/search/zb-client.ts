@@ -57,6 +57,10 @@ function loadDatabase() {
   return databasePromise;
 }
 
+function toDocument(document: unknown): ZbDocument {
+  return document as ZbDocument;
+}
+
 function toResult(document: ZbDocument, query: string): SearchResult {
   return {
     excerptSegments: excerptSegments(document.content, query),
@@ -76,7 +80,7 @@ export async function searchZbSearch(query: string): Promise<SearchResponse> {
       threshold: 0,
     });
     const results = response.hits.map((hit) =>
-      toResult(hit.document as unknown as ZbDocument, query)
+      toResult(toDocument(hit.document), query)
     );
     return {
       results,

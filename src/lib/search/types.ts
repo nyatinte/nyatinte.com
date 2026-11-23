@@ -12,7 +12,7 @@ export interface SearchSegment {
 }
 
 export interface SearchResult {
-  excerptSegments: SearchSegment[];
+  excerptSegments: Array<SearchSegment>;
   slug: string;
   title: string;
   url: string;
@@ -20,6 +20,6 @@ export interface SearchResult {
 
 export interface SearchResponse {
   message?: string;
-  results: SearchResult[];
+  results: Array<SearchResult>;
   status: Exclude<SearchStatus, "idle" | "loading">;
 }

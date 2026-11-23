@@ -15,9 +15,9 @@ export function slugifyHeading(title: string) {
     .normalize("NFC")
     .trim()
     .toLowerCase()
-    .replace(/[^\p{L}\p{N}\s-]/gu, "")
-    .replace(/[\s-]+/gu, "-")
-    .replace(/^-|-$/gu, "");
+    .replaceAll(/[^\p{L}\p{N}\s-]/gu, "")
+    .replaceAll(/[\s-]+/gu, "-")
+    .replaceAll(/^-|-$/gu, "");
   return slug || "section";
 }
 
@@ -28,11 +28,11 @@ export function uniqueHeadingId(title: string, used: Map<string, number>) {
   return count ? `${base}-${count}` : base;
 }
 
-export function extractHeadings(markdown: string): TocHeading[] {
+export function extractHeadings(markdown: string): Array<TocHeading> {
   const body = markdown.replace(frontmatterPattern, "");
   const used = new Map<string, number>();
   let fence: string | undefined;
-  const headings: TocHeading[] = [];
+  const headings: Array<TocHeading> = [];
   for (const line of body.split(newlinePattern)) {
     if (fencePattern.test(line)) {
       const marker = line.includes("```") ? "```" : "~~~";
@@ -46,7 +46,7 @@ export function extractHeadings(markdown: string): TocHeading[] {
     if (match === null) {
       continue;
     }
-    const title = match[2].replace(inlinePattern, "").trim();
+    const title = match[2].replaceAll(inlinePattern, "").trim();
     headings.push({
       depth: match[1].length as 2 | 3,
       id: uniqueHeadingId(title, used),

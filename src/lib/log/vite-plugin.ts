@@ -8,9 +8,9 @@ export function logFrontmatterPlugin(): Plugin {
     buildStart() {
       try {
         loadArticlesFromDirectory(join(root, "src/content/log"));
-      } catch (cause) {
+      } catch (error) {
         this.error(
-          cause instanceof Error ? cause.message : "Invalid article frontmatter"
+          error instanceof Error ? error.message : "Invalid article frontmatter"
         );
       }
     },

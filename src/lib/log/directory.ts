@@ -3,11 +3,11 @@ import { join } from "node:path";
 import { articlesFromSources } from "./frontmatter";
 
 export function loadArticlesFromDirectory(directory: string) {
-  let entries: Dirent[];
+  let entries: Array<Dirent>;
   try {
     entries = readdirSync(directory, { withFileTypes: true });
-  } catch (cause) {
-    throw new Error(`Article directory is missing: ${directory}`, { cause });
+  } catch (error) {
+    throw new Error(`Article directory is missing: ${directory}`, { cause: error });
   }
   const sources: Record<string, string> = {};
   for (const entry of entries) {
@@ -39,9 +39,9 @@ export function loadArticlesFromDirectory(directory: string) {
         if (!statSync(image).isFile()) {
           throw new Error("Not a file");
         }
-      } catch (cause) {
+      } catch (error) {
         throw new Error(`${article.slug}: image not found: ${article.image}`, {
-          cause,
+          cause: error,
         });
       }
     }

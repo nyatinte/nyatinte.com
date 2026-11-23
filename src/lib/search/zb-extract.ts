@@ -20,30 +20,30 @@ const querySeparator = /\s+/u;
 
 export function extractPlainText(source: string) {
   return source
-    .replace(scriptBlock, "")
-    .replace(styleBlock, "")
-    .replace(selfClosingComponent, "")
-    .replace(pairedComponent, "")
-    .replace(image, "")
-    .replace(link, "$1")
-    .replace(fencedCodeMarker, "")
-    .replace(inlineCode, "$1")
-    .replace(heading, "")
-    .replace(blockquote, "")
-    .replace(unorderedList, "")
-    .replace(orderedList, "")
-    .replace(inlineHtml, " ")
-    .replace(emphasis, "")
-    .replace(whitespace, " ")
+    .replaceAll(scriptBlock, "")
+    .replaceAll(styleBlock, "")
+    .replaceAll(selfClosingComponent, "")
+    .replaceAll(pairedComponent, "")
+    .replaceAll(image, "")
+    .replaceAll(link, "$1")
+    .replaceAll(fencedCodeMarker, "")
+    .replaceAll(inlineCode, "$1")
+    .replaceAll(heading, "")
+    .replaceAll(blockquote, "")
+    .replaceAll(unorderedList, "")
+    .replaceAll(orderedList, "")
+    .replaceAll(inlineHtml, " ")
+    .replaceAll(emphasis, "")
+    .replaceAll(whitespace, " ")
     .trim();
 }
 
 const excerptLength = 140;
 const excerptLead = 50;
 
-function markIntervals(text: string, tokens: string[]) {
+function markIntervals(text: string, tokens: Array<string>) {
   const lower = text.toLowerCase();
-  const intervals: [number, number][] = [];
+  const intervals: Array<[number, number]> = [];
   for (const token of tokens) {
     if (!token) {
       continue;
@@ -59,7 +59,7 @@ function markIntervals(text: string, tokens: string[]) {
     }
   }
   intervals.sort((left, right) => left[0] - right[0]);
-  const merged: [number, number][] = [];
+  const merged: Array<[number, number]> = [];
   for (const interval of intervals) {
     const last = merged.at(-1);
     if (last && interval[0] <= last[1]) {
@@ -88,7 +88,7 @@ export function excerptSegments(content: string, query: string) {
   }
   const start = Math.max(0, (first === -1 ? 0 : first) - excerptLead);
   const window = content.slice(start, start + excerptLength);
-  const segments: SearchSegment[] = [];
+  const segments: Array<SearchSegment> = [];
   let cursor = 0;
   for (const [from, to] of markIntervals(window, tokens)) {
     if (from > cursor) {

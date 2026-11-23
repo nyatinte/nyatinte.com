@@ -114,10 +114,10 @@ export function parseArticleSource(filename: string, source: string): Article {
   let data: unknown;
   try {
     data = parse(split.frontmatter);
-  } catch (cause) {
-    const message = cause instanceof Error ? cause.message : "invalid YAML";
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "invalid YAML";
     throw new Error(`${filename}: frontmatter YAML is invalid (${message})`, {
-      cause,
+      cause: error,
     });
   }
   const parsed = articleFrontmatterSchema.safeParse(data);
@@ -147,7 +147,7 @@ export function parseArticleSource(filename: string, source: string): Article {
   return article;
 }
 
-export function sortArticlesNewestFirst(articles: Article[]) {
+export function sortArticlesNewestFirst(articles: Array<Article>) {
   return [...articles].sort((left, right) => {
     const byDate = right.date.localeCompare(left.date);
     return byDate === 0 ? left.slug.localeCompare(right.slug) : byDate;

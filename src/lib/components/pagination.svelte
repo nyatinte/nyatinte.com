@@ -8,7 +8,7 @@
 </script>
 
 <nav aria-label="ページネーション" class="pagination">
-  <!-- biome-ignore lint/a11y/noRedundantRoles: Safari drops the list role when list-style is none. -->
+  <!-- Safari drops the list role when list-style is none. -->
   <ol role="list">
     <li>
       {#if currentPage > 1}

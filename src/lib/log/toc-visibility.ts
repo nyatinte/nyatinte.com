@@ -1,5 +1,5 @@
 interface TocVisibilityInput {
-  headingPositions: { id: string; top: number }[];
+  headingPositions: Array<{ id: string; top: number }>;
   scrollMargin?: number;
   viewportHeight: number;
 }

@@ -12,7 +12,7 @@ describe("heading table of contents", () => {
   it("ignores frontmatter and fenced code and extracts only h2/h3", () => {
     expect(
       extractHeadings(
-        "---\ntitle: Hidden\n---\n# Top\n## 概要\n#### Too deep\n\n\x60\x60\x60md\n## Hidden code\n\x60\x60\x60\n### 詳細"
+        "---\ntitle: Hidden\n---\n# Top\n## 概要\n#### Too deep\n\n\u0060\u0060\u0060md\n## Hidden code\n\u0060\u0060\u0060\n### 詳細"
       )
     ).toEqual([
       { depth: 2, id: "概要", title: "概要" },

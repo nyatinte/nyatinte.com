@@ -39,7 +39,7 @@
     {#if data.articles.length === 0}
       <p>記事はまだありません。</p>
     {:else}
-      <!-- biome-ignore lint/a11y/noRedundantRoles: Safari drops the list role when list-style is none. -->
+      <!-- Safari drops the list role when list-style is none. -->
       <ol role="list">
         {#each data.articles as article (article.slug)}
           <li>

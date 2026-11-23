@@ -4,7 +4,7 @@
   import { pulseHaptic } from "../log/toc-haptics";
   import { getTocVisibility } from "../log/toc-visibility";
 
-  let { headings }: { headings: TocHeading[] } = $props();
+  let { headings }: { headings: Array<TocHeading> } = $props();
   let active = $state("");
   let visible = $state(false);
   let dragging = $state(false);

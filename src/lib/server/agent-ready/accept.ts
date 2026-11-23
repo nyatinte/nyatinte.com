@@ -3,7 +3,7 @@ interface AcceptRange {
   type: string;
 }
 
-function parseAccept(accept: string): AcceptRange[] {
+function parseAccept(accept: string): Array<AcceptRange> {
   return accept
     .split(",")
     .map((part) => {
@@ -22,7 +22,7 @@ function parseAccept(accept: string): AcceptRange[] {
     .filter((range) => range.type && range.q > 0);
 }
 
-function quality(type: string, ranges: AcceptRange[]): number {
+function quality(type: string, ranges: Array<AcceptRange>): number {
   return ranges.find((range) => range.type === type)?.q ?? 0;
 }
 

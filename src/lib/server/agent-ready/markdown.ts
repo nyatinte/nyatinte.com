@@ -11,7 +11,7 @@ function linkLine(label: string, href: string) {
 }
 
 export function markdownLabel(label: string) {
-  return label.replaceAll("]", "\\]");
+  return label.replaceAll("]", String.raw`\]`);
 }
 
 function renderHomeMarkdown(): string {

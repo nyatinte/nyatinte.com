@@ -1,12 +1,12 @@
 <script lang="ts">
   type JsonLdGraph = Record<string, unknown>;
 
-  let { graphs }: { graphs: readonly JsonLdGraph[] } = $props();
+  let { graphs }: { graphs: ReadonlyArray<JsonLdGraph> } = $props();
 
   const closeScript = ["</", "script>"].join("");
 
   function jsonLdScript(graph: JsonLdGraph) {
-    const payload = JSON.stringify(graph).replaceAll("<", "\\u003c");
+    const payload = JSON.stringify(graph).replaceAll("<", String.raw`\u003c`);
     return `<script type="application/ld+json">${payload}${closeScript}`;
   }
 </script>
