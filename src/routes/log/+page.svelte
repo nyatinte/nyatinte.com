@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from "$app/state";
   import JsonLd from "../../lib/components/json-ld.svelte";
+  import LogArticleTitle from "../../lib/components/log-article-title.svelte";
   import LogSearch from "../../lib/components/log-search.svelte";
   import PageMeta from "../../lib/components/page-meta.svelte";
   import Pagination from "../../lib/components/pagination.svelte";
@@ -47,11 +48,11 @@
               style:view-transition-name={articleDateTransitionName(article.slug)}
               >{formatLogDate(article.date)}</time
             >
-            <h2
-              style:view-transition-name={articleTransitionName(article.slug)}
-            >
-              <a href={`/log/${article.slug}`}>{article.title}</a>
-            </h2>
+            <LogArticleTitle
+              href={`/log/${article.slug}`}
+              title={article.title}
+              transitionName={articleTransitionName(article.slug)}
+            />
             <p>{article.description}</p>
           </li>
         {/each}
@@ -103,30 +104,7 @@
     letter-spacing: 0.01em;
   }
 
-  h2 {
-    margin: 0.3rem 0 0.45rem;
-    font-size: clamp(1.4rem, 1.2rem + 0.6vw, 1.8rem);
-    font-weight: 600;
-    line-height: 1.3;
-    letter-spacing: -0.03em;
-  }
-
-  h2 a {
-    color: inherit;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.18em;
-  }
-
-  h2 a:hover {
-    color: var(--home-accent);
-  }
-
   li p {
     margin: 0;
-  }
-
-  a:focus-visible {
-    outline: 2px solid currentColor;
-    outline-offset: 4px;
   }
 </style>
