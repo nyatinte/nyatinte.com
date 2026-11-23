@@ -1,13 +1,12 @@
 import nkzw from "@nkzw/oxlint-config";
 import rsvelteRecommended from "@rsvelte/oxlint-plugin/recommended.json" with { type: "json" };
-import { defineConfig } from "oxlint";
 
 const rsvelteRules = rsvelteRecommended.rules as Record<
   string,
   "off" | "warn" | "error"
 >;
 
-export default defineConfig({
+export const lint = {
   env: { browser: true, builtin: true, es2024: true, node: true },
   extends: [nkzw],
   globals: {
@@ -53,4 +52,6 @@ export default defineConfig({
     "svelte/no-unnecessary-state-wrap": "off",
     "svelte/require-each-key": "off",
   },
-});
+};
+
+export default { lint };

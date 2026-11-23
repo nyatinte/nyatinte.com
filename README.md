@@ -19,7 +19,7 @@ pnpm dev
 | `pnpm vitals` | Svelte の静的コード健全性を確認 |
 | `pnpm check:ci` | check、build、HTTP テストを実行（pre-push hook が実行） |
 | `pnpm test:http` | ビルド済み Worker を起動して HTTP テストを実行（デフォルト `:8788`） |
-| `pnpm run fix` | oxlint による修正 |
+| `pnpm run fix` | vp lint による修正 |
 | `pnpm build` | SvelteKit Worker のビルド |
 | `pnpm dev:worker` | ビルド済み Worker をローカルの `:8787` で起動 |
 | `pnpm preview` | ビルド済み Worker を `:4173` で確認 |

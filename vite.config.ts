@@ -6,6 +6,7 @@ import { mdsvex } from "mdsvex";
 import type { PreprocessorGroup } from "svelte/compiler";
 import type { Plugin } from "vite";
 import { defineConfig } from "vite-plus";
+import { lint } from "./oxlint.config";
 import { remarkHeadingIds } from "./src/lib/log/remark-heading-ids";
 import { logFrontmatterPlugin } from "./src/lib/log/vite-plugin";
 import { buildZbSearchIndex } from "./src/lib/search/zb-build";
@@ -67,15 +68,7 @@ export default defineConfig(({ mode }) => ({
     fmt: false,
     lint: false,
   },
-  lint: {
-    ignorePatterns: [
-      ".agents/**",
-      "AGENTS.md",
-      "README.md",
-      "skills-lock.json",
-    ],
-    options: { typeAware: true, typeCheck: true },
-  },
+  lint,
   plugins:
     mode === "test"
       ? [
