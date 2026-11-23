@@ -671,7 +671,7 @@ test("GET /log renders the search UI and the no-JS article list", async () => {
   }
 });
 
-test("GET /log?q=Cua reflects the query without changing the canonical URL", async () => {
+test("GET /log?q=Cua reflects the query, hides the article list, and keeps the canonical URL", async () => {
   const body = await fetch(new URL("/log?q=Cua", targetUrl)).then((response) =>
     response.text()
   );
@@ -679,11 +679,11 @@ test("GET /log?q=Cua reflects the query without changing the canonical URL", asy
   expect(body).toContain('value="Cua"');
   expect(body.match(canonicalPattern)?.[1]).toBe("https://nyatinte.com/log");
   for (const slug of logArticleSlugs) {
-    expect(body).toContain(`/log/${slug}`);
+    expect(body).not.toContain(`/log/${slug}`);
   }
 });
 
-test("GET /log with no matching query keeps the canonical URL and article list", async () => {
+test("GET /log with no matching query hides the article list and keeps the canonical URL", async () => {
   const response = await fetch(
     new URL(`/log?q=${encodeURIComponent("存在しない語")}`, targetUrl)
   );
@@ -692,6 +692,6 @@ test("GET /log with no matching query keeps the canonical URL and article list",
   expect(response.status).toBe(200);
   expect(body.match(canonicalPattern)?.[1]).toBe("https://nyatinte.com/log");
   for (const slug of logArticleSlugs) {
-    expect(body).toContain(`/log/${slug}`);
+    expect(body).not.toContain(`/log/${slug}`);
   }
 });

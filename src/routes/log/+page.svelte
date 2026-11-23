@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from "$app/state";
   import JsonLd from "../../lib/components/json-ld.svelte";
   import LogSearch from "../../lib/components/log-search.svelte";
   import PageMeta from "../../lib/components/page-meta.svelte";
@@ -15,6 +16,9 @@
 
   let { data }: PageProps = $props();
   const title = $derived(logPageTitle(data.currentPage));
+  const searching = $derived(
+    (page.url.searchParams.get("q") ?? "").trim() !== ""
+  );
 </script>
 
 <JsonLd graphs={data.jsonLd} />
@@ -30,27 +34,34 @@
   <p class="lead">{logDescription}</p>
   <div class="subscribe"><RssLink /></div>
   <LogSearch />
-  {#if data.articles.length === 0}
-    <p>記事はまだありません。</p>
-  {:else}
-    <!-- biome-ignore lint/a11y/noRedundantRoles: Safari drops the list role when list-style is none. -->
-    <ol role="list">
-      {#each data.articles as article (article.slug)}
-        <li>
-          <time
-            datetime={article.date}
-            style:view-transition-name={articleDateTransitionName(article.slug)}
-            >{formatLogDate(article.date)}</time
-          >
-          <h2 style:view-transition-name={articleTransitionName(article.slug)}>
-            <a href={`/log/${article.slug}`}>{article.title}</a>
-          </h2>
-          <p>{article.description}</p>
-        </li>
-      {/each}
-    </ol>
-    {#if data.totalPages > 1}
-      <Pagination currentPage={data.currentPage} totalPages={data.totalPages} />
+  {#if !searching}
+    {#if data.articles.length === 0}
+      <p>記事はまだありません。</p>
+    {:else}
+      <!-- biome-ignore lint/a11y/noRedundantRoles: Safari drops the list role when list-style is none. -->
+      <ol role="list">
+        {#each data.articles as article (article.slug)}
+          <li>
+            <time
+              datetime={article.date}
+              style:view-transition-name={articleDateTransitionName(article.slug)}
+              >{formatLogDate(article.date)}</time
+            >
+            <h2
+              style:view-transition-name={articleTransitionName(article.slug)}
+            >
+              <a href={`/log/${article.slug}`}>{article.title}</a>
+            </h2>
+            <p>{article.description}</p>
+          </li>
+        {/each}
+      </ol>
+      {#if data.totalPages > 1}
+        <Pagination
+          currentPage={data.currentPage}
+          totalPages={data.totalPages}
+        />
+      {/if}
     {/if}
   {/if}
 </main>
