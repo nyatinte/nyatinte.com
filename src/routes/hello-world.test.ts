@@ -683,6 +683,23 @@ test("GET /log?q=Cua reflects the query, hides the article list, and keeps the c
   }
 });
 
+test("GET /log?q=Cua renders the clear button", async () => {
+  const body = await fetch(new URL("/log?q=Cua", targetUrl)).then((response) =>
+    response.text()
+  );
+
+  expect(body).toContain('aria-label="検索語を消す"');
+  expect(body).toContain('type="button"');
+});
+
+test("GET /log without a query does not render the clear button", async () => {
+  const body = await fetch(new URL("/log", targetUrl)).then((response) =>
+    response.text()
+  );
+
+  expect(body).not.toContain('aria-label="検索語を消す"');
+});
+
 test("GET /log with no matching query hides the article list and keeps the canonical URL", async () => {
   const response = await fetch(
     new URL(`/log?q=${encodeURIComponent("存在しない語")}`, targetUrl)
