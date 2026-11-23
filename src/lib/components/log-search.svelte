@@ -17,6 +17,7 @@
   let status = $state<SearchStatus>("idle");
   let message = $state("");
   let results = $state<SearchResult[]>([]);
+  let inputElement = $state<HTMLInputElement>();
   let enginePromise: Promise<
     (value: string) => Promise<SearchResponse>
   > | null = null;
@@ -74,8 +75,7 @@
     }
   }
 
-  function onInput(event: Event) {
-    const { value } = event.currentTarget as HTMLInputElement;
+  function updateQuery(value: string) {
     const next = new URL(page.url.href);
     if (value.trim()) {
       next.searchParams.set("q", value);
@@ -95,6 +95,15 @@
       }
       throw error;
     });
+  }
+
+  function onInput(event: Event) {
+    updateQuery((event.currentTarget as HTMLInputElement).value);
+  }
+
+  function clear() {
+    updateQuery("");
+    inputElement?.focus();
   }
 
   $effect(() => {
@@ -129,16 +138,29 @@
   data-search-status={status}
 >
   <label class="log-search-label" for="log-search-input">記事を検索</label>
-  <input
-    autocomplete="off"
-    id="log-search-input"
-    name="q"
-    onfocus={onFocus}
-    oninput={onInput}
-    placeholder="記事を検索..."
-    type="search"
-    value={query}
-  >
+  <div class="log-search-field">
+    <input
+      autocomplete="off"
+      id="log-search-input"
+      name="q"
+      onfocus={onFocus}
+      oninput={onInput}
+      placeholder="記事を検索..."
+      type="search"
+      value={query}
+      bind:this={inputElement}
+    >
+    {#if query !== ""}
+      <button
+        aria-label="検索語を消す"
+        class="log-search-clear"
+        onclick={clear}
+        type="button"
+      >
+        ×
+      </button>
+    {/if}
+  </div>
   <p aria-live="polite" class="log-search-status" role="status">
     {statusText}
   </p>
@@ -181,10 +203,15 @@
     clip-path: inset(50%);
   }
 
+  .log-search-field {
+    position: relative;
+  }
+
   input {
     box-sizing: border-box;
     width: 100%;
     padding: 0.7rem 0.9rem;
+    padding-inline-end: 2.75rem;
     font: inherit;
     color: inherit;
     background: var(--home-nav-background);
@@ -193,6 +220,37 @@
   }
 
   input:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  input::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  .log-search-clear {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: 0.3rem;
+    display: grid;
+    place-items: center;
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: inherit;
+    cursor: pointer;
+    background: none;
+    border: 0;
+    border-radius: 999px;
+    translate: 0 -50%;
+  }
+
+  .log-search-clear:hover {
+    color: var(--home-accent);
+  }
+
+  .log-search-clear:focus-visible {
     outline: 2px solid currentColor;
     outline-offset: 2px;
   }
