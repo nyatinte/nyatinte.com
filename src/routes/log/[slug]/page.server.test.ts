@@ -51,7 +51,7 @@ function resultFor(slug: string) {
 }
 
 test("copy markdown for cua-computer-use drops svelte blocks but keeps frontmatter, html and prose", async () => {
-  const result = await resultFor("cua-computer-use");
+  const result = resultFor("cua-computer-use");
 
   expect(result.copyMarkdown).not.toContain("<style");
   expect(result.copyMarkdown).not.toContain("</style>");
@@ -63,7 +63,7 @@ test("copy markdown for cua-computer-use drops svelte blocks but keeps frontmatt
 });
 
 test("copy markdown for stay-light-in-ai-era drops every svelte block but keeps html and prose", async () => {
-  const result = await resultFor("stay-light-in-ai-era");
+  const result = resultFor("stay-light-in-ai-era");
 
   expect(result.copyMarkdown).not.toContain("<style");
   expect(result.copyMarkdown).not.toContain("</style>");
@@ -79,19 +79,19 @@ test("copy markdown for stay-light-in-ai-era drops every svelte block but keeps 
 });
 
 test("copy markdown for markdown-only articles keeps the source unchanged", async () => {
-  const result = await resultFor("template");
+  const result = resultFor("template");
 
   expect(result.copyMarkdown).toBe(result.article.source);
 });
 
 test("copy markdown keeps style inside markdown code blocks and drops top-level style", async () => {
-  const result = await resultFor("code-block-style");
+  const result = resultFor("code-block-style");
 
   expect(result.copyMarkdown).toContain(
-    "<style>\n  .inside-code { color: red; }\n</style>"
+    "<style>\n  .inside-code { color: red; }\n</style>",
   );
   expect(result.copyMarkdown).toContain(
-    "    <style>\n      .inside-indented-code { color: green; }\n    </style>"
+    "    <style>\n      .inside-indented-code { color: green; }\n    </style>",
   );
   expect(result.copyMarkdown).not.toContain(".outside-code");
 });

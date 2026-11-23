@@ -86,7 +86,7 @@ const articleFrontmatterSchema = z
     {
       message: "updated must not be earlier than date",
       path: ["updated"],
-    }
+    },
   );
 
 export interface Article {
@@ -104,7 +104,7 @@ export function parseArticleSource(filename: string, source: string): Article {
   const slug = filename.replace(extensionPattern, "");
   if (slug === filename || !slugPattern.test(slug)) {
     throw new Error(
-      `${filename}: file name must be a slug with a .md or .svx extension`
+      `${filename}: file name must be a slug with a .md or .svx extension`,
     );
   }
   const split = splitFrontmatter(source);
@@ -114,10 +114,10 @@ export function parseArticleSource(filename: string, source: string): Article {
   let data: unknown;
   try {
     data = parse(split.frontmatter);
-  } catch (cause) {
-    const message = cause instanceof Error ? cause.message : "invalid YAML";
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "invalid YAML";
     throw new Error(`${filename}: frontmatter YAML is invalid (${message})`, {
-      cause,
+      cause: error,
     });
   }
   const parsed = articleFrontmatterSchema.safeParse(data);
@@ -147,7 +147,7 @@ export function parseArticleSource(filename: string, source: string): Article {
   return article;
 }
 
-export function sortArticlesNewestFirst(articles: Article[]) {
+export function sortArticlesNewestFirst(articles: Array<Article>) {
   return [...articles].sort((left, right) => {
     const byDate = right.date.localeCompare(left.date);
     return byDate === 0 ? left.slug.localeCompare(right.slug) : byDate;
@@ -156,7 +156,7 @@ export function sortArticlesNewestFirst(articles: Article[]) {
 
 export function articlesFromSources(sources: Record<string, string>) {
   const articles = Object.entries(sources).map(([path, source]) =>
-    parseArticleSource(articleFileName(path), source)
+    parseArticleSource(articleFileName(path), source),
   );
   const seen = new Set<string>();
   for (const article of articles) {

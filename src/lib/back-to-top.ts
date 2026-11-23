@@ -5,7 +5,7 @@ export function shouldShowBackToTop(scrollY: number): boolean {
 }
 
 export function backToTopScrollBehavior(
-  prefersReducedMotion: boolean
+  prefersReducedMotion: boolean,
 ): ScrollBehavior {
   return prefersReducedMotion ? "instant" : "smooth";
 }

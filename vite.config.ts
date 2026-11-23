@@ -6,6 +6,7 @@ import { mdsvex } from "mdsvex";
 import type { PreprocessorGroup } from "svelte/compiler";
 import type { Plugin } from "vite";
 import { defineConfig } from "vite-plus";
+import { lint } from "./oxlint.config";
 import { remarkHeadingIds } from "./src/lib/log/remark-heading-ids";
 import { logFrontmatterPlugin } from "./src/lib/log/vite-plugin";
 import { buildZbSearchIndex } from "./src/lib/search/zb-build";
@@ -54,7 +55,7 @@ function svelteMarkdown(): PreprocessorGroup {
         ...result,
         code: result.code.replaceAll(
           '<script context="module">',
-          "<script module>"
+          "<script module>",
         ),
       };
     },
@@ -64,18 +65,31 @@ function svelteMarkdown(): PreprocessorGroup {
 
 export default defineConfig(({ mode }) => ({
   check: {
-    fmt: false,
+    fmt: true,
     lint: false,
   },
-  lint: {
+  fmt: {
+    endOfLine: "lf",
     ignorePatterns: [
       ".agents/**",
+      ".svelte-kit/**",
+      ".wrangler/**",
+      "**/*.svelte",
       "AGENTS.md",
-      "README.md",
+      "build/**",
+      "dist/**",
+      "pnpm-lock.yaml",
       "skills-lock.json",
+      "worker-configuration.d.ts",
     ],
-    options: { typeAware: true, typeCheck: true },
+    printWidth: 80,
+    singleQuote: false,
+    sortPackageJson: false,
+    svelte: false,
+    tabWidth: 2,
+    useTabs: false,
   },
+  lint,
   plugins:
     mode === "test"
       ? [

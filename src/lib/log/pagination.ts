@@ -24,9 +24,9 @@ export function logPageCount(totalArticles: number, pageSize = LOG_PAGE_SIZE) {
 }
 
 export function paginateArticles<T>(
-  items: readonly T[],
+  items: ReadonlyArray<T>,
   page: number,
-  pageSize = LOG_PAGE_SIZE
+  pageSize = LOG_PAGE_SIZE,
 ) {
   const start = (page - 1) * pageSize;
   return items.slice(start, start + pageSize);

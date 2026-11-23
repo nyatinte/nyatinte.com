@@ -21,7 +21,7 @@ test.each(["", "0", "-1", "1.5", "01", "abc", " 2 "])(
   "rejects the page parameter %s",
   (value) => {
     expect(parseLogPageParam(value)).toEqual({ kind: "invalid" });
-  }
+  },
 );
 
 test("counts at least one page even without articles", () => {

@@ -20,14 +20,14 @@ function itemXml(article: Article) {
   ].join("\n");
 }
 
-function latestUpdatedDate(items: Article[]) {
+function latestUpdatedDate(items: Array<Article>) {
   return items.reduce((latest, item) => {
     const candidate = item.updated ?? item.date;
     return candidate > latest ? candidate : latest;
   }, "");
 }
 
-export function buildRssXml(items: Article[]) {
+export function buildRssXml(items: Array<Article>) {
   const link = canonicalSiteUrl("/log");
   const lastBuildDate = latestUpdatedDate(items);
   const channel = [
@@ -39,7 +39,7 @@ export function buildRssXml(items: Article[]) {
   ];
   if (lastBuildDate) {
     channel.push(
-      `    <lastBuildDate>${escapeXml(rssDate(lastBuildDate))}</lastBuildDate>`
+      `    <lastBuildDate>${escapeXml(rssDate(lastBuildDate))}</lastBuildDate>`,
     );
   }
   return [

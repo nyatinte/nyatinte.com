@@ -106,7 +106,7 @@ test("negative, UI-chrome, SVX, and CSS queries return no hits", async () => {
 test("excerpts mark the matching term inside a short content window", () => {
   const segments = excerptSegments(
     "Computer Use などは以前からある概念なので、Cua の何が差別化点なのか。",
-    "Cua"
+    "Cua",
   );
   const marked = segments.filter((segment) => segment.mark);
   expect(marked.length).toBeGreaterThan(0);
@@ -114,9 +114,9 @@ test("excerpts mark the matching term inside a short content window", () => {
     marked
       .map((segment) => segment.text)
       .join("")
-      .toLowerCase()
+      .toLowerCase(),
   ).toBe("cua");
   expect(segments.map((segment) => segment.text).join("")).toContain(
-    "Computer Use"
+    "Computer Use",
   );
 });

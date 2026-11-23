@@ -19,7 +19,7 @@ export function buildSitemapXml(): string {
     urlEntry("/", siteLastmod),
     urlEntry("/log", siteLastmod),
     ...articles.map((article) =>
-      urlEntry(`/log/${article.slug}`, article.updated ?? article.date)
+      urlEntry(`/log/${article.slug}`, article.updated ?? article.date),
     ),
   ];
   return [

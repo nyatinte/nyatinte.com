@@ -1,8 +1,11 @@
 import { expect, test } from "vite-plus/test";
 import { type ClipboardWriter, copyFeedback, copyText } from "./clipboard";
 
+const write: ClipboardWriter = () =>
+  Promise.reject(new Error("permission denied"));
+
 test("クリップボードへ書き込めたら成功を知らせる", async () => {
-  const written: string[] = [];
+  const written: Array<string> = [];
   const message = await copyText("https://nyatinte.com/log/a", (text) => {
     written.push(text);
     return Promise.resolve();
@@ -13,11 +16,8 @@ test("クリップボードへ書き込めたら成功を知らせる", async ()
 });
 
 test("書き込みが拒否されたら失敗を知らせる", async () => {
-  const write: ClipboardWriter = () =>
-    Promise.reject(new Error("permission denied"));
-
   await expect(copyText("https://nyatinte.com/log/a", write)).resolves.toBe(
-    copyFeedback.failure
+    copyFeedback.failure,
   );
 });
 
@@ -25,6 +25,6 @@ test("navigator.clipboard が無い環境では失敗を知らせる", async () 
   expect(navigator.clipboard).toBeUndefined();
 
   await expect(copyText("https://nyatinte.com/log/a")).resolves.toBe(
-    copyFeedback.failure
+    copyFeedback.failure,
   );
 });

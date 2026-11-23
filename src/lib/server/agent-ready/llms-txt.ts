@@ -21,7 +21,7 @@ export function buildLlmsTxt() {
     lines.push("## Articles", "");
     for (const article of articles) {
       lines.push(
-        `- [${markdownLabel(article.title)}](${canonicalSiteUrl(`/log/${article.slug}`)}): ${article.description}`
+        `- [${markdownLabel(article.title)}](${canonicalSiteUrl(`/log/${article.slug}`)}): ${article.description}`,
       );
     }
     lines.push("");

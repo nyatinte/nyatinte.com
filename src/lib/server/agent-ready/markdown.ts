@@ -11,7 +11,7 @@ function linkLine(label: string, href: string) {
 }
 
 export function markdownLabel(label: string) {
-  return label.replaceAll("]", "\\]");
+  return label.replaceAll("]", String.raw`\]`);
 }
 
 function renderHomeMarkdown(): string {
@@ -41,7 +41,7 @@ function renderLogListMarkdown(): string {
     lines.push("記事はまだありません。");
   } else {
     lines.push(
-      articles.map((article) => renderArticleSummary(article)).join("\n\n")
+      articles.map((article) => renderArticleSummary(article)).join("\n\n"),
     );
   }
   lines.push("", linkLine("ホーム", canonicalSiteUrl("/")));
@@ -66,7 +66,7 @@ function renderArticleMarkdown(article: Article): string {
   lines.push(
     "",
     linkLine("ログへ", canonicalSiteUrl("/log")),
-    linkLine("ホーム", canonicalSiteUrl("/"))
+    linkLine("ホーム", canonicalSiteUrl("/")),
   );
   return lines.join("\n");
 }

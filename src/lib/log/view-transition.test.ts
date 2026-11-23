@@ -18,14 +18,14 @@ test("starts a view transition between the list and an article", () => {
 
 test("prefixes slugs so the view transition name is a CSS identifier", () => {
   expect(articleTransitionName("2026-11-12-foo")).toBe(
-    "log-title-2026-11-12-foo"
+    "log-title-2026-11-12-foo",
   );
   expect(articleTransitionName("template")).toBe("log-title-template");
   expect(articleTransitionName("date-template")).not.toBe(
-    articleDateTransitionName("template")
+    articleDateTransitionName("template"),
   );
   expect(articleDateTransitionName("2026-11-12-foo")).toBe(
-    "log-date-2026-11-12-foo"
+    "log-date-2026-11-12-foo",
   );
   expect(articleDateTransitionName("template")).toBe("log-date-template");
 });

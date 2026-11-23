@@ -4,7 +4,7 @@ import { skipUnrelatedDocumentTransition } from "./document-transition";
 function event(from: string | undefined, to: string | undefined) {
   const skipTransition = vi.fn();
   return {
-    event: {
+    event: Object.assign(new Event("pageswap"), {
       activation:
         from && to
           ? {
@@ -13,7 +13,7 @@ function event(from: string | undefined, to: string | undefined) {
             }
           : null,
       viewTransition: { skipTransition },
-    } as unknown as Event,
+    }),
     skipTransition,
   };
 }

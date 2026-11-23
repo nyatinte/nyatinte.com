@@ -6,11 +6,11 @@ const html = readFileSync(new URL("./app.html", import.meta.url), "utf8");
 const bootstrap = html.match(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/u)?.[1];
 const layout = readFileSync(
   new URL("./routes/+layout.svelte", import.meta.url),
-  "utf8"
+  "utf8",
 );
 const tokens = readFileSync(
   new URL("./lib/styles/home-tokens.css", import.meta.url),
-  "utf8"
+  "utf8",
 );
 
 test.each([
@@ -42,7 +42,7 @@ test("declares explicit color schemes for stored preferences", () => {
     ["dark", "dark"],
   ]) {
     const rule = tokens.match(
-      new RegExp(`html\\[data-home-theme="${theme}"\\]\\s*\\{([^}]*)\\}`, "u")
+      new RegExp(`html\\[data-home-theme="${theme}"\\]\\s*\\{([^}]*)\\}`, "u"),
     )?.[1];
     expect(rule).toMatch(new RegExp(`color-scheme:\\s*${scheme};`, "u"));
   }
@@ -51,7 +51,9 @@ test("declares explicit color schemes for stored preferences", () => {
 test("keeps the full and Latin font subsets from overlapping", () => {
   expect(layout.match(/unicode-range:\s*U\+0100-10FFFF;/gu)).toHaveLength(2);
   expect(
-    layout.match(/font-display:\s*optional;\s*unicode-range:\s*U\+0000-00FF;/gu)
+    layout.match(
+      /font-display:\s*optional;\s*unicode-range:\s*U\+0000-00FF;/gu,
+    ),
   ).toHaveLength(2);
 });
 

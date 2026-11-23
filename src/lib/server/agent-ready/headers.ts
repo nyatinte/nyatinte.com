@@ -2,13 +2,13 @@ import { markdownContentType } from "./constants";
 
 function appendVary(
   existing: string | null | undefined,
-  value: string
+  value: string,
 ): string {
   const values = new Set(
     (existing ?? "")
       .split(",")
       .map((part) => part.trim())
-      .filter(Boolean)
+      .filter(Boolean),
   );
   values.add(value);
   return [...values].join(", ");
@@ -36,7 +36,7 @@ export function markdownResponse(
   options: {
     canonicalUrl: string;
     status: number;
-  }
+  },
 ): Response {
   const headers = agentResponseHeaders({
     canonicalUrl: options.canonicalUrl,

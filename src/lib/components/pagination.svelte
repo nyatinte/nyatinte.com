@@ -8,15 +8,14 @@
 </script>
 
 <nav aria-label="ページネーション" class="pagination">
-  <!-- biome-ignore lint/a11y/noRedundantRoles: Safari drops the list role when list-style is none. -->
+  <!-- Safari drops the list role when list-style is none. -->
   <ol role="list">
     <li>
       {#if currentPage > 1}
         <a
           aria-label={`前へ（${currentPage - 1}ページ目）`}
           href={logPageHref(currentPage - 1)}
-          rel="prev"
-          >前へ</a
+          rel="prev">前へ</a
         >
       {:else}
         <span aria-disabled="true" class="disabled">前へ</span>
@@ -38,8 +37,7 @@
         <a
           aria-label={`次へ（${currentPage + 1}ページ目）`}
           href={logPageHref(currentPage + 1)}
-          rel="next"
-          >次へ</a
+          rel="next">次へ</a
         >
       {:else}
         <span aria-disabled="true" class="disabled">次へ</span>

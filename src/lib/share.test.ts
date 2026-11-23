@@ -9,11 +9,11 @@ test("X シェア URL にタイトルと記事の URL をエンコードして�
   const shareUrl = new URL(href);
 
   expect(`${shareUrl.origin}${shareUrl.pathname}`).toBe(
-    "https://x.com/intent/post"
+    "https://x.com/intent/post",
   );
   expect(shareUrl.searchParams.get("text")).toBe("A & B #1 | nyatinte.com");
   expect(shareUrl.searchParams.get("url")).toBe(
-    "https://nyatinte.com/log/a-and-b"
+    "https://nyatinte.com/log/a-and-b",
   );
   expect(href).toContain("%26");
   expect(href).not.toContain(" ");

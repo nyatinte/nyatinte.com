@@ -30,10 +30,10 @@ export function createSearchTokenizer() {
   const { tokenize } = tokenizer;
   tokenizer.tokenize = (input, language, property, withCache) =>
     tokenize(
-      input.normalize("NFKC").replace(letterDotLetter, " "),
+      input.normalize("NFKC").replaceAll(letterDotLetter, " "),
       language,
       property,
-      withCache
+      withCache,
     ).map((token) => token.toLowerCase());
   return tokenizer;
 }

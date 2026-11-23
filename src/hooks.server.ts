@@ -19,7 +19,7 @@ function isAgentReadMethod(method: string) {
 
 function shouldEnrichResponse(
   route: NonNullable<ReturnType<typeof matchAgentRoute>>,
-  status: number
+  status: number,
 ) {
   return (
     route.kind === "home" ||
@@ -31,7 +31,7 @@ function shouldEnrichResponse(
 
 async function finalizeHtmlResponse(
   response: Response,
-  enrichHeaders?: (headers: Headers) => void
+  enrichHeaders?: (headers: Headers) => void,
 ): Promise<Response> {
   const headers = new Headers(response.headers);
   enrichHeaders?.(headers);
@@ -59,12 +59,12 @@ async function finalizeHtmlResponse(
   if (nonce && body.includes(jsonLdScriptTag)) {
     body = body.replaceAll(
       jsonLdScriptTag,
-      `<script type="application/ld+json" nonce="${nonce}">`
+      `<script type="application/ld+json" nonce="${nonce}">`,
     );
   }
   headers.set(
     "content-length",
-    String(new TextEncoder().encode(body).byteLength)
+    String(new TextEncoder().encode(body).byteLength),
   );
   return new Response(body, {
     headers,

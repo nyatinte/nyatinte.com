@@ -23,7 +23,7 @@ interface ScanState {
   inCode: boolean;
   inIndentedCode: boolean;
   previousBlank: boolean;
-  segments: Segment[];
+  segments: Array<Segment>;
   svelteTag: string | null;
   text: string;
 }
@@ -80,7 +80,7 @@ function consumeFenceLine(
   state: ScanState,
   line: string,
   content: string,
-  fence: CodeFence
+  fence: CodeFence,
 ) {
   state.code += line;
   if (closesFence(content, fence)) {
@@ -93,7 +93,7 @@ function consumeFenceLine(
 function consumeIndentedCodeLine(
   state: ScanState,
   line: string,
-  content: string
+  content: string,
 ) {
   if (content.trim() === "" || INDENTED_CODE.test(content)) {
     state.code += line;
@@ -109,7 +109,7 @@ function consumeSvelteLine(
   state: ScanState,
   line: string,
   content: string,
-  svelteTag: string
+  svelteTag: string,
 ) {
   state.text += line;
   if (content.includes(`</${svelteTag}>`)) {
@@ -118,7 +118,7 @@ function consumeSvelteLine(
   markBlank(state, content);
 }
 
-function splitCodeBlocks(markdown: string): Segment[] {
+function splitCodeBlocks(markdown: string): Array<Segment> {
   const state: ScanState = {
     code: "",
     fence: null,
@@ -193,7 +193,7 @@ export function stripSvelteBlocks(markdown: string): string {
       if (text !== segment.text) {
         changed = true;
       }
-      return text.replace(EXCESS_BLANK_LINES, "\n\n");
+      return text.replaceAll(EXCESS_BLANK_LINES, "\n\n");
     })
     .join("");
   if (!changed) {

@@ -11,7 +11,7 @@
 
 <svelte:head>
   <title>{getTitle(failure.code)} | nyatinte.com</title>
-  <meta content="noindex" name="robots">
+  <meta content="noindex" name="robots" />
 </svelte:head>
 
 <main class="log error-page">

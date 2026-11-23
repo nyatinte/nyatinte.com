@@ -18,7 +18,7 @@
   let { data }: PageProps = $props();
   const title = $derived(logPageTitle(data.currentPage));
   const searching = $derived(
-    (page.url.searchParams.get("q") ?? "").trim() !== ""
+    (page.url.searchParams.get("q") ?? "").trim() !== "",
   );
 </script>
 
@@ -39,14 +39,15 @@
     {#if data.articles.length === 0}
       <p>記事はまだありません。</p>
     {:else}
-      <!-- biome-ignore lint/a11y/noRedundantRoles: Safari drops the list role when list-style is none. -->
+      <!-- Safari drops the list role when list-style is none. -->
       <ol role="list">
         {#each data.articles as article (article.slug)}
           <li>
             <time
               datetime={article.date}
-              style:view-transition-name={articleDateTransitionName(article.slug)}
-              >{formatLogDate(article.date)}</time
+              style:view-transition-name={articleDateTransitionName(
+                article.slug,
+              )}>{formatLogDate(article.date)}</time
             >
             <LogArticleTitle
               href={`/log/${article.slug}`}

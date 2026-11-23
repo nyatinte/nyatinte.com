@@ -18,19 +18,19 @@ test("produces a channel that feed readers can subscribe to", () => {
 
   expect(xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>')).toBe(true);
   expect(xml).toContain(
-    '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">'
+    '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">',
   );
   expect(xml).toContain("<title>ログ | nyatinte.com</title>");
   expect(xml).toContain("<link>https://nyatinte.com/log</link>");
   expect(xml).toContain(
-    "<description>わからなかったことを調べて書く。</description>"
+    "<description>わからなかったことを調べて書く。</description>",
   );
   expect(xml).toContain("<language>ja</language>");
   expect(xml).toContain(
-    '<atom:link href="https://nyatinte.com/log/rss.xml" rel="self" type="application/rss+xml" />'
+    '<atom:link href="https://nyatinte.com/log/rss.xml" rel="self" type="application/rss+xml" />',
   );
   expect(xml).toContain(
-    "<lastBuildDate>Thu, 02 Jan 2025 00:00:00 GMT</lastBuildDate>"
+    "<lastBuildDate>Thu, 02 Jan 2025 00:00:00 GMT</lastBuildDate>",
   );
 });
 
@@ -44,7 +44,7 @@ test("emits one item per article with an RFC 822 date", () => {
   expect(xml).toContain("<title>タイトル A</title>");
   expect(xml).toContain("<link>https://nyatinte.com/log/a</link>");
   expect(xml).toContain(
-    '<guid isPermaLink="true">https://nyatinte.com/log/a</guid>'
+    '<guid isPermaLink="true">https://nyatinte.com/log/a</guid>',
   );
   expect(xml).toContain("<pubDate>Thu, 02 Jan 2025 00:00:00 GMT</pubDate>");
   expect(xml).toContain("<pubDate>Tue, 31 Dec 2024 00:00:00 GMT</pubDate>");
@@ -61,10 +61,10 @@ test("escapes XML special characters in text and attributes", () => {
   ]);
 
   expect(xml).toContain(
-    "<title>A &amp; B &lt;tag&gt; &quot;q&quot; &apos;p&apos;</title>"
+    "<title>A &amp; B &lt;tag&gt; &quot;q&quot; &apos;p&apos;</title>",
   );
   expect(xml).toContain(
-    "<description>A &amp; B &lt;tag&gt; &quot;q&quot; &apos;p&apos;</description>"
+    "<description>A &amp; B &lt;tag&gt; &quot;q&quot; &apos;p&apos;</description>",
   );
   expect(xml).not.toContain("<tag>");
 });
@@ -76,7 +76,7 @@ test("uses the newest updated date for lastBuildDate", () => {
   ]);
 
   expect(xml).toContain(
-    "<lastBuildDate>Tue, 04 Mar 2025 00:00:00 GMT</lastBuildDate>"
+    "<lastBuildDate>Tue, 04 Mar 2025 00:00:00 GMT</lastBuildDate>",
   );
   expect(xml).toContain("<pubDate>Tue, 31 Dec 2024 00:00:00 GMT</pubDate>");
 });

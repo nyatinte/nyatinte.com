@@ -27,7 +27,7 @@ export function parseVersionId(jsonl) {
   }
   if (!versionIdPattern.test(versionId)) {
     throw new Error(
-      `version-upload の version_id が UUID 形式ではありません: ${versionId}`
+      `version-upload の version_id が UUID 形式ではありません: ${versionId}`,
     );
   }
   return versionId;

@@ -11,19 +11,21 @@ pnpm install
 pnpm dev
 ```
 
-`pnpm install` は SvelteKit の同期と Vite+ の Git hook の設定も行い、pre-commit hook はステージ済みファイルを検査します。pre-push hook は `pnpm check:ci` を実行します。これは check、build、ビルド済み Worker への HTTP テストを行います。変更がルートの `README.md`・`AGENTS.md`・`CLAUDE.md` と `docs/**`・`.agents/**` だけなら、hook は `pnpm check:ci` をスキップします。GitHub Actions の Verify をこの処理にそろえることは Issue #114 です。修正は `pnpm run fix` で行えます。一時的に pre-push を飛ばす方法は `git push --no-verify` です。hook 自体を無効にする場合は `pnpm exec vp hooks disable` を実行してください。
+`pnpm install` は SvelteKit の同期と Vite+ の Git hook の設定も行い、pre-commit hook は format と lint を検査します。pre-push hook は `pnpm check:ci` を実行します。これは check、build、ビルド済み Worker への HTTP テストを行います。変更がルートの `README.md`・`AGENTS.md`・`CLAUDE.md` と `docs/**`・`.agents/**` だけなら、hook は `pnpm check:ci` をスキップします。GitHub Actions の Verify をこの処理にそろえることは Issue #114 です。修正は `pnpm run fix` で行えます。一時的に pre-push を飛ばす方法は `git push --no-verify` です。hook 自体を無効にする場合は `pnpm exec vp hooks disable` を実行してください。
 
-| コマンド | 内容 |
-| --- | --- |
-| `pnpm check` | 型生成、format・lint・型チェック |
-| `pnpm vitals` | Svelte の静的コード健全性を確認 |
-| `pnpm check:ci` | check、build、HTTP テストを実行（pre-push hook が実行） |
-| `pnpm test:http` | ビルド済み Worker を起動して HTTP テストを実行（デフォルト `:8788`） |
-| `pnpm run fix` | Ultracite/Biome による修正 |
-| `pnpm build` | SvelteKit Worker のビルド |
-| `pnpm dev:worker` | ビルド済み Worker をローカルの `:8787` で起動 |
-| `pnpm preview` | ビルド済み Worker を `:4173` で確認 |
-| `pnpm test` | Vitest の単体・HTTP テスト |
+| コマンド             | 内容                                                                 |
+| -------------------- | -------------------------------------------------------------------- |
+| `pnpm check`         | 型生成、format・lint・型チェック                                     |
+| `pnpm vitals`        | Svelte の静的コード健全性を確認                                      |
+| `pnpm check:ci`      | check、build、HTTP テストを実行（pre-push hook が実行）              |
+| `pnpm test:http`     | ビルド済み Worker を起動して HTTP テストを実行（デフォルト `:8788`） |
+| `pnpm run fix`       | vp lint による修正                                                   |
+| `pnpm run fmt`       | vp fmt と @rsvelte/fmt で整形                                        |
+| `pnpm run fmt:check` | 整形済みかを確認                                                     |
+| `pnpm build`         | SvelteKit Worker のビルド                                            |
+| `pnpm dev:worker`    | ビルド済み Worker をローカルの `:8787` で起動                        |
+| `pnpm preview`       | ビルド済み Worker を `:4173` で確認                                  |
+| `pnpm test`          | Vitest の単体・HTTP テスト                                           |
 
 HTTP テストには起動中の Worker が必要です。別々のターミナルで実行します。
 

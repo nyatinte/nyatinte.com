@@ -6,7 +6,7 @@ interface HeadingNode {
   depth?: number;
 }
 interface MarkdownTree {
-  children?: HeadingNode[];
+  children?: Array<HeadingNode>;
 }
 
 export function remarkHeadingIds() {
@@ -21,7 +21,7 @@ export function remarkHeadingIds() {
           (child) =>
             child.value ??
             child.children?.map((part) => part.value ?? "").join("") ??
-            ""
+            "",
         )
         .join("");
       node.data ??= {};

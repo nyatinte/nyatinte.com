@@ -17,7 +17,7 @@ export function buildZbSearchIndex(directory: string) {
     if (!content) {
       throw new Error(`${article.slug}: content is required`);
     }
-    insert(db, {
+    void insert(db, {
       content,
       description: article.description,
       id: article.slug,

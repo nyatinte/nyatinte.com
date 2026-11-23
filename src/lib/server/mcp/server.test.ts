@@ -14,11 +14,11 @@ test("MCP starts without tools so blog tools can be added later", async () => {
         handler.fetch(new Request(url, init), {
           authInfo: { clientId: "test", scopes: [], token: "test" },
         }),
-    }
+    },
   );
   const client = new Client(
     { name: "test", version: "1.0.0" },
-    { versionNegotiation: { mode: "auto" } }
+    { versionNegotiation: { mode: "auto" } },
   );
   try {
     await client.connect(transport);

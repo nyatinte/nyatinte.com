@@ -23,14 +23,14 @@
 <figure class="x-post-card">
   <a aria-label={`X の ${author} のポストを開く`} {href}>
     <header>
-      <img alt="" class="avatar" src={avatar}>
+      <img alt="" class="avatar" src={avatar} />
       <span class="author"
         ><strong>{author}</strong><small>@{handle}</small></span
       >
       <span aria-hidden="true" class="mark">𝕏</span>
     </header>
     <p>{text}</p>
-    <img alt={imageAlt} class="post-image" src={image}>
+    <img alt={imageAlt} class="post-image" src={image} />
     <small class="date">{date} · Xで見る</small>
   </a>
 </figure>

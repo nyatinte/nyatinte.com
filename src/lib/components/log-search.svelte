@@ -16,7 +16,7 @@
   let settledQuery = $state("");
   let status = $state<SearchStatus>("idle");
   let message = $state("");
-  let results = $state<SearchResult[]>([]);
+  let results = $state<Array<SearchResult>>([]);
   let inputElement = $state<HTMLInputElement>();
   let enginePromise: Promise<
     (value: string) => Promise<SearchResponse>
@@ -146,7 +146,7 @@
       type="search"
       value={query}
       bind:this={inputElement}
-    >
+    />
     {#if query !== ""}
       <button
         aria-label="検索語を消す"
@@ -162,7 +162,7 @@
     {statusText}
   </p>
   {#if settledQuery !== "" && results.length > 0}
-    <!-- biome-ignore lint/a11y/noRedundantRoles: Safari drops the list role when list-style is none. -->
+    <!-- Safari drops the list role when list-style is none. -->
     <ol class="log-search-results" data-search-results role="list">
       {#each results as item (item.slug)}
         <li data-search-result-slug={item.slug}>

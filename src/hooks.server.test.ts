@@ -47,12 +47,12 @@ vi.mock("./lib/log/articles", async (importOriginal) => {
 
 function eventFor(url: string, accept = "text/html"): RequestEvent {
   const request = new Request(url, { headers: { Accept: accept } });
-  return {
+  const event: Partial<RequestEvent> = {
     cookies: {
       delete: () => undefined,
       get: () => undefined,
       getAll: () => [],
-      parse: () => undefined,
+      parse: () => ({ name: "", value: "" }),
       serialize: () => "",
       set: () => undefined,
     },
@@ -63,13 +63,18 @@ function eventFor(url: string, accept = "text/html"): RequestEvent {
     isSubRequest: false,
     locals: {},
     params: {},
-    platform: { env: {} },
+    platform: undefined,
     request,
     route: { id: "/" as const },
     setHeaders: () => undefined,
-    tracing: {},
+    tracing: {
+      current: undefined,
+      enabled: false,
+      root: undefined,
+    } as RequestEvent["tracing"],
     url: new URL(request.url),
-  } as unknown as RequestEvent;
+  };
+  return event as RequestEvent;
 }
 
 test("HTML responses use the production origin in the markdown Link header", async () => {
@@ -89,7 +94,7 @@ test("agent markdown for cua-computer-use drops svelte blocks but keeps html and
   const response = await handle({
     event: eventFor(
       "http://127.0.0.1:8787/log/cua-computer-use",
-      "text/markdown"
+      "text/markdown",
     ),
     resolve: () => {
       throw new Error("resolve should not run");
@@ -114,7 +119,7 @@ test("agent markdown for stay-light-in-ai-era drops svelte blocks but keeps html
   const response = await handle({
     event: eventFor(
       "http://127.0.0.1:8787/log/stay-light-in-ai-era",
-      "text/markdown"
+      "text/markdown",
     ),
     resolve: () => {
       throw new Error("resolve should not run");
@@ -154,7 +159,7 @@ test("HTML content-length matches the body after JSON-LD nonce injection", async
   const body = await response.text();
   expect(body).toContain('<script type="application/ld+json" nonce="abc">');
   expect(response.headers.get("content-length")).toBe(
-    String(new TextEncoder().encode(body).byteLength)
+    String(new TextEncoder().encode(body).byteLength),
   );
 });
 
@@ -174,7 +179,7 @@ test("agent markdown keeps style inside markdown code blocks and drops top-level
   const response = await handle({
     event: eventFor(
       "http://127.0.0.1:8787/log/code-block-style",
-      "text/markdown"
+      "text/markdown",
     ),
     resolve: () => {
       throw new Error("resolve should not run");
@@ -185,7 +190,7 @@ test("agent markdown keeps style inside markdown code blocks and drops top-level
   expect(response.status).toBe(200);
   expect(body).toContain("<style>\n  .inside-code { color: red; }\n</style>");
   expect(body).toContain(
-    "    <style>\n      .inside-indented-code { color: green; }\n    </style>"
+    "    <style>\n      .inside-indented-code { color: green; }\n    </style>",
   );
   expect(body).not.toContain(".outside-code");
 });

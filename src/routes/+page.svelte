@@ -24,22 +24,22 @@
     fetchpriority="high"
     href="/images/adult-penguin.png"
     rel="preload"
-  >
-  <link as="image" href="/images/chick-penguin.png" rel="preload">
+  />
+  <link as="image" href="/images/chick-penguin.png" rel="preload" />
   <link
     as="font"
     crossorigin="anonymous"
     href={latinRegular}
     rel="preload"
     type="font/woff2"
-  >
+  />
   <link
     as="font"
     crossorigin="anonymous"
     href={latinBold}
     rel="preload"
     type="font/woff2"
-  >
+  />
 </svelte:head>
 
 <main class="home">
