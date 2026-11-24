@@ -200,6 +200,12 @@ importers:
       jose:
         specifier: 6.2.18
         version: 6.2.18
+      matter-js:
+        specifier: ^0.20.0
+        version: 0.20.0
+      poly-decomp:
+        specifier: ^0.3.0
+        version: 0.3.0
       valibot:
         specifier: 1.5.0
         version: 1.5.0(typescript@6.0.3)
@@ -234,6 +240,9 @@ importers:
       '@sveltejs/vite-plugin-svelte':
         specifier: 7.3.1
         version: 7.3.1(@voidzero-dev/vite-plus-core@8.3.8000(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1))(svelte@5.59.1(@typescript-eslint/types@8.72.2))
+      '@types/matter-js':
+        specifier: ^0.20.2
+        version: 0.20.2
       '@types/node':
         specifier: 26.6.6
         version: 26.6.6
@@ -1413,6 +1422,9 @@ packages:
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
 
+  '@types/matter-js@0.20.2':
+    resolution: {integrity: sha512-3PPKy3QxvZ89h9+wdBV2488I1JLVs7DEpIkPvgO8JC1mUdiVSO37ZIvVctOTD7hIq8OAL2gJ3ugGSuUip6DhCw==}
+
   '@types/mdast@4.0.4':
     resolution: {integrity: sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==}
 
@@ -2345,6 +2357,9 @@ packages:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
 
+  matter-js@0.20.0:
+    resolution: {integrity: sha512-iC9fYR7zVT3HppNnsFsp9XOoQdQN2tUyfaKg4CHLH8bN+j6GT4Gw7IH2rP0tflAebrHFw730RR3DkVSZRX8hwA==}
+
   mdn-data@2.27.1:
     resolution: {integrity: sha512-9Yubnt3e8A0OKwxYSXyhLymGW4sCufcLG6VdiDdUGVkPhpqLxlvP5vl1983gQjJl3tqbrM731mjaZaP68AgosQ==}
 
@@ -2497,6 +2512,9 @@ packages:
   pngjs@7.0.0:
     resolution: {integrity: sha512-LKWqWJRhstyYo9pGvgor/ivk2w94eSjE3RGVuzLGlr3NmD8bf7RcYGze1mNdEHRP6TRP6rMuDHk5t44hnTRyow==}
     engines: {node: '>=14.19.0'}
+
+  poly-decomp@0.3.0:
+    resolution: {integrity: sha512-hWeBxGzPYiybmI4548Fca7Up/0k1qS5+79cVHI9+H33dKya5YNb9hxl0ZnDaDgvrZSuYFBhkCK/HOnqN7gefkQ==}
 
   postcss-html@2.0.1:
     resolution: {integrity: sha512-FqutI3u6D7j28ZgviEFjGCbId174THaVxFAMe/yd6Y/+BSQidYYh2nRCxFk8btwEV64f3TvfNz7ureGnkzqtmA==}
@@ -3789,6 +3807,8 @@ snapshots:
 
   '@types/json-schema@7.0.15': {}
 
+  '@types/matter-js@0.20.2': {}
+
   '@types/mdast@4.0.4':
     dependencies:
       '@types/unist': 2.0.11
@@ -4617,6 +4637,8 @@ snapshots:
 
   math-intrinsics@1.1.0: {}
 
+  matter-js@0.20.0: {}
+
   mdn-data@2.27.1: {}
 
   mdsvex@0.12.8(svelte@5.59.1(@typescript-eslint/types@8.72.2)):
@@ -4769,6 +4791,8 @@ snapshots:
   pkce-challenge@5.0.1: {}
 
   pngjs@7.0.0: {}
+
+  poly-decomp@0.3.0: {}
 
   postcss-html@2.0.1(postcss@8.5.33):
     dependencies:

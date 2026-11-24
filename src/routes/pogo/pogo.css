@@ -1,0 +1,204 @@
+@layer components {
+  .pogo-page {
+    display: grid;
+    gap: 0.75rem;
+    inline-size: min(100%, 72rem);
+    margin-inline: auto;
+    padding: 5.5rem 1rem 2rem;
+  }
+
+  .pogo-hud {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid color-mix(in srgb, currentcolor 18%, transparent);
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, currentcolor 4%, transparent);
+  }
+
+  .pogo-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.625rem;
+  }
+
+  .pogo-status h1 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
+
+  .pogo-badge,
+  .pogo-goal-badge,
+  .pogo-counter {
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+  }
+
+  .pogo-badge {
+    border: 1px solid color-mix(in srgb, currentcolor 22%, transparent);
+    opacity: 0.8;
+  }
+
+  .pogo-badge[data-active="true"] {
+    border-color: #f59e0b;
+    background: #f59e0b;
+    color: #111827;
+    opacity: 1;
+  }
+
+  .pogo-goal-badge {
+    background: #10b981;
+    color: #06281e;
+  }
+
+  .pogo-counter {
+    border: 1px solid color-mix(in srgb, currentcolor 15%, transparent);
+    font-weight: 500;
+  }
+
+  .pogo-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.85rem;
+    font-size: 0.8125rem;
+  }
+
+  .pogo-controls kbd {
+    padding: 0.1rem 0.35rem;
+    border: 1px solid color-mix(in srgb, currentcolor 30%, transparent);
+    border-radius: 0.25rem;
+    font-family: inherit;
+    font-size: 0.75rem;
+  }
+
+  .pogo-reset {
+    padding: 0.35rem 0.7rem;
+    border: 1px solid color-mix(in srgb, currentcolor 30%, transparent);
+    border-radius: 0.45rem;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .pogo-viewport {
+    position: relative;
+    inline-size: 100%;
+    block-size: min(72vh, 620px);
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, currentcolor 20%, transparent);
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, currentcolor 3%, transparent);
+    user-select: none;
+  }
+
+  .pogo-loading {
+    position: absolute;
+    inset-block-start: 1rem;
+    inset-inline-start: 1rem;
+    z-index: 2;
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  .pogo-world {
+    position: relative;
+    inline-size: 1840px;
+    block-size: 1040px;
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+
+  .pogo-stage {
+    display: block;
+  }
+
+  .pogo-grid-line {
+    stroke: color-mix(in srgb, currentcolor 8%, transparent);
+  }
+
+  .pogo-terrain {
+    fill: color-mix(in srgb, currentcolor 16%, transparent);
+    stroke: currentcolor;
+    stroke-width: 2;
+    stroke-linejoin: round;
+  }
+
+  .pogo-start-pad {
+    stroke: #38bdf8;
+  }
+
+  .pogo-goal-zone {
+    fill: color-mix(in srgb, #10b981 35%, transparent);
+  }
+
+  .pogo-flag-pole {
+    stroke: currentcolor;
+  }
+
+  .pogo-flag {
+    fill: #10b981;
+  }
+
+  .pogo-kill-line {
+    stroke: #ef4444;
+  }
+
+  .pogo-label {
+    fill: currentcolor;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .pogo-player {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inline-size: 36px;
+    block-size: 73px;
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  .pogo-player::before {
+    content: "";
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 9px;
+    inline-size: 18px;
+    block-size: 40px;
+    border: 2px solid currentcolor;
+    border-radius: 9px 9px 4px 4px;
+    background: linear-gradient(to bottom, #fbbf24 0 38%, #38bdf8 38% 100%);
+    box-sizing: border-box;
+  }
+
+  .pogo-player::after {
+    content: "";
+    position: absolute;
+    inset-block-start: 38px;
+    inset-inline-start: 15px;
+    inline-size: 6px;
+    block-size: 34px;
+    border-radius: 3px;
+    background: linear-gradient(to bottom, #94a3b8 0 74%, #f97316 74% 100%);
+  }
+
+  .pogo-player[data-boost-ready="true"]::after {
+    background: linear-gradient(to bottom, #94a3b8 0 68%, #fde047 68% 100%);
+    box-shadow: 0 6px 14px 4px #f59e0b;
+  }
+
+  .pogo-player[data-ouch="true"]::before {
+    background: linear-gradient(to bottom, #ef4444 0 38%, #f87171 38% 100%);
+  }
+}
