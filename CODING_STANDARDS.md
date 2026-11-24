@@ -29,3 +29,14 @@
 図解の枠や X のポスト、締めの吹き出しは部品に任せる。図の中身（SVG の path や、その記事だけの HTML）は `:::figure` の中に直接書く。部品を入れ子にするときは、外側のフェンスをコロン 4 つ以上にする（`::::figure` の中に `:::flow`）。
 
 コピー用 Markdown と `Accept: text/markdown` では、`:::name` を HTML や Svelte に展開せず、記事ファイルと同じ書き方のまま出す。
+
+## 画像
+
+記事に載せる画像の置き方と書き方。配信時の絶対 URL 化や、Markdown 画像への幅・高さの自動付与はまだ実装しない。
+
+- 記事固有の画像は `src/content/log/<slug>/` に置き、ファイル名は英小文字・数字・ハイフンを使う（例: `./terminal-output.webp`）。OGP はこれまでどおり同じディレクトリの `./og.jpg` などとし、本文の画像には使わない。サイト共通の装飾だけ `static/images/` を使う。
+- 外部の画像ホスト、R2、Cloudflare Images は使わない。本文から http(s) の画像を参照しない。記事の資料画像を `static/images/` に足さない。
+- 新たに置く本文画像は WebP にする。幅は 1280px を上限（本文カラム 40rem の 2x）とし、1 枚あたり 200KB を目安にする。OGP は 1200×630 のまま。
+- 本文では `![代替テキスト](./filename.webp)` と書く。代替テキストは必須。装飾だけは `<img>` の `alt=""` を使う。
+- `<img>` には `width` と `height` を付け、先頭の大きな画像以外は `loading="lazy"` にする。
+- コピー用 Markdown と `Accept: text/markdown` では、実装後、画像を `https://nyatinte.com/...` の絶対 URL にする。記事ファイル上のパスは相対のままにする。

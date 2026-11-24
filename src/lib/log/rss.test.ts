@@ -1,4 +1,5 @@
 import { expect, test } from "vite-plus/test";
+import { logDescription } from "./constants";
 import type { Article } from "./frontmatter";
 import { buildRssXml } from "./rss";
 
@@ -22,9 +23,7 @@ test("produces a channel that feed readers can subscribe to", () => {
   );
   expect(xml).toContain("<title>ログ | nyatinte.com</title>");
   expect(xml).toContain("<link>https://nyatinte.com/log</link>");
-  expect(xml).toContain(
-    "<description>わからなかったことを調べて書く。</description>",
-  );
+  expect(xml).toContain(`<description>${logDescription}</description>`);
   expect(xml).toContain("<language>ja</language>");
   expect(xml).toContain(
     '<atom:link href="https://nyatinte.com/log/rss.xml" rel="self" type="application/rss+xml" />',
