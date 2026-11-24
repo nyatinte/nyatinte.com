@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Point2D } from "../../lib/pogo/svg-terrain";
+  import type { Point2D } from "../../lib/pogo/coords";
 
   let {
     debugPolygons = [],

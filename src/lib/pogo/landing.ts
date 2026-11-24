@@ -1,11 +1,11 @@
 import {
   OUCH_BODY_LINEAR_KEEP,
   OUCH_GLANCING_LINEAR_KEEP,
-  OUCH_RESIDUAL_BOUNCE_SPEED,
+  OUCH_RESIDUAL_BOUNCE_SPEED_M_PER_SEC,
   OUCH_TUMBLE_ANGULAR_IMPULSE_DEG_PER_SEC,
   TIP_ALIGN_MAX_ANGLE_DEG,
 } from "./constants";
-import type { Point2D } from "./svg-terrain";
+import type { Point2D } from "./coords";
 
 export type ContactPart = "body" | "tip";
 export type LandingOutcome = "clean" | "glancing" | "ouch";
@@ -57,7 +57,8 @@ function failedLandingVelocity(
   const tangentX = velocity.x - normal.x * normalSpeed;
   const tangentY = velocity.y - normal.y * normalSpeed;
   const outwardNormalSpeed =
-    Math.max(0, normalSpeed) * linearKeep + OUCH_RESIDUAL_BOUNCE_SPEED;
+    Math.max(0, normalSpeed) * linearKeep +
+    OUCH_RESIDUAL_BOUNCE_SPEED_M_PER_SEC;
   return {
     x: tangentX * linearKeep + normal.x * outwardNormalSpeed,
     y: tangentY * linearKeep + normal.y * outwardNormalSpeed,

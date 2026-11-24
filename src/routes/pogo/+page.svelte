@@ -4,21 +4,25 @@
   import { SvelteSet } from "svelte/reactivity";
   import PageMeta from "../../lib/components/page-meta.svelte";
   import {
-    CAMERA_PAN_LIMIT,
-    CAMERA_PAN_SPEED,
     GRID_CELL_PX,
-    MAX_FRAME_DT_MS,
     GRID_MAX_X,
     GRID_MAX_Y,
     GRID_MIN_X,
     GRID_MIN_Y,
-    W_S_CAMERA_PAN,
+    MAX_FRAME_DT_MS,
+    TERRAIN_SAMPLE_STEP_PX,
   } from "../../lib/pogo/constants";
+  import { createCameraState, updateCamera } from "../../lib/pogo/camera";
+  import type { Point2D } from "../../lib/pogo/coords";
+  import {
+    cameraPanDirectionX,
+    cameraPanDirectionY,
+  } from "../../lib/pogo/keys";
   import type {
     PogoSimulation,
     PogoSnapshot,
   } from "../../lib/pogo/simulate-types";
-  import { sampleTerrainPaths, type Point2D } from "../../lib/pogo/svg-terrain";
+  import { sampleTerrainPaths } from "../../lib/pogo/terrain-sampling";
   import type { PageProps } from "./$types";
   import PogoHud from "./pogo-hud.svelte";
   import PogoStage from "./pogo-stage.svelte";
@@ -43,13 +47,18 @@
     minY: 80,
   } as const;
 
-  const PLAYER_HALF_W = 18;
-  const PLAYER_BASE_PIVOT_Y = 36;
+  const BODY_WIDTH = 18;
+  const BODY_HEIGHT = 44;
+  const STICK_WIDTH = 6;
+  const TIP_SIZE = 10;
+
   const debugEnabled = $derived(page.url.searchParams.get("debug") === "1");
 
   let viewportEl: HTMLDivElement | undefined = $state();
   let worldEl: HTMLDivElement | undefined = $state();
-  let playerEl: HTMLDivElement | undefined = $state();
+  let bodyEl: HTMLDivElement | undefined = $state();
+  let stickEl: HTMLDivElement | undefined = $state();
+  let tipEl: HTMLDivElement | undefined = $state();
 
   let boostReady = $state(false);
   let ouch = $state(false);
@@ -58,35 +67,30 @@
   let physicsStepCount = $state(0);
   let debugPolygons: ReadonlyArray<ReadonlyArray<Point2D>> = $state([]);
   let ready = $state(false);
+  let loadFailed = $state(false);
 
   let simulation: PogoSimulation | null = null;
-  let lastKnownResets = 0;
 
   const pressedKeys = new SvelteSet<string>();
 
-  function isPanUpPressed(): boolean {
-    return (
-      pressedKeys.has("ArrowUp") || (W_S_CAMERA_PAN && pressedKeys.has("KeyW"))
-    );
-  }
-
-  function isPanDownPressed(): boolean {
-    return (
-      pressedKeys.has("ArrowDown") ||
-      (W_S_CAMERA_PAN && pressedKeys.has("KeyS"))
-    );
+  function keyName(event: KeyboardEvent): string {
+    if (event.code === "Space" || event.key === " ") {
+      return "Space";
+    }
+    return event.code;
   }
 
   function handleKeyDown(event: KeyboardEvent): void {
     if (event.ctrlKey || event.metaKey || event.altKey) {
       return;
     }
+    const key = keyName(event);
     if (
-      event.code === "Space" ||
-      event.code === "ArrowUp" ||
-      event.code === "ArrowDown" ||
-      event.code === "ArrowLeft" ||
-      event.code === "ArrowRight"
+      key === "Space" ||
+      key === "ArrowUp" ||
+      key === "ArrowDown" ||
+      key === "ArrowLeft" ||
+      key === "ArrowRight"
     ) {
       event.preventDefault();
     }
@@ -94,139 +98,113 @@
       simulation.respawn();
       return;
     }
-    pressedKeys.add(event.code);
+    pressedKeys.add(key);
   }
 
   function handleKeyUp(event: KeyboardEvent): void {
-    if (event.code === "Space") {
+    if (keyName(event) === "Space") {
       event.preventDefault();
     }
-    pressedKeys.delete(event.code);
+    pressedKeys.delete(keyName(event));
   }
 
   function handleWindowBlur(): void {
-    pressedKeys.clear();
+    if (!document.hasFocus()) {
+      pressedKeys.clear();
+    }
   }
 
   onMount(() => {
-    if (!viewportEl || !worldEl || !playerEl) {
+    if (!viewportEl || !worldEl || !bodyEl || !stickEl || !tipEl) {
       return;
     }
 
     const currentViewport = viewportEl;
     const currentWorld = worldEl;
-    const currentPlayer = playerEl;
+    const currentBody = bodyEl;
+    const currentStick = stickEl;
+    const currentTip = tipEl;
 
     let disposed = false;
     let rafId = 0;
-    let panX = 0;
-    let panY = 0;
-    let camX: number = SPAWN.x;
-    let camY: number = SPAWN.y;
-    let hasCameraAnchor = false;
     let lastTimestamp = 0;
+    const camera = createCameraState(SPAWN);
 
-    function applyTransforms(
-      snapshot: PogoSnapshot,
-      pivotY: number,
-      dtSec: number,
-    ): void {
-      currentPlayer.style.transform = `translate3d(${(snapshot.x - PLAYER_HALF_W).toFixed(2)}px, ${(snapshot.y - pivotY).toFixed(2)}px, 0) rotate(${snapshot.angleRad.toFixed(4)}rad)`;
+    function applyTransforms(snapshot: PogoSnapshot, dtSec: number): void {
+      const body = snapshot.body;
+      const tip = snapshot.tip;
+      const stickLength = Math.hypot(tip.x - body.x, tip.y - body.y);
 
-      const panDirX =
-        (pressedKeys.has("ArrowRight") ? 1 : 0) -
-        (pressedKeys.has("ArrowLeft") ? 1 : 0);
-      const panDirY = (isPanDownPressed() ? 1 : 0) - (isPanUpPressed() ? 1 : 0);
+      currentBody.style.transform = `translate3d(${(body.x - BODY_WIDTH / 2).toFixed(2)}px, ${(body.y - BODY_HEIGHT / 2).toFixed(2)}px, 0) rotate(${body.angleRad.toFixed(4)}rad)`;
+      currentStick.style.transform = `translate3d(${(body.x - STICK_WIDTH / 2).toFixed(2)}px, ${body.y.toFixed(2)}px, 0) rotate(${body.angleRad.toFixed(4)}rad)`;
+      currentStick.style.blockSize = `${stickLength.toFixed(2)}px`;
+      currentTip.style.transform = `translate3d(${(tip.x - TIP_SIZE / 2).toFixed(2)}px, ${(tip.y - TIP_SIZE / 2).toFixed(2)}px, 0)`;
 
-      if (panDirX !== 0) {
-        panX = Math.max(
-          -CAMERA_PAN_LIMIT,
-          Math.min(CAMERA_PAN_LIMIT, panX + panDirX * CAMERA_PAN_SPEED * dtSec),
-        );
-      } else {
-        panX *= Math.max(0, 1 - 6 * dtSec);
-      }
-
-      if (panDirY !== 0) {
-        panY = Math.max(
-          -CAMERA_PAN_LIMIT,
-          Math.min(CAMERA_PAN_LIMIT, panY + panDirY * CAMERA_PAN_SPEED * dtSec),
-        );
-      } else {
-        panY *= Math.max(0, 1 - 6 * dtSec);
-      }
-
-      const targetX = snapshot.x + panX;
-      const targetY = snapshot.y + panY;
-
-      if (!hasCameraAnchor || snapshot.resetCount !== lastKnownResets) {
-        camX = targetX;
-        camY = targetY;
-        hasCameraAnchor = true;
-        lastKnownResets = snapshot.resetCount;
-      } else {
-        const lerp = 1 - Math.exp(-8 * dtSec);
-        camX += (targetX - camX) * lerp;
-        camY += (targetY - camY) * lerp;
-      }
-
-      const vpW = currentViewport.clientWidth;
-      const vpH = currentViewport.clientHeight;
-      const offsetX = Math.round(vpW / 2 - camX);
-      const offsetY = Math.round(vpH / 2 - camY);
-      currentWorld.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0)`;
+      const panDirectionX = cameraPanDirectionX(pressedKeys);
+      const panDirectionY = cameraPanDirectionY(pressedKeys);
+      const view = updateCamera(camera, {
+        dtSec,
+        panDirectionX,
+        panDirectionY,
+        resetCount: snapshot.resetCount,
+        targetX: body.x,
+        targetY: body.y,
+        viewportHeight: currentViewport.clientHeight,
+        viewportWidth: currentViewport.clientWidth,
+      });
+      currentWorld.style.transform = `translate3d(${view.offsetX}px, ${view.offsetY}px, 0)`;
     }
 
     async function start(): Promise<void> {
       currentWorld.style.transform = "none";
-      const terrainPolygons = sampleTerrainPaths(currentWorld);
-      const { createPogoSimulation } = await import("../../lib/pogo/simulate");
-      if (disposed) {
-        return;
-      }
-
-      const sim = createPogoSimulation({
-        goalZone: GOAL_ZONE,
-        spawn: SPAWN,
-        stageBounds: STAGE_BOUNDS,
-        terrainPolygons,
-      });
-      simulation = sim;
-
-      debugPolygons = sim.getTerrainPolygons();
-
-      const pivotY = PLAYER_BASE_PIVOT_Y + sim.pivotOffsetY;
-      currentPlayer.style.transformOrigin = `${PLAYER_HALF_W}px ${pivotY.toFixed(2)}px`;
-      ready = true;
-
-      const tick = (timestamp: number): void => {
+      const terrain = sampleTerrainPaths(currentWorld, TERRAIN_SAMPLE_STEP_PX);
+      try {
+        const { createPogoSimulation } =
+          await import("../../lib/pogo/simulate");
+        const sim = await createPogoSimulation({
+          goalZone: GOAL_ZONE,
+          spawn: SPAWN,
+          stageBounds: STAGE_BOUNDS,
+          terrain,
+        });
         if (disposed) {
+          sim.destroy();
           return;
         }
-        const dtMs = lastTimestamp === 0 ? 0 : timestamp - lastTimestamp;
-        lastTimestamp = timestamp;
+        simulation = sim;
+        debugPolygons = sim.getTerrainPolylines();
+        ready = true;
 
-        const snapshot = sim.step(dtMs, {
-          jump: pressedKeys.has("Space"),
-          left: pressedKeys.has("KeyA"),
-          right: pressedKeys.has("KeyD"),
-        });
+        const tick = (timestamp: number): void => {
+          if (disposed) {
+            return;
+          }
+          const dtMs = lastTimestamp === 0 ? 0 : timestamp - lastTimestamp;
+          lastTimestamp = timestamp;
 
-        boostReady = snapshot.boostReady;
-        ouch = snapshot.ouch;
-        reachedGoal = snapshot.reachedGoal;
-        respawns = snapshot.respawns;
-        physicsStepCount = snapshot.physicsStepCount;
+          const snapshot = sim.step(dtMs, {
+            jump: pressedKeys.has("Space"),
+            left: pressedKeys.has("KeyA"),
+            right: pressedKeys.has("KeyD"),
+          });
 
-        applyTransforms(
-          snapshot,
-          pivotY,
-          Math.min(MAX_FRAME_DT_MS, Math.max(0, dtMs)) / 1000,
-        );
+          boostReady = snapshot.boostReady;
+          ouch = snapshot.ouch;
+          reachedGoal = snapshot.reachedGoal;
+          respawns = snapshot.respawns;
+          physicsStepCount = snapshot.physicsStepCount;
+
+          applyTransforms(
+            snapshot,
+            Math.min(MAX_FRAME_DT_MS, Math.max(0, dtMs)) / 1000,
+          );
+          rafId = requestAnimationFrame(tick);
+        };
+
         rafId = requestAnimationFrame(tick);
-      };
-
-      rafId = requestAnimationFrame(tick);
+      } catch {
+        loadFailed = true;
+      }
     }
 
     void start();
@@ -270,7 +248,15 @@
     class="pogo-viewport"
   >
     {#if !ready}
-      <p class="pogo-loading">物理エンジンを読み込み中...</p>
+      <p
+        class="pogo-loading"
+        role={loadFailed ? "alert" : "status"}
+        aria-live="polite"
+      >
+        {loadFailed
+          ? "物理エンジンを読み込めませんでした。再読み込みしてください。"
+          : "物理エンジンを読み込み中..."}
+      </p>
     {/if}
     <div bind:this={worldEl} class="pogo-world" id="world">
       <div
@@ -288,8 +274,20 @@
         stageWidth={STAGE_WIDTH}
       />
       <div
-        bind:this={playerEl}
-        class="pogo-player"
+        bind:this={tipEl}
+        class="pogo-tip"
+        data-boost-ready={boostReady}
+        data-ouch={ouch}
+      ></div>
+      <div
+        bind:this={stickEl}
+        class="pogo-stick"
+        data-boost-ready={boostReady}
+        data-ouch={ouch}
+      ></div>
+      <div
+        bind:this={bodyEl}
+        class="pogo-body"
         data-boost-ready={boostReady}
         data-ouch={ouch}
       ></div>

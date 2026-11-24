@@ -1,18 +1,11 @@
 import { describe, expect, it } from "vite-plus/test";
 import {
-  MATTER_BASE_DELTA_MS,
   ROTATION_ACCEL_DEG_PER_SEC2,
   ROTATION_MAX_DEG_PER_SEC,
   ROTATION_RELEASE_DECEL_DEG_PER_SEC2,
 } from "./constants";
-import {
-  degPerSecToMatterAngularVelocity,
-  lerpAngleShortArc,
-  lerpPose,
-  matterAngularVelocityToDegPerSec,
-  stepAngularVelocity,
-  type RotationModel,
-} from "./rotation";
+import { lerpAngleShortArc, lerpPose } from "./coords";
+import { stepAngularVelocity, type RotationModel } from "./rotation";
 
 const MODEL: RotationModel = {
   accelDegPerSec2: ROTATION_ACCEL_DEG_PER_SEC2,
@@ -76,18 +69,6 @@ describe("stepAngularVelocity", () => {
     const towardMax = stepAngularVelocity(2000, 1, 0.01, MODEL);
     expect(towardMax).toBeLessThan(2000);
     expect(towardMax).toBeGreaterThan(ROTATION_MAX_DEG_PER_SEC);
-  });
-});
-
-describe("matter angular velocity conversion", () => {
-  it("round trips degrees per second", () => {
-    for (const degPerSec of [0, 120, 480, -480]) {
-      const omega = degPerSecToMatterAngularVelocity(degPerSec);
-      expect(matterAngularVelocityToDegPerSec(omega)).toBeCloseTo(degPerSec, 6);
-    }
-    expect(
-      degPerSecToMatterAngularVelocity((360 * 1000) / MATTER_BASE_DELTA_MS),
-    ).toBeCloseTo(2 * Math.PI, 6);
   });
 });
 
