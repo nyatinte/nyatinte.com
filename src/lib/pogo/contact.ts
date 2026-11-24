@@ -73,6 +73,7 @@ function applyLandingResolution(
   resolution: LandingResolution,
 ): void {
   rig.setKinematics(resolution.velocity, resolution.angularVelocityDegPerSec);
+  state.appliedAngularDegPerSec = resolution.angularVelocityDegPerSec;
   if (resolution.cancelBoost) {
     state.boostState = cancelBoost();
   }
@@ -149,7 +150,9 @@ export function resolveContacts(
   accelDegPerSec2: number,
 ): void {
   const normal = rig.tipNormal();
-  const torsoTouching = rig.torsoTouching();
+  const torsoNormal = rig.torsoNormal();
+  const torsoTouching = torsoNormal !== null;
+  let failedThisStep = false;
 
   if (torsoTouching && !state.torsoWasTouching) {
     applyLandingResolution(
@@ -159,15 +162,16 @@ export function resolveContacts(
         alignmentAngleDeg: 90,
         angularVelocityDegPerSec: state.appliedAngularDegPerSec,
         contactPart: "body",
-        normal: normal ?? { x: 0, y: 1 },
+        normal: torsoNormal ?? { x: 0, y: 1 },
         rotationInput: rotationInput(input),
         velocity: previousStickVelocity,
       }),
     );
+    failedThisStep = true;
   }
   state.torsoWasTouching = torsoTouching;
 
-  if (normal && !state.tipWasGrounded && state.ouchFlashRemainingMs === 0) {
+  if (normal && !state.tipWasGrounded && !failedThisStep && !torsoTouching) {
     startCharge(
       rig,
       config,
@@ -184,5 +188,5 @@ export function resolveContacts(
     state.compressionPx = 0;
     state.groundNormal = null;
   }
-  state.tipWasGrounded = normal !== null;
+  state.tipWasGrounded = failedThisStep ? false : normal !== null;
 }

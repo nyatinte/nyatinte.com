@@ -34,10 +34,18 @@ function launch(
   state: SimulationState,
   input: PogoInputState,
 ): void {
-  state.boostState = consumeBoostOnLaunch(
-    state.boostState,
-    input.jump,
-  ).nextState;
+  const launchBoost = consumeBoostOnLaunch(state.boostState, input.jump);
+  state.boostState = launchBoost.nextState;
+  const unboostedCompressionPx = computeCompressionPx(
+    computeChargeLevel(state.chargeMs),
+    false,
+  );
+  if (!launchBoost.boosted && state.compressionPx > unboostedCompressionPx) {
+    const allowedLengthM = REST_LENGTH_M - pxToMeters(unboostedCompressionPx);
+    if (rig.jointLengthM() < allowedLengthM) {
+      rig.setJointLength(allowedLengthM);
+    }
+  }
   const currentLengthM = rig.jointLengthM();
   state.releaseLengthM =
     currentLengthM +

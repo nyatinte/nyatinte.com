@@ -153,7 +153,7 @@ describe("Rapier pogo cycle", () => {
       const flight = firstFlight(sim, INPUT_HOLD_RIGHT);
       expect(flight.groundedSteps).toBeGreaterThan(4);
       expect(flight.tipDriftPx).toBeLessThan(3);
-      expect(Math.abs(flight.takeoffAngleRad)).toBeGreaterThan(0.2);
+      expect(flight.takeoffAngleRad).toBeGreaterThan(0.2);
     });
   });
 
@@ -191,6 +191,94 @@ describe("Rapier pogo cycle", () => {
       const fall = sim.step(FIXED_STEP_MS, INPUT_NONE);
       expect(fall.respawns).toBe(1);
     });
+  });
+
+  it("registers a Space press slightly before landing as a charged hop", async () => {
+    await withSim((sim) => {
+      firstFlight(sim, INPUT_NONE);
+      let holdLeft = 0;
+      let released = false;
+      let sawGroundAfterRelease = false;
+      let groundY: number | null = null;
+      let peakY = Number.POSITIVE_INFINITY;
+      let apexPx = 0;
+      for (let step = 0; step < 2400; step += 1) {
+        const jump = holdLeft > 0;
+        if (holdLeft > 0) {
+          holdLeft -= 1;
+          if (holdLeft === 0) {
+            released = true;
+          }
+        }
+        const snapshot = sim.step(FIXED_STEP_MS, {
+          jump,
+          left: false,
+          right: false,
+        });
+        if (!released && !snapshot.grounded && snapshot.body.y > PAD_Y - 150) {
+          holdLeft = 6;
+          continue;
+        }
+        if (!released) {
+          continue;
+        }
+        if (!sawGroundAfterRelease) {
+          if (snapshot.grounded) {
+            sawGroundAfterRelease = true;
+            groundY = snapshot.body.y;
+          }
+          continue;
+        }
+        if (!snapshot.grounded) {
+          peakY = Math.min(peakY, snapshot.body.y);
+          continue;
+        }
+        if (peakY < Number.POSITIVE_INFINITY) {
+          apexPx = (groundY ?? snapshot.body.y) - peakY;
+          break;
+        }
+      }
+      expect(released).toBe(true);
+      expect(sawGroundAfterRelease).toBe(true);
+      expect(apexPx).toBeGreaterThan(UNCHARGED_APEX_PX * 1.2);
+    });
+  });
+
+  it("clears the ouch flash without locking later simulation steps", async () => {
+    const bar = [
+      { x: 190, y: 245 },
+      { x: 210, y: 245 },
+      { x: 210, y: 260 },
+      { x: 190, y: 260 },
+    ];
+    const sim = await createPogoSimulation({
+      ...config(),
+      terrain: [
+        { closed: false, points: flatPad() },
+        { closed: true, points: bar },
+      ],
+    });
+    try {
+      let sawOuch = false;
+      let stepsDuringOuch = 0;
+      let stepsAfterOuch = 0;
+      for (let step = 0; step < 1200; step += 1) {
+        const snapshot = sim.step(FIXED_STEP_MS, INPUT_NONE);
+        if (snapshot.ouch) {
+          sawOuch = true;
+          stepsDuringOuch += 1;
+          continue;
+        }
+        if (sawOuch) {
+          stepsAfterOuch += 1;
+        }
+      }
+      expect(sawOuch).toBe(true);
+      expect(stepsDuringOuch).toBeGreaterThan(0);
+      expect(stepsAfterOuch).toBeGreaterThan(10);
+    } finally {
+      sim.destroy();
+    }
   });
 
   it("runs the fixed step at 120Hz and exposes the terrain polylines", async () => {

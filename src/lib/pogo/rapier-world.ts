@@ -28,6 +28,7 @@ import {
   metersToPx,
   pxToMeters,
   rapierAngleToStage,
+  stageAngleToRapier,
   stagePointToRapier,
   type Point2D,
   type Pose,
@@ -54,7 +55,9 @@ export type PogoWorld = {
   tipPose(): Pose;
   bodyCenterStage(): Point2D;
   tipNormal(): Point2D | null;
+  torsoNormal(): Point2D | null;
   torsoTouching(): boolean;
+  setJointLength(lengthM: number): void;
   reset(): void;
   terrainPolylines(): Array<Array<Point2D>>;
   destroy(): void;
@@ -192,7 +195,7 @@ export function createPogoWorld(
     });
     let normal: Point2D | null = null;
     for (const other of contacts) {
-      world.contactPair(collider, other, (manifold) => {
+      world.contactPair(collider, other, (manifold, _flipped) => {
         if (normal) {
           return;
         }
@@ -253,14 +256,27 @@ export function createPogoWorld(
     removePivot,
     reset,
     setAngularVelocity(angularDegPerSec: number): void {
-      torsoBody.setAngvel(degToRad(angularDegPerSec), true);
-      stickBody.setAngvel(degToRad(angularDegPerSec), true);
+      const angvel = stageAngleToRapier(degToRad(angularDegPerSec));
+      torsoBody.setAngvel(angvel, true);
+      stickBody.setAngvel(angvel, true);
+    },
+    setJointLength(lengthM: number): void {
+      const tip = stickBody.translation();
+      const angle = torsoBody.rotation();
+      torsoBody.setTranslation(
+        {
+          x: tip.x - Math.sin(angle) * lengthM,
+          y: tip.y + Math.cos(angle) * lengthM,
+        },
+        true,
+      );
     },
     setKinematics(velocity: Point2D, angularDegPerSec: number): void {
+      const angvel = stageAngleToRapier(degToRad(angularDegPerSec));
       torsoBody.setLinvel(velocity, true);
       stickBody.setLinvel(velocity, true);
-      torsoBody.setAngvel(degToRad(angularDegPerSec), true);
-      stickBody.setAngvel(degToRad(angularDegPerSec), true);
+      torsoBody.setAngvel(angvel, true);
+      stickBody.setAngvel(angvel, true);
     },
     setMotor(targetLengthM: number, stiffness: number, damping: number): void {
       joint.configureMotorPosition(targetLengthM, stiffness, damping);
@@ -276,6 +292,7 @@ export function createPogoWorld(
     tipPose: () => poseOf(stickBody),
     torsoBody,
     torsoCollider,
+    torsoNormal: () => findTerrainContact(torsoCollider),
     torsoPose: () => poseOf(torsoBody),
     torsoTouching: () => findTerrainContact(torsoCollider) !== null,
     world,
