@@ -125,6 +125,28 @@ test("GET / sends fresh CSP nonces for every inline script", async () => {
   }
 });
 
+test("only /pogo CSP allows wasm-unsafe-eval", async () => {
+  const pages = await Promise.all(
+    ["/", "/log/stay-light-in-ai-era", "/pogo"].map(async (pathname) => {
+      const response = await fetch(new URL(pathname, targetUrl));
+      expect(response.status).toBe(200);
+      const csp = response.headers.get("content-security-policy") ?? "";
+      const scriptSource = csp.match(cspScriptSourcePattern)?.[1] ?? "";
+      return { csp, pathname, scriptSource };
+    }),
+  );
+
+  for (const page of pages) {
+    expect(page.scriptSource).toContain("'self'");
+    expect(page.scriptSource).toMatch(cspNoncePattern);
+    if (page.pathname === "/pogo") {
+      expect(page.scriptSource).toContain("'wasm-unsafe-eval'");
+    } else {
+      expect(page.scriptSource).not.toContain("'wasm-unsafe-eval'");
+    }
+  }
+});
+
 test("home preloads self-hosted, immutable Latin fonts", async () => {
   const page = await fetch(new URL("/", targetUrl));
   const fonts = [...(await page.text()).matchAll(latinFontPattern)];
