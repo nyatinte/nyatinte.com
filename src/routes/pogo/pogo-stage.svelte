@@ -74,7 +74,7 @@
     stroke-width="2"
     x1="0"
     x2={stageWidth}
-    y1={stageHeight + 12}
-    y2={stageHeight + 12}
+    y1={stageHeight - 4}
+    y2={stageHeight - 4}
   />
 </svg>

@@ -7,7 +7,15 @@ import {
   handleContactBoost,
   type BoostState,
 } from "./boost";
-import { GRAVITY_Y, ROTATION_SPEED_DEG_PER_SEC } from "./constants";
+import {
+  COMPRESSION_HORIZONTAL_DAMP,
+  GRAVITY_Y,
+  OUCH_BODY_HORIZONTAL_DAMP,
+  OUCH_GLANCING_HORIZONTAL_DAMP,
+  OUCH_RECOVERY_MS,
+  OUCH_ROTATION_SCALE,
+  ROTATION_SPEED_DEG_PER_SEC,
+} from "./constants";
 import { computeBounce } from "./impulse";
 import {
   alignmentDegrees,
@@ -27,8 +35,6 @@ const { Body, Composite, Engine, Events } = Matter;
 
 const FIXED_STEP_MS = 1000 / 60;
 const MAX_FRAME_DT_MS = 50;
-const OUCH_RECOVERY_MS = 260;
-
 export type PogoInputState = {
   readonly left: boolean;
   readonly right: boolean;
@@ -146,7 +152,7 @@ export function createPogoSimulation(
         impactSpeed: normalImpactSpeed(prevVelocity, normal),
         jumpHeld: currentInput.jump,
       });
-      applyOuchBounce(normal, result.bounceSpeed, 0.5);
+      applyOuchBounce(normal, result.bounceSpeed, OUCH_BODY_HORIZONTAL_DAMP);
       return;
     }
 
@@ -181,7 +187,7 @@ export function createPogoSimulation(
       return;
     }
 
-    applyOuchBounce(normal, result.bounceSpeed, 0.6);
+    applyOuchBounce(normal, result.bounceSpeed, OUCH_GLANCING_HORIZONTAL_DAMP);
   }
 
   function onCollisionStart(
@@ -224,12 +230,12 @@ export function createPogoSimulation(
         boostState = nextState;
       } else {
         Body.setVelocity(player, {
-          x: player.velocity.x * 0.75,
+          x: player.velocity.x * COMPRESSION_HORIZONTAL_DAMP,
           y: Math.min(0, player.velocity.y),
         });
       }
     } else {
-      const rotationScale = ouchTimerMs > 0 ? 0.6 : 1;
+      const rotationScale = ouchTimerMs > 0 ? OUCH_ROTATION_SCALE : 1;
       if (ouchTimerMs > 0) {
         ouchTimerMs = Math.max(0, ouchTimerMs - FIXED_STEP_MS);
       }

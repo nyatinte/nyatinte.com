@@ -56,6 +56,11 @@ _Pogostuck: Rage With Your Friends_（開発者 Superku / Hendrik Felix Pohl、2
 | `TIP_FRICTION`                     | `0.05` | 仮定                                 | ポゴ先端パーツの摩擦係数（斜面での滑りを許容）                                                                                   |
 | `BODY_FRICTION`                    | `0.45` | 仮定                                 | 胴体・軸パーツの摩擦係数                                                                                                         |
 | `OUCH_BOUNCE_SCALE`                | `0.15` | 仮定                                 | 非先端・角度不足着地（Ouch / Glancing）時に残す法線反発の割合                                                                    |
+| `OUCH_RECOVERY_MS`                 | `260`  | 仮定                                 | 非先端着地（Ouch）後、空中のブースト累積を止め、回転を弱める時間（ms）                                                           |
+| `OUCH_ROTATION_SCALE`              | `0.6`  | 仮定                                 | Ouch 回復中の回転速度倍率                                                                                                        |
+| `OUCH_BODY_HORIZONTAL_DAMP`        | `0.5`  | 仮定                                 | 胴体ヒット時に残す水平速度の割合                                                                                                 |
+| `OUCH_GLANCING_HORIZONTAL_DAMP`    | `0.6`  | 仮定                                 | 角度不足の先端ヒット時に残す水平速度の割合                                                                                       |
+| `COMPRESSION_HORIZONTAL_DAMP`      | `0.75` | 仮定                                 | 先端圧縮中に残す水平速度の割合                                                                                                   |
 | `GROUND_CONTACT_BASE_MS`           | `90`   | 仮定                                 | 先端接地（圧縮）時間の基本値（ms）                                                                                               |
 | `GROUND_CONTACT_FALL_MS_PER_SPEED` | `12`   | 仮定（定性のみ出典 4）               | 衝突速度あたりに追加する接地時間（ms）                                                                                           |
 | `GRAVITY_Y`                        | `1.6`  | 仮定                                 | Matter.js の重力 Y（DOM と同じく下向き正）                                                                                       |
@@ -66,6 +71,7 @@ _Pogostuck: Rage With Your Friends_（開発者 Superku / Hendrik Felix Pohl、2
 | `PATH_SAMPLE_SPACING`              | `8`    | 仮定                                 | SVG `<path>` サンプリング間隔（px）                                                                                              |
 | `KILL_PLANE_MARGIN`                | `80`   | 仮定                                 | ステージ境界から外れた際にリスポーンする余白（px）                                                                               |
 | `CAMERA_PAN_SPEED`                 | `420`  | 仮定（矢印キーでの移動自体は出典 8） | `W` / `S` および矢印キーでカメラを先読みする速度（px/秒）                                                                        |
+| `CAMERA_PAN_LIMIT`                 | `320`  | 仮定                                 | カメラ先読みオフセットの上限（px）                                                                                               |
 | `W_S_CAMERA_PAN`                   | `true` | 仮定                                 | 本家に `W` / `S` 移動の出典がないため、WASD 操作の要求に対して `W`（上見渡し）/ `S`（下見渡し）を割り当てます                    |
 
 ## 4. 純粋関数の仕様
@@ -86,7 +92,7 @@ _Pogostuck: Rage With Your Friends_（開発者 Superku / Hendrik Felix Pohl、2
 ## 5. PoC アーキテクチャ
 
 - **物理と描画の分離**: 衝突判定と時間積分は `matter-js` + `poly-decomp`（`src/lib/pogo/simulate.ts` および同モジュールのみが参照する `src/lib/pogo/simulate-bodies.ts`）に限定し、描画は DOM + SVG のみに分離します。
-- **遅延ロードの境界**: `matter-js` と `poly-decomp` をトップレベルで import するのは `src/lib/pogo/simulate.ts` と `src/lib/pogo/simulate-bodies.ts` のみとします。`src/routes/pogo/+page.svelte` は `onMount` 内で `import("$lib/pogo/simulate")` を動的に呼び出し、他ルート・レイアウト・SSR バンドルへ物理エンジンを含めません。
+- **遅延ロードの境界**: `matter-js` と `poly-decomp` をトップレベルで import するのは `src/lib/pogo/simulate.ts` と `src/lib/pogo/simulate-bodies.ts` のみとします。`src/routes/pogo/+page.svelte` は `onMount` 内で `import("../../lib/pogo/simulate")` を動的に呼び出し、他ルート・レイアウト・SSR バンドルへ物理エンジンを含めません。
 - **SVG 地形の物理化（`src/lib/pogo/svg-terrain.ts`）**: 閉じた（または端点接続で閉路化した）`<path data-terrain>` 要素を `getTotalLength()` と `getPointAtLength()` で `PATH_SAMPLE_SPACING` 間隔で点列化し、`path.getScreenCTM()` と `#world` 要素の矩形から変換行列を作って `#world` 座標系へ変換します。`simulate-bodies.ts` 側で `Common.setDecomp(decomp)` を設定した上で `Bodies.fromVertices` により静的剛体を生成し、バウンディングボックスを元の頂点群へ位置合わせします。
 - **単一 `div` と `#world` カメラ**: プレイヤーは `#world` 内の単一 `<div>` として描画し、毎フレーム `transform: translate3d(...) rotate(...)` のみを更新します（`top` / `left` による座標指定は行いません）。カメラは `#world` へ逆向きの `translate3d(...)` を適用してプレイヤー位置とパンオフセットを追従させます。
 - **入力・ステージ・リスポーン**:

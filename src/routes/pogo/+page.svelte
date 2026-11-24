@@ -2,7 +2,11 @@
   import { onMount } from "svelte";
   import { SvelteSet } from "svelte/reactivity";
   import PageMeta from "../../lib/components/page-meta.svelte";
-  import { CAMERA_PAN_SPEED, W_S_CAMERA_PAN } from "../../lib/pogo/constants";
+  import {
+    CAMERA_PAN_LIMIT,
+    CAMERA_PAN_SPEED,
+    W_S_CAMERA_PAN,
+  } from "../../lib/pogo/constants";
   import type { PogoSimulation, PogoSnapshot } from "../../lib/pogo/simulate";
   import { sampleTerrainPaths } from "../../lib/pogo/svg-terrain";
   import type { PageProps } from "./$types";
@@ -29,8 +33,6 @@
 
   const PLAYER_HALF_W = 18;
   const PLAYER_BASE_PIVOT_Y = 36;
-  const PAN_LIMIT = 320;
-
   let viewportEl: HTMLDivElement | undefined = $state();
   let worldEl: HTMLDivElement | undefined = $state();
   let playerEl: HTMLDivElement | undefined = $state();
@@ -128,8 +130,8 @@
 
       if (panDirX !== 0) {
         panX = Math.max(
-          -PAN_LIMIT,
-          Math.min(PAN_LIMIT, panX + panDirX * CAMERA_PAN_SPEED * dtSec),
+          -CAMERA_PAN_LIMIT,
+          Math.min(CAMERA_PAN_LIMIT, panX + panDirX * CAMERA_PAN_SPEED * dtSec),
         );
       } else {
         panX *= Math.max(0, 1 - 6 * dtSec);
@@ -137,8 +139,8 @@
 
       if (panDirY !== 0) {
         panY = Math.max(
-          -PAN_LIMIT,
-          Math.min(PAN_LIMIT, panY + panDirY * CAMERA_PAN_SPEED * dtSec),
+          -CAMERA_PAN_LIMIT,
+          Math.min(CAMERA_PAN_LIMIT, panY + panDirY * CAMERA_PAN_SPEED * dtSec),
         );
       } else {
         panY *= Math.max(0, 1 - 6 * dtSec);
@@ -201,9 +203,7 @@
 
         boostReady = snapshot.boostReady;
         ouch = snapshot.ouch;
-        if (snapshot.reachedGoal) {
-          reachedGoal = true;
-        }
+        reachedGoal = snapshot.reachedGoal;
         respawns = snapshot.respawns;
 
         applyTransforms(snapshot, pivotY, dtMs / 1000);

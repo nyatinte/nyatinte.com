@@ -64,12 +64,11 @@ export function sampleSvgPathToWorld(
     }
   }
 
-  if (filtered.length > 2) {
-    if (distanceSq(filtered[0], filtered.at(-1)!) < minSq) {
-      filtered.pop();
-    } else {
-      filtered.push(filtered[0]);
-    }
+  if (
+    filtered.length > 2 &&
+    distanceSq(filtered[0], filtered.at(-1)!) < minSq
+  ) {
+    filtered.pop();
   }
 
   return filtered;
