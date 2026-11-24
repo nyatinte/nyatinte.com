@@ -18,41 +18,30 @@
     cameraPanDirectionX,
     cameraPanDirectionY,
   } from "../../lib/pogo/keys";
-  import type {
-    PogoSimulation,
-    PogoSnapshot,
-  } from "../../lib/pogo/simulate-types";
+  import type { PogoSimulation, PogoSnapshot } from "../../lib/pogo/simulate-types";
   import { sampleTerrainPaths } from "../../lib/pogo/terrain-sampling";
+  import { mergeTune, type PogoTuneOverrides } from "../../lib/pogo/tune";
   import type { PageProps } from "./$types";
   import PogoHud from "./pogo-hud.svelte";
   import PogoStage from "./pogo-stage.svelte";
+  import PogoTuneGate from "./pogo-tune-gate.svelte";
+  import {
+    BODY_HEIGHT,
+    BODY_WIDTH,
+    GOAL_ZONE,
+    SPAWN,
+    STAGE_BOUNDS,
+    STAGE_HEIGHT,
+    STAGE_WIDTH,
+    STICK_WIDTH,
+    TIP_SIZE,
+  } from "./stage-layout";
   import "./pogo.css";
 
   let { data }: PageProps = $props();
 
-  const STAGE_WIDTH = 1840;
-  const STAGE_HEIGHT = 1040;
-  const START_PAD_Y = 860;
-  const SPAWN = { x: 220, y: START_PAD_Y } as const;
-  const GOAL_ZONE = {
-    maxX: 1710,
-    maxY: 170,
-    minX: 1385,
-    minY: 50,
-  } as const;
-  const STAGE_BOUNDS = {
-    maxX: 1760,
-    maxY: 980,
-    minX: 80,
-    minY: 80,
-  } as const;
-
-  const BODY_WIDTH = 18;
-  const BODY_HEIGHT = 44;
-  const STICK_WIDTH = 6;
-  const TIP_SIZE = 10;
-
   const debugEnabled = $derived(page.url.searchParams.get("debug") === "1");
+  const tuneEnabled = $derived(debugEnabled || page.url.searchParams.get("tune") === "1");
 
   let viewportEl: HTMLDivElement | undefined = $state();
   let worldEl: HTMLDivElement | undefined = $state();
@@ -68,8 +57,15 @@
   let debugPolygons: ReadonlyArray<ReadonlyArray<Point2D>> = $state([]);
   let ready = $state(false);
   let loadFailed = $state(false);
+  let tuneOverrides: PogoTuneOverrides = $state({});
+  const tunables = $derived(mergeTune(tuneOverrides));
 
   let simulation: PogoSimulation | null = null;
+
+  function applyTune(next: PogoTuneOverrides): void {
+    tuneOverrides = next;
+    simulation?.setTune(next);
+  }
 
   const pressedKeys = new SvelteSet<string>();
 
@@ -172,6 +168,7 @@
           return;
         }
         simulation = sim;
+        sim.setTune(tuneOverrides);
         debugPolygons = sim.getTerrainPolylines();
         ready = true;
 
@@ -240,6 +237,13 @@
     {physicsStepCount}
     {reachedGoal}
     {respawns}
+  />
+
+  <PogoTuneGate
+    enabled={tuneEnabled}
+    onChange={applyTune}
+    onReset={() => applyTune({})}
+    values={tunables}
   />
 
   <div

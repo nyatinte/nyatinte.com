@@ -1,11 +1,10 @@
 import {
-  OUCH_BODY_LINEAR_KEEP,
   OUCH_GLANCING_LINEAR_KEEP,
   OUCH_RESIDUAL_BOUNCE_SPEED_M_PER_SEC,
-  OUCH_TUMBLE_ANGULAR_IMPULSE_DEG_PER_SEC,
   TIP_ALIGN_MAX_ANGLE_DEG,
 } from "./constants";
 import type { Point2D } from "./coords";
+import { defaultTunables, type PogoTunables } from "./tune";
 
 export type ContactPart = "body" | "tip";
 export type LandingOutcome = "clean" | "glancing" | "ouch";
@@ -65,7 +64,39 @@ function failedLandingVelocity(
   };
 }
 
-export function resolveLanding(input: LandingInput): LandingResolution {
+function reflectedVelocity(velocity: Point2D, normal: Point2D): Point2D {
+  const normalSpeed = velocity.x * normal.x + velocity.y * normal.y;
+  return {
+    x: velocity.x - 2 * normalSpeed * normal.x,
+    y: velocity.y - 2 * normalSpeed * normal.y,
+  };
+}
+
+function bodyHitVelocity(
+  velocity: Point2D,
+  normal: Point2D,
+  tune: PogoTunables,
+): Point2D {
+  const killed = failedLandingVelocity(
+    velocity,
+    normal,
+    tune.ouchBodyLinearKeep,
+  );
+  const restitution = Math.min(1, Math.max(0, tune.ouchBodyRestitution));
+  if (restitution <= 0) {
+    return killed;
+  }
+  const bounced = reflectedVelocity(velocity, normal);
+  return {
+    x: killed.x * (1 - restitution) + bounced.x * restitution,
+    y: killed.y * (1 - restitution) + bounced.y * restitution,
+  };
+}
+
+export function resolveLanding(
+  input: LandingInput,
+  tune: PogoTunables = defaultTunables(),
+): LandingResolution {
   const outcome = classifyLanding(input.contactPart, input.alignmentAngleDeg);
 
   if (outcome === "clean") {
@@ -79,21 +110,25 @@ export function resolveLanding(input: LandingInput): LandingResolution {
   }
 
   const isBodyHit = outcome === "ouch";
-  const linearKeep = isBodyHit
-    ? OUCH_BODY_LINEAR_KEEP
-    : OUCH_GLANCING_LINEAR_KEEP;
   const tangentialSign = Math.sign(
     input.velocity.y * input.normal.x - input.velocity.x * input.normal.y,
   );
   const tumble =
-    (isBodyHit ? OUCH_TUMBLE_ANGULAR_IMPULSE_DEG_PER_SEC : 0) *
+    (isBodyHit ? tune.ouchTumbleAngularImpulseDegPerSec : 0) *
     tumbleDirection(input, tangentialSign);
+  const velocity = isBodyHit
+    ? bodyHitVelocity(input.velocity, input.normal, tune)
+    : failedLandingVelocity(
+        input.velocity,
+        input.normal,
+        OUCH_GLANCING_LINEAR_KEEP,
+      );
 
   return {
     angularVelocityDegPerSec: input.angularVelocityDegPerSec + tumble,
     cancelBoost: true,
     outcome,
     startBounceCycle: false,
-    velocity: failedLandingVelocity(input.velocity, input.normal, linearKeep),
+    velocity,
   };
 }

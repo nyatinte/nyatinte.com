@@ -4,6 +4,7 @@ import {
   TIP_ALIGN_MAX_ANGLE_DEG,
 } from "./constants";
 import { classifyLanding, resolveLanding } from "./landing";
+import { mergeTune } from "./tune";
 
 const UP_NORMAL = { x: 0, y: -1 };
 
@@ -132,5 +133,30 @@ describe("resolveLanding", () => {
     expect(
       body.velocity.x * UP_NORMAL.x + body.velocity.y * UP_NORMAL.y,
     ).toBeGreaterThan(0);
+  });
+
+  it("kills body-hit momentum at restitution 0 and reflects at 1", () => {
+    const input = {
+      alignmentAngleDeg: 90,
+      angularVelocityDegPerSec: 0,
+      contactPart: "body" as const,
+      normal: UP_NORMAL,
+      rotationInput: 0,
+      velocity: { x: 10, y: 20 },
+    };
+    const dead = resolveLanding(input, mergeTune({ ouchBodyRestitution: 0 }));
+    const bounce = resolveLanding(input, mergeTune({ ouchBodyRestitution: 1 }));
+    const incoming = 10 * UP_NORMAL.x + 20 * UP_NORMAL.y;
+
+    expect(dead.outcome).toBe("ouch");
+    expect(bounce.outcome).toBe("ouch");
+    expect(Math.hypot(dead.velocity.x, dead.velocity.y)).toBeLessThan(
+      Math.hypot(10, 20) * 0.2,
+    );
+    expect(bounce.velocity.x).toBeCloseTo(10, 9);
+    expect(bounce.velocity.y).toBeCloseTo(20 - 2 * incoming * UP_NORMAL.y, 9);
+    expect(
+      bounce.velocity.x * UP_NORMAL.x + bounce.velocity.y * UP_NORMAL.y,
+    ).toBeCloseTo(-incoming, 9);
   });
 });

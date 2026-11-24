@@ -17,6 +17,7 @@ import type {
   PogoSimulationConfig,
   PogoSnapshot,
 } from "./simulate-types";
+import { defaultTunables, mergeTune, type PogoTuneOverrides } from "./tune";
 
 const REST_POSE: Pose = { angleRad: 0, x: 0, y: 0 };
 
@@ -26,6 +27,7 @@ export async function createPogoSimulation(
   const rig = createPogoWorld(await loadRapier(), config);
   const state = createSimulationState();
   const input: PogoInputState = { jump: false, left: false, right: false };
+  let tunables = defaultTunables();
   let currentInput: PogoInputState = input;
   let accumulatorMs = 0;
   let prevBodyPose: Pose = REST_POSE;
@@ -55,7 +57,7 @@ export async function createPogoSimulation(
   function stepFixed(): void {
     prevBodyPose = currBodyPose;
     prevTipPose = currTipPose;
-    stepPogo(rig, config, state, currentInput);
+    stepPogo(rig, config, state, currentInput, tunables);
     measurePoses();
 
     if (
@@ -77,6 +79,9 @@ export async function createPogoSimulation(
       return rig.terrainPolylines();
     },
     respawn,
+    setTune(overrides: PogoTuneOverrides): void {
+      tunables = mergeTune(overrides);
+    },
     spawn: config.spawn,
     step(dtMs: number, nextInput: PogoInputState): PogoSnapshot {
       currentInput = nextInput;

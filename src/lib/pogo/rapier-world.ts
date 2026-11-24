@@ -4,7 +4,7 @@ import type {
   PrismaticImpulseJoint,
   RigidBody,
   World,
-} from "@dimforge/rapier2d-compat";
+} from "@dimforge/rapier2d";
 import { buildPolylineGeometry, toRapierPolyline } from "./polyline";
 import {
   BODY_FRICTION,

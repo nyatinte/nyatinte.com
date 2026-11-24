@@ -1,5 +1,6 @@
 import type { Box2D, Point2D, Pose } from "./coords";
 import type { RespawnReason } from "./respawn";
+import type { PogoTuneOverrides } from "./tune";
 
 export type PogoInputState = {
   readonly jump: boolean;
@@ -36,6 +37,7 @@ export type PogoSimulation = {
   readonly spawn: Point2D;
   step(dtMs: number, input: PogoInputState): PogoSnapshot;
   respawn(reason?: RespawnReason): void;
+  setTune(overrides: PogoTuneOverrides): void;
   getTerrainPolylines(): Array<Array<Point2D>>;
   destroy(): void;
 };

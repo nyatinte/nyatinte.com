@@ -29,6 +29,7 @@ import { evaluateTipPivot, estimatePivotLateralForceN } from "./pivot";
 import type { PogoWorld } from "./rapier-world";
 import type { SimulationState } from "./simulate-state";
 import type { PogoInputState, PogoSimulationConfig } from "./simulate-types";
+import type { PogoTunables } from "./tune";
 
 const REST_LENGTH_M = pxToMeters(BODY_TO_TIP_PX);
 const TOTAL_MASS_KG = TORSO_MASS_KG + STICK_MASS_KG;
@@ -92,18 +93,22 @@ function startCharge(
   normal: Point2D,
   previousStickVelocity: Point2D,
   accelDegPerSec2: number,
+  tune: PogoTunables,
 ): void {
   const impactSpeedPxPerSec = metersToPx(
     normalImpactSpeed(previousStickVelocity, normal),
   );
-  const resolution = resolveLanding({
-    alignmentAngleDeg: alignmentDegrees(rig.torsoBody.rotation(), normal),
-    angularVelocityDegPerSec: state.appliedAngularDegPerSec,
-    contactPart: "tip",
-    normal,
-    rotationInput: rotationInput(input),
-    velocity: previousStickVelocity,
-  });
+  const resolution = resolveLanding(
+    {
+      alignmentAngleDeg: alignmentDegrees(rig.torsoBody.rotation(), normal),
+      angularVelocityDegPerSec: state.appliedAngularDegPerSec,
+      contactPart: "tip",
+      normal,
+      rotationInput: rotationInput(input),
+      velocity: previousStickVelocity,
+    },
+    tune,
+  );
   if (resolution.outcome !== "clean") {
     applyLandingResolution(rig, state, resolution);
     return;
@@ -116,16 +121,21 @@ function startCharge(
       releasedAtMs: state.releasedAtMs,
     },
     state.simTimeMs,
+    tune,
   );
   state.launchOnRelease = input.jump;
-  state.contactRemainingMs = computeContactDurationMs(impactSpeedPxPerSec);
+  state.contactRemainingMs = computeContactDurationMs(
+    impactSpeedPxPerSec,
+    tune,
+  );
   state.boostState = handleContactBoost(state.boostState, {
     isTipContact: true,
     jumpHeld: input.jump,
   });
   state.compressionPx = computeCompressionPx(
-    computeChargeLevel(state.chargeMs),
+    computeChargeLevel(state.chargeMs, tune),
     state.boostState.ready && input.jump,
+    tune,
   );
   state.ouchFlashRemainingMs = 0;
   state.phase = "charging";
@@ -148,6 +158,7 @@ export function resolveContacts(
   input: PogoInputState,
   previousStickVelocity: Point2D,
   accelDegPerSec2: number,
+  tune: PogoTunables,
 ): void {
   const normal = rig.tipNormal();
   const torsoNormal = rig.torsoNormal();
@@ -158,14 +169,17 @@ export function resolveContacts(
     applyLandingResolution(
       rig,
       state,
-      resolveLanding({
-        alignmentAngleDeg: 90,
-        angularVelocityDegPerSec: state.appliedAngularDegPerSec,
-        contactPart: "body",
-        normal: torsoNormal ?? { x: 0, y: 1 },
-        rotationInput: rotationInput(input),
-        velocity: previousStickVelocity,
-      }),
+      resolveLanding(
+        {
+          alignmentAngleDeg: 90,
+          angularVelocityDegPerSec: state.appliedAngularDegPerSec,
+          contactPart: "body",
+          normal: torsoNormal ?? { x: 0, y: 1 },
+          rotationInput: rotationInput(input),
+          velocity: previousStickVelocity,
+        },
+        tune,
+      ),
     );
     failedThisStep = true;
   }
@@ -180,6 +194,7 @@ export function resolveContacts(
       normal,
       previousStickVelocity,
       accelDegPerSec2,
+      tune,
     );
   } else if (!normal && state.tipWasGrounded && state.phase !== "air") {
     rig.removePivot();

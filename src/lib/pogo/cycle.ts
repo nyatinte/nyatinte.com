@@ -19,7 +19,8 @@ import { pxToMeters } from "./coords";
 import { resolveContacts, updatePivot } from "./contact";
 import type { PogoWorld } from "./rapier-world";
 import { shouldCountFall, type RespawnReason } from "./respawn";
-import { ROTATION_MODEL, stepAngularVelocity } from "./rotation";
+import { stepAngularVelocity } from "./rotation";
+import type { PogoTunables } from "./tune";
 import type { SimulationState } from "./simulate-state";
 import type { PogoInputState, PogoSimulationConfig } from "./simulate-types";
 
@@ -33,12 +34,14 @@ function launch(
   rig: PogoWorld,
   state: SimulationState,
   input: PogoInputState,
+  tune: PogoTunables,
 ): void {
   const launchBoost = consumeBoostOnLaunch(state.boostState, input.jump);
   state.boostState = launchBoost.nextState;
   const unboostedCompressionPx = computeCompressionPx(
-    computeChargeLevel(state.chargeMs),
+    computeChargeLevel(state.chargeMs, tune),
     false,
+    tune,
   );
   if (!launchBoost.boosted && state.compressionPx > unboostedCompressionPx) {
     const allowedLengthM = REST_LENGTH_M - pxToMeters(unboostedCompressionPx);
@@ -68,6 +71,7 @@ export function stepPogo(
   config: PogoSimulationConfig,
   state: SimulationState,
   input: PogoInputState,
+  tune: PogoTunables,
 ): void {
   state.simTimeMs += FIXED_STEP_MS;
   if (input.jump && !state.prevHeld) {
@@ -84,7 +88,11 @@ export function stepPogo(
     previousDegPerSec,
     rotationInput(input),
     FIXED_STEP_SEC,
-    ROTATION_MODEL,
+    {
+      accelDegPerSec2: tune.rotationAccelDegPerSec2,
+      maxDegPerSec: tune.rotationMaxDegPerSec,
+      releaseDecelDegPerSec2: tune.rotationReleaseDecelDegPerSec2,
+    },
   );
   state.appliedAngularDegPerSec = nextDegPerSec;
   const accelDegPerSec2 = (nextDegPerSec - previousDegPerSec) / FIXED_STEP_SEC;
@@ -92,14 +100,15 @@ export function stepPogo(
   if (state.phase === "charging") {
     updatePivot(rig, state, accelDegPerSec2);
     if (state.launchOnRelease && !input.jump) {
-      launch(rig, state, input);
+      launch(rig, state, input, tune);
     } else {
       if (input.jump) {
         state.chargeMs += FIXED_STEP_MS;
       }
       state.compressionPx = computeCompressionPx(
-        computeChargeLevel(state.chargeMs),
+        computeChargeLevel(state.chargeMs, tune),
         state.boostState.ready && input.jump,
+        tune,
       );
       rig.setMotor(
         REST_LENGTH_M - pxToMeters(state.compressionPx),
@@ -108,7 +117,7 @@ export function stepPogo(
       );
       state.contactRemainingMs -= FIXED_STEP_MS;
       if (state.contactRemainingMs <= 0) {
-        launch(rig, state, input);
+        launch(rig, state, input, tune);
       }
     }
   } else if (state.phase === "launching") {
@@ -119,7 +128,15 @@ export function stepPogo(
   rig.world.step();
   state.physicsStepCount += 1;
 
-  resolveContacts(rig, config, state, input, stickVelocity, accelDegPerSec2);
+  resolveContacts(
+    rig,
+    config,
+    state,
+    input,
+    stickVelocity,
+    accelDegPerSec2,
+    tune,
+  );
 
   if (
     state.phase === "launching" &&
