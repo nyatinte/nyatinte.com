@@ -33,6 +33,7 @@ import {
   createPlayerRig,
   createTerrainBodies,
   isOutsideKillBounds,
+  terrainDebugPolygons,
 } from "./simulate-bodies";
 import type {
   PogoInputState,
@@ -99,7 +100,11 @@ export function createPogoSimulation(
     Body.setAngle(player, 0);
     Body.setAngularVelocity(player, 0);
     boostState = createBoostState();
-    compressionRemainingMs = 0;
+    compressionRemainingMs = computeBounce({
+      boostReady: false,
+      impactSpeed: 0,
+      jumpHeld: currentInput.jump,
+    }).contactDurationMs;
     contactImpactSpeed = 0;
     ouchFlashRemainingMs = 0;
     reachedGoal = false;
@@ -252,12 +257,7 @@ export function createPogoSimulation(
       Engine.clear(engine);
     },
     getTerrainPolygons(): Array<Array<Point2D>> {
-      return terrainBodies.flatMap((body) => {
-        const parts = body.parts.length > 1 ? body.parts.slice(1) : [body];
-        return parts.map((part) =>
-          part.vertices.map((vertex) => ({ x: vertex.x, y: vertex.y })),
-        );
-      });
+      return terrainDebugPolygons(terrainBodies);
     },
     pivotOffsetY,
     respawn,

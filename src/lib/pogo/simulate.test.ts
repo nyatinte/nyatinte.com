@@ -208,4 +208,21 @@ describe("spawn and fall counter", () => {
     }
     sim.destroy();
   });
+
+  it("still auto-bounces after a manual respawn on the pad", () => {
+    const sim = createPogoSimulation(config({ terrainPolygons: [PAD] }));
+    sim.step(FIXED_STEP_MS * 30, INPUT_NONE);
+    sim.respawn();
+    const first = sim.step(FIXED_STEP_MS, INPUT_NONE);
+    let minY = first.y;
+    let sawOuch = false;
+    for (let step = 0; step < 120; step += 1) {
+      const snapshot = sim.step(FIXED_STEP_MS, INPUT_RIGHT);
+      minY = Math.min(minY, snapshot.y);
+      sawOuch ||= snapshot.ouch;
+    }
+    expect(first.y - minY).toBeGreaterThan(UNCHARGED_APEX_PX * 0.5);
+    expect(sawOuch).toBe(false);
+    sim.destroy();
+  });
 });

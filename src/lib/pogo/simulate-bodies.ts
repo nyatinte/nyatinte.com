@@ -168,3 +168,14 @@ export function createPlayerRig(spawn: Point2D): PlayerRig {
     torsoId: torso.id,
   };
 }
+
+export function terrainDebugPolygons(
+  bodies: ReadonlyArray<Matter.Body>,
+): Array<Array<Point2D>> {
+  return bodies.flatMap((body) => {
+    const parts = body.parts.length > 1 ? body.parts.slice(1) : [body];
+    return parts.map((part) =>
+      part.vertices.map((vertex) => ({ x: vertex.x, y: vertex.y })),
+    );
+  });
+}
