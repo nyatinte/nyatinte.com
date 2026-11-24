@@ -188,6 +188,9 @@ importers:
 
   .:
     dependencies:
+      '@dimforge/rapier2d':
+        specifier: 0.21.0
+        version: 0.21.0
       '@modelcontextprotocol/server':
         specifier: 2.4.0
         version: 2.4.0
@@ -479,6 +482,9 @@ packages:
     engines: {node: '>=20.19.0'}
     peerDependencies:
       postcss-selector-parser: ^7.1.1
+
+  '@dimforge/rapier2d@0.21.0':
+    resolution: {integrity: sha512-4HBqGr7pWD0lMpJeo358MItN9nCDo0FeR77UYcdJA8tzJ43SG3TSkuoaMLwjh5TY9CFzjY9qtNQqG9Gj/Wspmw==}
 
   '@emnapi/runtime@1.11.3':
     resolution: {integrity: sha512-Xz4Tpyki7XyrpbUK1jR1AhdAdaXyhhY4lZ3neLodmhpuWfy2PAQN5B46sAiU4liOXGLkHypn/qU+jvfWSCYYLA==}
@@ -3136,6 +3142,8 @@ snapshots:
   '@csstools/selector-specificity@6.0.1(postcss-selector-parser@7.2.1)':
     dependencies:
       postcss-selector-parser: 7.2.1
+
+  '@dimforge/rapier2d@0.21.0': {}
 
   '@emnapi/runtime@1.11.3':
     dependencies:

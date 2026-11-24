@@ -39,6 +39,7 @@
     "vitals": "svelte-vitals --no-animation"
   },
   "dependencies": {
+    "@dimforge/rapier2d": "0.21.0",
     "@modelcontextprotocol/server": "2.4.0",
     "@tabler/icons": "^3.51.0",
     "@zbsearch/tokenizers": "4.0.4",

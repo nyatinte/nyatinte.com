@@ -7,6 +7,7 @@ import type { PreprocessorGroup } from "svelte/compiler";
 import type { Plugin } from "vite";
 import nkzw from "@nkzw/oxlint-config";
 import rsvelteRecommended from "@rsvelte/oxlint-plugin/recommended.json" with { type: "json" };
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite-plus";
 import { remarkHeadingIds } from "./src/lib/log/remark-heading-ids";
 import { logFrontmatterPlugin } from "./src/lib/log/vite-plugin";
@@ -180,6 +181,20 @@ export default defineConfig(({ mode }) => ({
             preprocess: svelteMarkdown(),
           }),
         ],
+  resolve: {
+    alias:
+      mode === "test"
+        ? {
+            "@dimforge/rapier2d": fileURLToPath(
+              new URL(
+                "./node_modules/@dimforge/rapier2d/rapier.js",
+                import.meta.url,
+              ),
+            ),
+          }
+        : undefined,
+  },
+  ssr: mode === "test" ? { noExternal: ["@dimforge/rapier2d"] } : undefined,
   test: {
     environment: "node",
     include: ["src/**/*.test.ts"],

@@ -1,0 +1,256 @@
+@layer components {
+  .pogo-page {
+    display: grid;
+    gap: 0.75rem;
+    inline-size: min(100%, 72rem);
+    margin-inline: auto;
+    padding: 5.5rem 1rem 2rem;
+    color: var(--home-foreground);
+    background: var(--home-background);
+  }
+
+  .pogo-page::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: var(--home-background);
+  }
+
+  .pogo-hud {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid color-mix(in srgb, currentcolor 18%, transparent);
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, currentcolor 4%, transparent);
+  }
+
+  .pogo-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.625rem;
+  }
+
+  .pogo-status h1 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
+
+  .pogo-badge,
+  .pogo-goal-badge,
+  .pogo-counter {
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+  }
+
+  .pogo-badge {
+    border: 1px solid color-mix(in srgb, currentcolor 22%, transparent);
+    opacity: 0.8;
+  }
+
+  .pogo-badge[data-active="true"] {
+    border-color: #f59e0b;
+    background: #f59e0b;
+    color: #111827;
+    opacity: 1;
+  }
+
+  .pogo-goal-badge {
+    background: #10b981;
+    color: #06281e;
+  }
+
+  .pogo-counter {
+    border: 1px solid color-mix(in srgb, currentcolor 15%, transparent);
+    font-weight: 500;
+  }
+
+  .pogo-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.85rem;
+    font-size: 0.8125rem;
+  }
+
+  .pogo-controls kbd {
+    padding: 0.1rem 0.35rem;
+    border: 1px solid color-mix(in srgb, currentcolor 30%, transparent);
+    border-radius: 0.25rem;
+    font-family: inherit;
+    font-size: 0.75rem;
+  }
+
+  .pogo-reset {
+    padding: 0.35rem 0.7rem;
+    border: 1px solid color-mix(in srgb, currentcolor 30%, transparent);
+    border-radius: 0.45rem;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .pogo-viewport {
+    position: relative;
+    inline-size: 100%;
+    block-size: min(72vh, 620px);
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, currentcolor 20%, transparent);
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, currentcolor 3%, transparent);
+    user-select: none;
+  }
+
+  .pogo-loading {
+    position: absolute;
+    inset-block-start: 1rem;
+    inset-inline-start: 1rem;
+    z-index: 2;
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  .pogo-world {
+    position: relative;
+    inline-size: 1840px;
+    block-size: 1040px;
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+
+  .pogo-stage {
+    position: relative;
+    z-index: 1;
+    display: block;
+  }
+
+  .pogo-grid {
+    position: absolute;
+    z-index: 0;
+    background-image:
+      linear-gradient(
+        to right,
+        color-mix(in srgb, var(--home-foreground) 8%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--home-foreground) 8%, transparent) 1px,
+        transparent 1px
+      );
+    pointer-events: none;
+  }
+
+  .pogo-debug-terrain {
+    fill: color-mix(in srgb, #f472b6 22%, transparent);
+    stroke: #f472b6;
+    stroke-width: 1.5;
+    pointer-events: none;
+  }
+
+  .pogo-terrain {
+    fill: var(--home-foreground);
+    fill-opacity: 0.16;
+    stroke: var(--home-foreground);
+    stroke-width: 2;
+    stroke-linejoin: round;
+    transition:
+      fill var(--home-theme-duration) var(--home-theme-easing),
+      stroke var(--home-theme-duration) var(--home-theme-easing);
+  }
+
+  .pogo-start-pad {
+    stroke: #38bdf8;
+  }
+
+  .pogo-goal-zone {
+    fill: color-mix(in srgb, #10b981 35%, transparent);
+  }
+
+  .pogo-flag-pole {
+    stroke: var(--home-foreground);
+    transition: stroke var(--home-theme-duration) var(--home-theme-easing);
+  }
+
+  .pogo-flag {
+    fill: #10b981;
+  }
+
+  .pogo-kill-line {
+    stroke: #ef4444;
+  }
+
+  .pogo-label {
+    fill: var(--home-foreground);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    transition: fill var(--home-theme-duration) var(--home-theme-easing);
+  }
+
+  .pogo-body {
+    position: absolute;
+    z-index: 3;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inline-size: 18px;
+    block-size: 44px;
+    border: 2px solid var(--home-foreground);
+    border-radius: 9px 9px 4px 4px;
+    background: linear-gradient(to bottom, #fbbf24 0 38%, #38bdf8 38% 100%);
+    box-sizing: border-box;
+    pointer-events: none;
+    transform-origin: 50% 50%;
+    will-change: transform;
+  }
+
+  .pogo-stick {
+    position: absolute;
+    z-index: 1;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inline-size: 6px;
+    block-size: 46px;
+    border-radius: 3px;
+    background: #94a3b8;
+    pointer-events: none;
+    transform-origin: 50% 0;
+    will-change: transform;
+  }
+
+  .pogo-tip {
+    position: absolute;
+    z-index: 2;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inline-size: 10px;
+    block-size: 10px;
+    border-radius: 50%;
+    background: #f97316;
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  .pogo-stick[data-boost-ready="true"] {
+    background: linear-gradient(to bottom, #94a3b8 0 68%, #fde047 68% 100%);
+    box-shadow: 0 6px 14px 4px #f59e0b;
+  }
+
+  .pogo-tip[data-boost-ready="true"] {
+    background: #fde047;
+    box-shadow: 0 0 12px 3px #f59e0b;
+  }
+
+  .pogo-body[data-ouch="true"] {
+    background: linear-gradient(to bottom, #ef4444 0 38%, #f87171 38% 100%);
+  }
+}

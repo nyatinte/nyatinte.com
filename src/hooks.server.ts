@@ -29,12 +29,43 @@ function shouldEnrichResponse(
   );
 }
 
+function withWasmUnsafeEval(csp: string) {
+  return csp
+    .split(";")
+    .map((part) => {
+      const directive = part.trim();
+      if (directive === "") {
+        return directive;
+      }
+      const [name, ...sources] = directive.split(/\s+/u);
+      if (name !== "script-src" || sources.includes("'wasm-unsafe-eval'")) {
+        return directive;
+      }
+      return `${directive} 'wasm-unsafe-eval'`;
+    })
+    .filter((directive) => directive !== "")
+    .join("; ");
+}
+
+function allowWasmEvalOnPogo(pathname: string, headers: Headers) {
+  if (pathname !== "/pogo") {
+    return;
+  }
+  const csp = headers.get("content-security-policy");
+  if (!csp) {
+    return;
+  }
+  headers.set("content-security-policy", withWasmUnsafeEval(csp));
+}
+
 async function finalizeHtmlResponse(
   response: Response,
+  pathname: string,
   enrichHeaders?: (headers: Headers) => void,
 ): Promise<Response> {
   const headers = new Headers(response.headers);
   enrichHeaders?.(headers);
+  allowWasmEvalOnPogo(pathname, headers);
   const contentType = headers.get("content-type") ?? "";
   if (!contentType.includes("text/html")) {
     return new Response(response.body, {
@@ -104,10 +135,10 @@ export const handle: Handle = async ({ event, resolve }) => {
       shouldEnrichResponse(route, response.status)
     )
   ) {
-    return finalizeHtmlResponse(response);
+    return finalizeHtmlResponse(response, event.url.pathname);
   }
 
-  return finalizeHtmlResponse(response, (headers) => {
+  return finalizeHtmlResponse(response, event.url.pathname, (headers) => {
     const enriched = agentResponseHeaders({
       canonicalUrl: canonicalSiteUrl(route.canonicalPath),
       existingVary: headers.get("Vary"),

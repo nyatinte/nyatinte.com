@@ -194,3 +194,40 @@ test("agent markdown keeps style inside markdown code blocks and drops top-level
   );
   expect(body).not.toContain(".outside-code");
 });
+
+const pageCsp =
+  "default-src 'self'; script-src 'self' 'nonce-abc'; object-src 'none'";
+
+function htmlWithCsp() {
+  return new Response("<html></html>", {
+    headers: {
+      "content-security-policy": pageCsp,
+      "content-type": "text/html; charset=utf-8",
+    },
+    status: 200,
+  });
+}
+
+test("/pogo HTML CSP adds wasm-unsafe-eval and keeps the nonce", async () => {
+  const response = await handle({
+    event: eventFor("http://127.0.0.1:8787/pogo"),
+    resolve: async () => htmlWithCsp(),
+  });
+
+  const csp = response.headers.get("content-security-policy") ?? "";
+  expect(csp).toContain("'wasm-unsafe-eval'");
+  expect(csp).toContain("'nonce-abc'");
+  expect(csp).toContain("script-src 'self' 'nonce-abc' 'wasm-unsafe-eval'");
+  expect(csp).toContain("default-src 'self'");
+  expect(csp).toContain("object-src 'none'");
+});
+
+test("home and log HTML CSP stay without wasm-unsafe-eval", async () => {
+  for (const path of ["/", "/log/stay-light-in-ai-era"]) {
+    const response = await handle({
+      event: eventFor(`http://127.0.0.1:8787${path}`),
+      resolve: async () => htmlWithCsp(),
+    });
+    expect(response.headers.get("content-security-policy")).toBe(pageCsp);
+  }
+});
