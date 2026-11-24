@@ -29,169 +29,231 @@ _Pogostuck: Rage With Your Friends_（開発者 Superku / Hendrik Felix Pohl、2
 15. Reddit r/PogoStuck、u/Dracibatic（2022-02-01、非公式のコミュニティ測定）: https://www.reddit.com/r/PogoStuck/comments/shtkev/a_small_list_of_pogostuck_stuff_i_found_neat/
 16. Reddit r/PogoStuck、u/Willing-Loan-1700（2026-09-10、出典 15 の再掲に見える非公式リスト）: https://www.reddit.com/r/PogoStuck/comments/1wclylp/a_big_list_of_cool_pogostuck_stuff_i_found/
 
+### 追加調査（ラウンド3）
+
+17. 開発者 Superku、2020-07-15（出典 4 の再確認）: https://steamcommunity.com/app/688130/discussions/0/2788242183271372329/
+    - ジャンプボタンを押すと hop する。早く離すと短い hop になる。
+    - ブーストは空中で回してジャンプを押し続ける。次ジャンプのチャージ中に早く離すとブーストはキャンセルされる。
+    - 落下が深いほど接地時間が長く、次ジャンプの狙いを合わせる余裕が増える。
+18. 開発者 Superku、2020-09-02（出典 3 の再確認）: https://steamcommunity.com/app/688130/discussions/0/2948124408713778310/
+    - 接地前にジャンプを離すとブーストジャンプはキャンセルされる。
+19. レツ（出典 8 の再確認）: https://note.com/retsu_teno/n/nd7518b0df608
+    - 「ジャンプを押し続けると着地時のジャンプ力が上がる。」
+20. Reddit r/PogoStuck、u/realSuperglue（2021-04-13、コミュニティ。開発者本人かは確認できない）: https://www.reddit.com/r/PogoStuck/comments/m5mm0o/how_does_one_use_the_double_jump/
+    - 「壁や地面に触れる前にジャンプを押して保持する。通常ジャンプは離したとき、またはポゴが自動で打ち出すときに出る」。ミリ秒の記述は無い。
+21. Steam ガイド（出典 11 の再確認）: https://steamcommunity.com/sharedfiles/filedetails/?id=3323449872
+    - ジャンプボタンを押し続けると高く跳べる。
+
+ばね・スライダ・先端ピボットの公式記述、着地バッファの公式ミリ秒、接地摩擦の公式数値は、Steam / note / NamuWiki / speedrun / 検索した範囲では見つかりませんでした。一般的なポゴの力学や汎用の jump buffer 解説は本家の出典にしません。
+
 ## 2. 確定した仕様（出典あり）
 
 - **自動バウンド**: ポゴ先端が地形へ着地するたびに自動で跳ねます。ボタン無操作でも跳び続けます（出典 8, 9）。
-- **ジャンプチャージと hop**: ジャンプボタン（Space）を押し続けると着地時のジャンプ力が上がります。早く離すと短い hop になります（出典 4, 8, 11）。
+- **ジャンプチャージと hop**: ジャンプボタン（Space）を押し続けると着地時のジャンプ力が上がります。早く離すと短い hop になります（出典 4, 8, 11, 17, 19, 21）。
+- **通常ジャンプの発火**: 離したとき、またはポゴが自動で打ち出すときに出ます。壁や地面に触れる前に押して保持するのが基本です（出典 20、コミュニティ。ミリ秒は無し）。
 - **空中回転**: 空中で `A` / `D` を押し続けて機体を傾け・回転させます。地面を離れた瞬間から回し始めるのが基本です（出典 3, 4, 8）。
-- **入力と回転速度**: アナログ入力の 0–100% はトルクではなく回転速度（turning speed）へ写像されます。オプションメニューの回転する顔も同じ計算を使っています（出典 7, 14）。キーボード `A` / `D` の最大角速度・角加速度・離鍵後の減衰の数値は公開されていません。
-- **ブースト条件（285°）**: 空中で累積回転角が約 `285°` に達するとブーストが成立します（ゲーム内では「360°」と表現されますが、開発者は実測条件が `285°` であると明言しています）。達成すると先端にチャージ演出が出ます（出典 3, 4, 5, 8, 10）。
+- **入力と回転速度**: アナログ入力の 0–100% はトルクではなく回転速度（turning speed）へ写像されます（出典 7, 14）。キーボード `A` / `D` の最大角速度・角加速度・離鍵後の減衰の数値は公開されていません。
+- **ブースト条件（285°）**: 空中で累積回転角が約 `285°` に達するとブーストが成立します（出典 3, 4, 5, 8, 10）。
 - **ブースト発動と取消**:
-  - 次ジャンプのチャージ中にジャンプボタンを早く離すとブーストはキャンセルされます（出典 3, 4, 5）。
+  - 次ジャンプのチャージ中にジャンプボタンを早く離すとブーストはキャンセルされます（出典 3, 4, 5, 17, 18）。
   - ブースト成立後にポゴ先端以外が地形に触れるとブーストを失います（出典 5）。
   - ジャンプを押したまま先端だけで着地すると、次のジャンプがブーストジャンプになります（出典 5, 8）。
 - **追加回転の扱い**: `720°` などの追加回転を行っても通常モードのブースト威力は増加しません（出典 6）。
-- **落下と接地時間・反発**: 深い落下ほど接地時間が長くなり、次ジャンプの狙いを合わせる余裕が増えます（出典 4）。落下の勢い・高さは着地後のジャンプ力に寄与します（出典 1, 8, 10, 11）。
-- **失敗着地（Ouch）**: 先端以外での着地、または先端でも着地面に対する角度が不足した着地ではバランスを失います（Ouch）。壁や天井でも先端着地が成立すれば跳ねます（出典 8, 11）。
+- **落下と接地時間・反発**: 深い落下ほど接地時間が長くなり、次ジャンプの狙いを合わせる余裕が増えます（出典 4, 17）。落下の勢い・高さは着地後のジャンプ力に寄与します（出典 1, 8, 10, 11）。
+- **失敗着地（Ouch）**: 先端以外での着地、または先端でも着地面に対する角度が不足した着地ではバランスを失います（出典 8, 11）。壁や天井でも先端着地が成立すれば跳ねます（出典 8, 11）。
 - **体ヒットと運動量**: 体が崖などの地形に当たると運動量をすべて失います（出典 11）。先端以外が地形に触れるとブーストを失います（出典 5）。
-- **既定操作とカメラ**: 既定の操作は `A`（左傾け）、`D`（右傾け）、`Space`（ジャンプ）です。矢印キーでカメラを動かし、周囲の先読みができます（出典 8）。
-- **未採用事項**: 連続ブーストでジャンプ力が育つ説（出典 13）は開発者確認が取れていないため採用しません。`E` のエモート（出典 8）とスケートモードは PoC の対象外です。
+- **既定操作とカメラ**: `A`（左傾け）、`D`（右傾け）、`Space`（ジャンプ）。矢印キーでカメラを先読みできます（出典 8）。
+- **未採用事項**: 連続ブーストでジャンプ力が育つ説（出典 13）は開発者確認が取れていないため採用しません。`E` のエモート（出典 8）とスケートモードは対象外です。
 
-## 3. 仮定と定数一覧
+## 3. ラウンド3（Rapier 2D への移行）
+
+ラウンド2 の Matter.js 実装を捨て、2 剛体のばね物理へ作り直しました。`matter-js`、`poly-decomp`、`@types/matter-js` と Matter 専用のコード・テストは削除済みです。Planck は使いません。
+
+### エンジン
+
+- **パッケージ**: `@dimforge/rapier2d-compat` 0.21.0。`-compat` 版は WASM を base64 で内包するため、SvelteKit on Cloudflare Workers のリポジトリ全体へ Vite の WASM プラグインを足さずに済み、`await init()` がそのまま読み込み表示になります。`@dimforge/rapier2d`（非 compat）は別 WASM ファイルの配信設定が要り、同じ隔離を保てる根拠が無いため採用しません。
+- **2 剛体**: 胴体（`PLAYER_WIDTH` × `PLAYER_HEIGHT` の箱）とスティック（先端の球）。スティック軸方向のプリズマティック・ジョイントでつなぎ、相対回転を固定します。`PRISMATIC_TRAVEL_PX` の範囲で伸縮し、胴体とスティックの接触は無効にします。
+- **ばね**: ジョイントの位置モーター。チャージ中は圧縮目標へ、離陸時は自然長へ戻します。剛性・減衰・最大力・限界は `constants.ts` に置きます。スティックの剛体は CCD 有効です。
+- **座標**: Rapier は Y 上向き・メートル、ステージは Y 下向き・ピクセル。`PIXELS_PER_METER` で境界変換し、角度と角速度の符号を反転します（`coords.ts`）。
+- **120Hz**: `FIXED_STEP_MS` のアキュムレータとスパイラル・オブ・デス上限を維持し、`world.timestep` を固定ステップに合わせます。描画は直近 2 姿勢の補間です。スナップショットに `physicsStepCount` を含めます。
+- **WASM 初期化**: `/pogo` の `onMount` だけが `simulate` を動的 import し、その中で Rapier を動的 import して `await init()` します。完了までは読み込み表示（`role="status"`）を出し、失敗時は `role="alert"` に切り替えます。
+- **描画**: 胴体・軸・先端の 3 つの div を `translate3d` / `rotate` で更新します。カメラは `#world` への逆向き `translate3d` のままです。
+
+### チャージ・離陸・自動発射
+
+- Space を押し続けると接地中の圧縮が深くなります（出典 17, 19, 21）。押し切ると接触窓の終わりで自動発射し、途中で離すとその時点のチャージで短い hop になります（出典 17, 20）。離したときにブーストのチャージ中ならブーストは取消されます（出典 17, 18）。
+- チャージ量は押下時間で `CHARGE_FULL_MS` まで増え、圧縮目標は `UNCHARGED_COMPRESSION_PX` から `CHARGED_COMPRESSION_PX`（ブースト時は `BOOST_COMPRESSION_PX`）へ動きます。
+
+### 着地入力猶予
+
+- `JUMP_PRE_LANDING_BUFFER_MS`: 先端接地の直前に押した Space は、接地時点で既に離されていてもチャージとして数えます。数値は仮定です（公式値なし）。
+- 押しっぱなしのチャージは着地をまたいで維持します（出典 17–19。窓の長さの公式値はなし）。
+- 接地時間は衝突速度で伸びます（出典 4, 17。式と数値は仮定）。落下が深いほど次の狙いを合わせる余裕が増える、という定性仕様を `GROUND_CONTACT_*` で表します。
+
+### 接地中の先端ピボット
+
+- 先端が有効着地しているあいだ、先端を一時的な revolute ジョイントで地面へ固定し、`A` / `D` で先端を支点に機体を回します。離陸で解除します。
+- 斜面が `TIP_PIVOT_MAX_SLOPE_DEG` を超える、または横力が `TIP_PIVOT_MAX_FORCE_N` を超えると解除して滑らせます。公式記述は無く、すべて仮定です。
+
+### 地形のサンプリングと描画
+
+- `path[data-terrain]` を `getTotalLength()` / `getPointAtLength()` で `TERRAIN_SAMPLE_STEP_PX` 間隔にサンプルし、SVG ルート基準の CTM（`svg.getScreenCTM().inverse()` × `path.getScreenCTM()`）で `#world` のカメラ変換を打ち消して `#world` 座標へ写します。`TERRAIN_MIN_EDGE_PX` 未満の辺を捨て、`ColliderDesc.polyline` のポリラインにします。閉じたパスは最後→最初の辺を足して閉じます。
+- 地形の `fill` / `stroke` とグリッドは `currentcolor` ではなく `var(--home-foreground)` を使います。地形の塗りは SVG の `fill-opacity`、グリッドは `color-mix` で薄くします。`color-mix(..., currentcolor ...)` は SVG と WebKit・ダークモードで崩れるため使いません。テーマ遷移は `--home-theme-duration` / `--home-theme-easing` だけを使います。
+
+### 実測（仮定の目標との比較）
+
+`pnpm exec vp test --run src/lib/pogo`、Node 26.13.1、Rapier 0.21.0、平らな足場、120Hz 固定ステップ。乱数を使わないため再実行しても同値です。到達高は接地開始時の胴体中心から飛行中の最高点までの差です。
+
+| 条件                       | 実測    | 目標（仮定） |
+| -------------------------- | ------- | ------------ |
+| 無チャージ自動バウンド     | 89.4px  | 88px         |
+| 押し切りチャージ           | 149.2px | 146.7px      |
+| チャージ 3 ステップで離す  | 51.3px  | 押し切り未満 |
+| 接地中の先端 x 変位（A/D） | 0.08px  | 実質 0       |
+
+目標は 44px の体高に対する `2` / `5/1.5` / `7/1.5` 倍です。ブーストの到達高は着地角度に依存するため、同じばねモデルの押し込み量で目標に合わせます。
+
+## 4. 仮定と定数一覧
 
 公式の数値式・物理パラメータは非公開です。PoC を成立させるための初期値と計算ルールはすべて「仮定」として `src/lib/pogo/constants.ts` にまとめます。
 
-### 固定ステップと 120Hz
+### 固定ステップ・座標・重力
 
-| 定数名                        | 値         | 区分 | 説明                                                                                |
-| ----------------------------- | ---------- | ---- | ----------------------------------------------------------------------------------- |
-| `FIXED_STEP_HZ`               | `120`      | 仮定 | 物理の固定ステップ周波数。公式の内部 tick は非公開のため、依頼どおり 120Hz にします |
-| `FIXED_STEP_MS`               | `1000/120` | 仮定 | 1 ステップの時間（ms）。アキュムレータで 0..N 回 `Engine.update` します             |
-| `MAX_FRAME_DT_MS`             | `50`       | 仮定 | 1 フレームで取り込む最大経過時間（ms）。タブ復帰時の巨大な dt を捨てます            |
-| `MAX_PHYSICS_STEPS_PER_FRAME` | `8`        | 仮定 | 1 フレームで回す物理ステップの上限。スパイラル・オブ・デスを防ぎます                |
-| `MATTER_BASE_DELTA_MS`        | `1000/60`  | 仕様 | Matter.js 0.20 の速度基準ステップ（ms）。`Body.setVelocity` の速度単位の基準        |
-| `MATTER_GRAVITY_SCALE`        | `0.001`    | 仕様 | Matter.js 0.20 の既定重力スケール                                                   |
+| 定数名                        | 値         | 区分 | 説明                                          |
+| ----------------------------- | ---------- | ---- | --------------------------------------------- |
+| `FIXED_STEP_HZ`               | `120`      | 仮定 | 物理の固定ステップ周波数                      |
+| `FIXED_STEP_MS`               | `1000/120` | 仮定 | 1 ステップの時間（ms）                        |
+| `MAX_FRAME_DT_MS`             | `50`       | 仮定 | 1 フレームで取り込む最大経過時間（ms）        |
+| `MAX_PHYSICS_STEPS_PER_FRAME` | `8`        | 仮定 | 1 フレームで回す物理ステップの上限            |
+| `PIXELS_PER_METER`            | `100`      | 仮定 | ステージ px と Rapier メートルの比率          |
+| `GRAVITY_M_PER_SEC2`          | `16`       | 仮定 | 重力（m/s²）。ラウンド2 の `1600px/s²` に相当 |
 
 ### プレイヤーと地形
 
-| 定数名                | 値     | 区分 | 説明                                                             |
-| --------------------- | ------ | ---- | ---------------------------------------------------------------- |
-| `GRAVITY_Y`           | `1.6`  | 仮定 | Matter.js の重力 Y（DOM と同じく下向き正）。`1600px/s²` に相当   |
-| `PLAYER_WIDTH`        | `18`   | 仮定 | 胴体の当たり判定幅（px）                                         |
-| `PLAYER_HEIGHT`       | `44`   | 仮定 | 胴体の当たり判定高さ（px）。コミュニティの体高 1.5m に対応させる |
-| `STICK_LENGTH`        | `36`   | 仮定 | ポゴ軸の長さ（px）                                               |
-| `TIP_RADIUS`          | `5`    | 仮定 | ポゴ先端円の半径（px）                                           |
-| `PLAYER_FRICTION_AIR` | `0`    | 仮定 | 空中の線形減衰。空気抵抗の出典がないため 0（運動量を保存）       |
-| `TIP_FRICTION`        | `0.05` | 仮定 | 先端の摩擦係数（斜面での滑りを許容）                             |
-| `BODY_FRICTION`       | `0.45` | 仮定 | 胴体・軸の摩擦係数                                               |
+| 定数名           | 値     | 区分 | 説明                                                       |
+| ---------------- | ------ | ---- | ---------------------------------------------------------- |
+| `PLAYER_WIDTH`   | `18`   | 仮定 | 胴体の当たり判定幅（px）                                   |
+| `PLAYER_HEIGHT`  | `44`   | 仮定 | 胴体の当たり判定高さ（px）。コミュニティの体高 1.5m に対応 |
+| `BODY_TO_TIP_PX` | `46`   | 仮定 | 自然長での胴体中心と先端中心の距離（px）                   |
+| `TIP_RADIUS`     | `5`    | 仮定 | 先端円の半径（px）                                         |
+| `TORSO_MASS_KG`  | `1`    | 仮定 | 胴体の質量（kg）                                           |
+| `STICK_MASS_KG`  | `0.15` | 仮定 | スティックの質量（kg）                                     |
+| `TIP_FRICTION`   | `0.05` | 仮定 | 先端の摩擦係数（斜面での滑りを許容）                       |
+| `BODY_FRICTION`  | `0.45` | 仮定 | 胴体の摩擦係数                                             |
 
-### ジャンプ高さ（非公式コミュニティ測定と仮定）
+### ばねと到達高
 
-出典 15 は「Pogo Guy はほぼ 1.5m」「base jump 5m、boost jump 7m」と書く非公式のコミュニティ測定です。全文は Reddit のログイン壁で取得できず、公開検索スニペットからの引用です。`PLAYER_HEIGHT = 44px` を 1.5m に対応させる仮定のもとで、以下を目標にします。
+| 定数名                             | 値      | 区分                          | 説明                                     |
+| ---------------------------------- | ------- | ----------------------------- | ---------------------------------------- |
+| `PRISMATIC_TRAVEL_PX`              | `30`    | 仮定                          | プリズマティックの可動量（px）           |
+| `UNCHARGED_APEX_BODY_HEIGHTS`      | `2`     | 出典なし・仮定                | 無チャージ hop の到達高（体高比）        |
+| `CHARGED_APEX_BODY_HEIGHTS`        | `5/1.5` | 非公式（出典 15）・対応は仮定 | "base jump" 5m をチャージ hop に対応     |
+| `BOOST_APEX_BODY_HEIGHTS`          | `7/1.5` | 非公式（出典 15）・対応は仮定 | boost jump 7m                            |
+| `UNCHARGED_COMPRESSION_PX`         | `14`    | 仮定                          | 無チャージ時にモーターが引く圧縮量（px） |
+| `CHARGED_COMPRESSION_PX`           | `18`    | 仮定                          | 押し切り時の圧縮量（px）                 |
+| `BOOST_COMPRESSION_PX`             | `24.5`  | 仮定                          | ブースト時の圧縮量（px）                 |
+| `SPRING_CHARGE_STIFFNESS`          | `20000` | 仮定                          | チャージ中に圧縮目標へ寄せる剛性         |
+| `SPRING_CHARGE_DAMPING`            | `400`   | 仮定                          | チャージ中に振動を抑える減衰             |
+| `SPRING_LAUNCH_STIFFNESS`          | `2600`  | 仮定                          | 離陸時に伸ばすばねの剛性                 |
+| `SPRING_LAUNCH_DAMPING`            | `4`     | 仮定                          | 離陸時の減衰                             |
+| `SPRING_MOTOR_MAX_FORCE`           | `20000` | 仮定                          | モーターの最大力（N）                    |
+| `PIVOT_RELEASE_EXTENSION_FRACTION` | `0.5`   | 仮定                          | 伸びきる前に先端ピボットを外す割合       |
 
-| 定数名                        | 値             | 区分                              | 説明                                                                        |
-| ----------------------------- | -------------- | --------------------------------- | --------------------------------------------------------------------------- |
-| `UNCHARGED_APEX_BODY_HEIGHTS` | `2`            | 出典なし・仮定                    | 無チャージ hop の到達高（体高比）。`88px`                                   |
-| `CHARGED_APEX_BODY_HEIGHTS`   | `5/1.5 ≈ 3.33` | 非公式（出典 15）・対応は仮定     | コミュニティの "base jump" 5m をチャージ hop に対応させたもの。`約146.7px`  |
-| `BOOST_APEX_BODY_HEIGHTS`     | `7/1.5 ≈ 4.67` | 非公式（出典 15）・対応は仮定     | コミュニティの boost jump 7m。`約205.3px`                                   |
-| `UNCHARGED_APEX_PX`           | `88`           | 導出                              | `PLAYER_HEIGHT * UNCHARGED_APEX_BODY_HEIGHTS`                               |
-| `CHARGED_APEX_PX`             | `約146.7`      | 導出                              | 同上                                                                        |
-| `BOOST_APEX_PX`               | `約205.3`      | 導出                              | 同上                                                                        |
-| `AUTO_BOUNCE_SPEED`           | `約8.956`      | 導出                              | `UNCHARGED_APEX_PX` から逆算したバウンド速度（Matter 速度単位）             |
-| `CHARGED_BOUNCE_SPEED`        | `約11.530`     | 導出                              | `CHARGED_APEX_PX` から逆算                                                  |
-| `BOOST_BOUNCE_SPEED`          | `約13.622`     | 導出                              | `BOOST_APEX_PX` から逆算                                                    |
-| `BOOST_BOUNCE_MULTIPLIER`     | `約1.181`      | 導出                              | `BOOST_BOUNCE_SPEED / CHARGED_BOUNCE_SPEED`                                 |
-| `MAX_BOUNCE_SPEED`            | `約13.622`     | 仮定                              | バウンド速度の上限。ブースト速度と同じにし、単発ブーストを `205px` に抑える |
-| `FALL_SPEED_BOUNCE_SCALE`     | `0.35`         | 仮定（定性のみ出典 1, 8, 10, 11） | 現在の hop の落下速度を超えた分だけバウンド速度へ加算する係数               |
+### チャージ・着地猶予・接地時間
 
-到達高は Matter.js 0.20 の Verlet 積分順序を含む閉形式 `V²/(2g) − V·Δt/2`（`V` は px/s、`Δt = 1/120s`）で求めます。実機の Matter 120Hz で 3 回ずつ測った到達高は `88.012 / 146.672 / 205.345px`、ばらつきは 0 でした。空気抵抗は `PLAYER_FRICTION_AIR = 0` のため含みません。
+| 定数名                                      | 値    | 区分                       | 説明                                                |
+| ------------------------------------------- | ----- | -------------------------- | --------------------------------------------------- |
+| `CHARGE_FULL_MS`                            | `45`  | 仮定                       | チャージ量が最大になる押下時間（ms）                |
+| `JUMP_PRE_LANDING_BUFFER_MS`                | `120` | 仮定                       | 着地直前に押した Space をチャージとして拾う窓（ms） |
+| `GROUND_CONTACT_BASE_MS`                    | `90`  | 仮定（定性のみ出典 4, 17） | 先端接地時間の基本値（ms）                          |
+| `GROUND_CONTACT_FALL_MS_PER_100_PX_PER_SEC` | `12`  | 仮定（定性のみ出典 4, 17） | 衝突速度 100px/s あたりに足す接地時間（ms）         |
+| `GROUND_CONTACT_MAX_MS`                     | `400` | 仮定                       | 接地時間の上限（ms）                                |
 
-### 回転（仮定）
+### 回転
 
-出典 7・14 は入力 % が turning speed へ写像されると述べるだけで、最大角速度・角加速度・離鍵後の減衰・地上と空中の差は公開していません。以下はすべて仮定です。
+出典 7・14 は入力 % が turning speed へ写像されると述べるだけで、最大角速度・角加速度・離鍵後の減衰は公開していません。以下はすべて仮定です。
 
-| 定数名                                | 値     | 区分 | 説明                                                                 |
-| ------------------------------------- | ------ | ---- | -------------------------------------------------------------------- |
-| `ROTATION_MAX_DEG_PER_SEC`            | `480`  | 仮定 | `A` / `D` 100% 入力時の目標角速度。通常 hop の滞空中に 285° を回せる |
-| `ROTATION_ACCEL_DEG_PER_SEC2`         | `4800` | 仮定 | 目標角速度へ加速する角加速度。最大到達まで約 0.1s                    |
-| `ROTATION_RELEASE_DECEL_DEG_PER_SEC2` | `4000` | 仮定 | 離鍵後に 0 へ減速する角加速度。停止まで約 0.12s                      |
-| `BOUNCE_ANGULAR_KEEP`                 | `0.7`  | 仮定 | クリーンな先端バウンドで持ち越す角速度の割合                         |
+| 定数名                                | 値     | 説明                                     |
+| ------------------------------------- | ------ | ---------------------------------------- |
+| `ROTATION_MAX_DEG_PER_SEC`            | `480`  | `A` / `D` 100% 入力時の目標角速度        |
+| `ROTATION_ACCEL_DEG_PER_SEC2`         | `4800` | 目標角速度へ加速する角加速度             |
+| `ROTATION_RELEASE_DECEL_DEG_PER_SEC2` | `4000` | 離鍵後に 0 へ減速する角加速度            |
+| `BOUNCE_ANGULAR_KEEP`                 | `0.7`  | クリーンな先端離陸で持ち越す角速度の割合 |
 
-地上（圧縮中）と空中で同じ最大角速度・角加速度を使います（差の出典なし）。圧縮中も回転でき、次ジャンプの狙いを合わせられます。
+### 着地・失敗着地・ピボット
 
-### 着地と接地
+| 定数名                                    | 値     | 区分                      | 説明                                              |
+| ----------------------------------------- | ------ | ------------------------- | ------------------------------------------------- |
+| `BOOST_ROTATION_DEGREES`                  | `285`  | 出典 3–5, 10 / 実装は仮定 | ブースト成立に必要な空中累積回転角（度）          |
+| `TIP_ALIGN_MAX_ANGLE_DEG`                 | `50`   | 仮定（定性のみ出典 8）    | スティック軸と着地面法線の許容ずれ角（度）        |
+| `TIP_PIVOT_MAX_SLOPE_DEG`                 | `55`   | 仮定                      | 先端ピボットを解除する斜面の上限（度）            |
+| `TIP_PIVOT_MAX_FORCE_N`                   | `60`   | 仮定                      | 先端ピボットを解除する横力の上限（N）             |
+| `OUCH_BODY_LINEAR_KEEP`                   | `0.05` | 仮定（出典 11 は定性）    | 体ヒット時に残す線形速度の割合                    |
+| `OUCH_GLANCING_LINEAR_KEEP`               | `0.3`  | 仮定                      | 角度不足の先端ヒットで残す線形速度の割合          |
+| `OUCH_RESIDUAL_BOUNCE_SPEED_M_PER_SEC`    | `0.36` | 仮定                      | 失敗着地で埋まり込みを避ける微小な分離速度（m/s） |
+| `OUCH_TUMBLE_ANGULAR_IMPULSE_DEG_PER_SEC` | `180`  | 仮定                      | 体ヒット時に加える角速度インパルス                |
+| `OUCH_FLASH_MS`                           | `260`  | 仮定                      | 失敗着地の赤フラッシュ表示時間                    |
 
-| 定数名                                    | 値     | 区分                              | 説明                                                         |
-| ----------------------------------------- | ------ | --------------------------------- | ------------------------------------------------------------ |
-| `BOOST_ROTATION_DEGREES`                  | `285`  | 出典 3–5, 10 / 実装詳細は仮定     | ブースト成立に必要な空中累積回転角（度）                     |
-| `TIP_ALIGN_MAX_ANGLE_DEG`                 | `50`   | 仮定（定性のみ出典 8）            | スティック上向き軸と着地面外向き法線の許容ずれ角（度）       |
-| `OUCH_BODY_LINEAR_KEEP`                   | `0.05` | 仮定（「運動量を失う」は出典 11） | 体ヒット時に残す線形速度の割合。ほぼ 0                       |
-| `OUCH_GLANCING_LINEAR_KEEP`               | `0.3`  | 仮定                              | 角度不足の先端ヒットで残す線形速度の割合。体ヒットより緩い   |
-| `OUCH_RESIDUAL_BOUNCE_SPEED`              | `0.6`  | 仮定                              | 失敗着地で埋まり込みを避けるため法線方向へ残す微小な分離速度 |
-| `OUCH_TUMBLE_ANGULAR_IMPULSE_DEG_PER_SEC` | `180`  | 仮定                              | 体ヒット時に加える角インパルス。既存の角速度はゼロにしない   |
-| `OUCH_FLASH_MS`                           | `260`  | 仮定                              | 失敗着地の赤フラッシュ表示時間。操作・物理には影響しない     |
-| `COMPRESSION_HORIZONTAL_DAMP`             | `0.75` | 仮定                              | 先端圧縮中に残す水平速度の割合                               |
-| `GROUND_CONTACT_BASE_MS`                  | `90`   | 仮定                              | 先端接地（圧縮）時間の基本値（ms）                           |
-| `GROUND_CONTACT_FALL_MS_PER_SPEED`        | `12`   | 仮定（定性のみ出典 4）            | 衝突速度あたりに追加する接地時間（ms）                       |
+失敗着地は、体ヒットで線形速度をほぼゼロにし、ブーストを取消し、既存の角速度を保ったまま小さな角インパルスを足します。角度不足の先端ヒットは体ヒットより運動量を残します。操作ロック・スタン・自動直立はありません（仮定）。
 
-失敗着地の詳細（ラグドールか引っかかりか、自動起き上がりの有無、操作ロックの有無、反発係数）は公式・信頼できる二次資料のどちらにも記述がありません。PoC では次を仮定します。
+### 地形・ステージ・カメラ
 
-- 体ヒットは線形速度をほぼゼロにし、ブーストを取消し、圧縮／バウンドサイクルを開始しない。
-- 角度不足の先端ヒットも失敗着地だが、残す運動量は体ヒットより多い。
-- 既存の角速度はゼロにせず、体ヒット時は小さな角インパルスを足して倒れ込む。
-- 操作はロックしない。自動で直立へスナップしない。回復はプレイヤーが `A` / `D` で先端を下へ戻し、クリーンな先端着地をするまで待つ。
+| 定数名                   | 値     | 区分                     | 説明                                     |
+| ------------------------ | ------ | ------------------------ | ---------------------------------------- |
+| `TERRAIN_SAMPLE_STEP_PX` | `8`    | 仮定                     | SVG `<path>` のサンプリング間隔（px）    |
+| `TERRAIN_MIN_EDGE_PX`    | `2`    | 仮定                     | 捨てる最小の辺長（px）                   |
+| `KILL_PLANE_MARGIN`      | `80`   | 仮定                     | ステージ境界から外れた際のリスポーン余白 |
+| `CAMERA_PAN_SPEED`       | `420`  | 仮定（移動自体は出典 8） | カメラ先読み速度（px/秒）                |
+| `CAMERA_PAN_LIMIT`       | `320`  | 仮定                     | カメラ先読みオフセットの上限（px）       |
+| `W_S_CAMERA_PAN`         | `true` | 仮定                     | `W` / `S` の上下先読みを割り当てる       |
+| `GRID_CELL_PX`           | `40`   | 仮定                     | 背景グリッドの間隔（px）                 |
 
-### ステージ・カメラ・グリッド
+## 5. 純粋関数の仕様
 
-| 定数名                | 値      | 区分                                 | 説明                                                                                |
-| --------------------- | ------- | ------------------------------------ | ----------------------------------------------------------------------------------- |
-| `PATH_SAMPLE_SPACING` | `8`     | 仮定                                 | SVG `<path>` サンプリング間隔（px）                                                 |
-| `KILL_PLANE_MARGIN`   | `80`    | 仮定                                 | ステージ境界から外れた際にリスポーンする余白（px）                                  |
-| `CAMERA_PAN_SPEED`    | `420`   | 仮定（矢印キーでの移動自体は出典 8） | カメラ先読み速度（px/秒）                                                           |
-| `CAMERA_PAN_LIMIT`    | `320`   | 仮定                                 | カメラ先読みオフセットの上限（px）                                                  |
-| `W_S_CAMERA_PAN`      | `true`  | 仮定                                 | 本家に `W` / `S` 移動の出典がないため、`W`（上見渡し）/ `S`（下見渡し）を割り当てる |
-| `GRID_CELL_PX`        | `40`    | 仮定                                 | 背景グリッドの間隔（px）                                                            |
-| `GRID_MIN_X`          | `-4000` | 仮定                                 | グリッド左端（world 座標）                                                          |
-| `GRID_MAX_X`          | `6000`  | 仮定                                 | グリッド右端                                                                        |
-| `GRID_MIN_Y`          | `-4000` | 仮定                                 | グリッド上端                                                                        |
-| `GRID_MAX_Y`          | `4000`  | 仮定                                 | グリッド下端                                                                        |
+物理エンジンや DOM に依存しない純粋関数を中心に実装し、単体テストで挙動を検証します。Rapier の初期化が要るテストだけ `await init()` を待ちます。
 
-## 4. 純粋関数の仕様
+- **`charge.ts`**
+  - `computeContactDurationMs(impactSpeedPxPerSec)`: 基本 90ms に衝突速度 100px/s あたり 12ms を足し、400ms でクランプします。
+  - `computeContactChargeMs(timing, contactStartMs)`: 接地時点で押していれば押下開始からの時間、着地前に離していれば `JUMP_PRE_LANDING_BUFFER_MS` 以内なら押下していた時間、それ以外は 0 を返します。
+  - `computeChargeLevel(chargeMs)`: `CHARGE_FULL_MS` で 1 に飽和します。
+  - `computeCompressionPx(level, boosted)`: 無チャージからチャージ済みへ線形に動かし、ブースト時は `BOOST_COMPRESSION_PX` を返します。
+- **`pivot.ts`**
+  - `evaluateTipPivot({ grounded, slopeDeg, lateralForceN })`: 空中・急斜面・過大な横力で解除し、それ以外は固定します。
+  - `estimatePivotLateralForceN(input)`: 斜面方向の重力成分と、指令した角加速度 × 重心距離から横力を推定します。
+- **`landing.ts`**
+  - `classifyLanding(contactPart, alignmentAngleDeg)`: 胴体接地は `"ouch"`、先端で `|angle| <= TIP_ALIGN_MAX_ANGLE_DEG` なら `"clean"`、超過なら `"glancing"`。
+  - `resolveLanding(input)`: クリーンならバウンドサイクル開始、失敗なら線形速度の減衰・微小分離速度・角速度の保持／角インパルス・ブースト取消を返します。
+- **`boost.ts`**
+  - `accumulateAirborneRotation(state, deltaDeg, thresholdDeg)`: 空中の回転増分を符号付きで累積し、絶対値が `285°` 以上で成立させます。追加回転では増強しません。
+  - `handleContactBoost(state, { isTipContact, jumpHeld })`: 先端以外の接地、またはチャージ中に `jumpHeld` が false なら取消します。
+  - `consumeBoostOnLaunch(state, jumpHeld)`: `ready && jumpHeld` のときだけブーストし、状態を初期化します。
+- **`rotation.ts`**
+  - `stepAngularVelocity(currentDegPerSec, inputDir, dtSec, model)`: 目標角速度へ加減速し、入力 0 なら減速して 0 へ戻します。最大速度を超える既存のスピンは滑らかに寄せます。
+- **`coords.ts`**
+  - `pxToMeters` / `metersToPx` / `stagePointToRapier` / `rapierPointToStage` / `stageAngleToRapier` / `rapierAngleToStage`: px・Y 下向き・時計回りと、メートル・Y 上向き・反時計回りの変換。
+  - `pogoUpVector` / `alignmentDegrees` / `normalImpactSpeed` / `slopeDegFromUpNormal`: 姿勢と接触法線の幾何。
+  - `lerpAngleShortArc` / `lerpPose`: 直近 2 姿勢の補間。
+- **`polyline.ts`**
+  - `filterPolylinePoints` / `buildPolylineGeometry` / `toRapierPolyline`: 短い辺を捨て、閉じたパスは最後→最初の辺を足し、`ColliderDesc.polyline` 用の頂点・インデックスを作ります。
+- **`respawn.ts`**
+  - `shouldCountFall(reason)`: `"fall"` だけ落下回数に数えます。`"manual"` は数えません。
 
-物理エンジンや DOM に依存しない純粋関数として、以下を実装し単体テストで挙動を検証します。
+## 6. PoC アーキテクチャ
 
-- **`src/lib/pogo/boost.ts`**:
-  - `createBoostState()`: 累積角 `0`、未成立の初期状態を返します。
-  - `accumulateAirborneRotation(state, deltaDeg, thresholdDeg)`: 空中の回転増分を符号付きで累積し、`Math.abs(accumulatedDeg) >= thresholdDeg` でブースト成立（`ready: true`）にします。一度成立した後の微調整の逆回転や `720°` 以上の追加回転では状態を増強しません。
-  - `cancelBoost()`: 累積角と成立フラグを初期化します。
-  - `handleContactBoost(state, { isTipContact, jumpHeld })`: 先端以外の接地、または接地チャージ中に `jumpHeld` が `false` になった場合は `cancelBoost()` で取り消します。
-  - `consumeBoostOnLaunch(state, jumpHeld)`: 跳躍時に `state.ready && jumpHeld` であれば `boosted: true` を返し、状態を初期化します。
-- **`src/lib/pogo/impulse.ts`**:
-  - `computeContactDurationMs(impactSpeed)`: `GROUND_CONTACT_BASE_MS + Math.max(0, impactSpeed) * GROUND_CONTACT_FALL_MS_PER_SPEED` を返します。
-  - `computeBounce({ impactSpeed, jumpHeld, boostReady })`: クリーンな先端着地のバウンド速度を返します。`usedBoost = jumpHeld && boostReady` に応じた基本速度（`AUTO_BOUNCE_SPEED` / `CHARGED_BOUNCE_SPEED` / `CHARGED_BOUNCE_SPEED * BOOST_BOUNCE_MULTIPLIER`）に、現在の hop の落下速度を超えた分だけ `FALL_SPEED_BOUNCE_SCALE` を掛けて加え、`MAX_BOUNCE_SPEED` でクランプします。通常の hop では落下速度が基本速度以下なので、跳ねるたびに高くはなりません。
-- **`src/lib/pogo/landing.ts`**:
-  - `classifyLanding(contactPart, alignmentAngleDeg)`: 胴体接地は `"ouch"`、先端接地で `|alignmentAngleDeg| <= TIP_ALIGN_MAX_ANGLE_DEG` なら `"clean"`、超過なら `"glancing"` を返します。
-  - `resolveLanding(input)`: クリーンな先端着地ならバウンドサイクル開始、失敗着地なら線形速度の減衰・微小分離速度・角速度の保持／角インパルス・ブースト取消を返します。角度の自動リセットや操作ロックは行いません。
-- **`src/lib/pogo/rotation.ts`**:
-  - `stepAngularVelocity(currentDegPerSec, inputDir, dtSec, model)`: 入力方向を目標角速度へ写像し、`accelDegPerSec2` で加減速します。入力が 0 なら `releaseDecelDegPerSec2` で 0 へ戻します。最大速度を超える既存のスピンは瞬間的にクランプせず滑らかに目標へ寄せます。
-  - `degPerSecToMatterAngularVelocity` / `matterAngularVelocityToDegPerSec`: Matter.js 0.20 の `Body.setAngularVelocity` 単位（`Body._baseDelta` あたりのラジアン）との変換。
-  - `lerpAngleShortArc` / `lerpPose`: 直近 2 つの物理姿勢を短い弧で補間します。
-- **`src/lib/pogo/jump.ts`**:
-  - `computeJumpApexPx(bounceSpeed, model)`: Matter.js 0.20 の Verlet 積分順序を含む到達高の閉形式。
-  - `computeBounceSpeedForApexPx(apexPx, model)`: 目標到達高からバウンド速度を逆算します。
-- **`src/lib/pogo/respawn.ts`**:
-  - `shouldCountFall(reason)`: `"fall"`（キルプレーン落下）だけ `true` を返します。手動リセット `"manual"` は `false` です。
+- **物理と描画の分離**: 物理は `src/lib/pogo/simulate.ts`（アキュムレータ・補間・スナップショット）、`cycle.ts`（固定ステップの状態機械）、`contact.ts`（接地判定・ピボット・失敗着地）、`rapier-world.ts`（剛体・ジョイント・地形コライダー）に限定します。描画は DOM と SVG のみです。
+- **遅延ロードの境界**: `@dimforge/rapier2d-compat` を import するのは `rapier-load.ts` だけで、しかも `import()` です。`src/routes/pogo/+page.svelte` は `onMount` 内で `import("../../lib/pogo/simulate")` を呼びます。他ルート・レイアウト・SSR / Worker バンドルへ物理エンジンを含めません。
+- **120Hz 固定ステップと補間描画**: rAF ごとに経過時間をアキュムレータへ足し、`FIXED_STEP_MS` 分だけ `world.step()` を 0 回以上実行します。1 フレームのステップ数は `MAX_PHYSICS_STEPS_PER_FRAME`、dt は `MAX_FRAME_DT_MS` で上限します。物理が 0 回のフレームでも描画し、`alpha` で直近 2 姿勢を補間します。
+- **接地と離陸**: 先端コンタクトの立ち上がりでチャージを開始し、接触窓の終わりか Space の早期解放でモーターを自然長へ戻します。伸びが `PIVOT_RELEASE_EXTENSION_FRACTION` に達したら先端ピボットを外します。接触の取得と状態遷移は `world.step()` の後に行い、イベント配信中にジョイントを触りません。
+- **描画**: 胴体・軸・先端の 3 つの div を毎フレーム `transform` だけで更新します。カメラは `#world` へ逆向きの `translate3d` を適用します。
+- **衝突デバッグ表示**: `?debug=1` のときだけ、Rapier のポリライン地形をステージ SVG と同じ座標空間へ `<polygon>` として重ねます。
+- **スポーンとリスポーン**: 先端下端がスタートパッド `y = 860` に接するようスポーンします。初期角度 0、速度 0 です。`R` と UI のリセットは `respawn("manual")` を呼び、落下回数を増やしません。キルプレーン越えだけが `respawn("fall")` で増やします。手動リセット後も最初の接地点で自動バウンドが始まります（Matter 時代の再発火回避の回避策は不要になりました）。`resetCount` でカメラをスポーンへ戻します。
+- **入力**:
+  - `A` / `D`: 左右回転（接地中は先端を支点に回る）。
+  - `Space`: チャージ・跳躍。`event.code === "Space"` と `event.key === " "` の両方を拾い、`preventDefault()` します。リセットボタンは押下後に blur します。
+  - `W` / `S` および矢印キー: カメラパン。
+  - `R`: スタート地点への手動リスポーン。
 
-## 5. PoC アーキテクチャ
-
-- **物理と描画の分離**: 衝突判定と時間積分は `matter-js` + `poly-decomp`（`src/lib/pogo/simulate.ts`、`simulate-bodies.ts`、`simulate-collision.ts` のみが参照）に限定し、描画は DOM + SVG のみに分離します。
-- **遅延ロードの境界**: `matter-js` と `poly-decomp` をトップレベルで import するのは上記の物理モジュールのみとします。`src/routes/pogo/+page.svelte` は `onMount` 内で `import("../../lib/pogo/simulate")` を動的に呼び出し、他ルート・レイアウト・SSR バンドルへ物理エンジンを含めません。
-- **120Hz 固定ステップと補間描画**: rAF ごとに経過時間をアキュムレータへ足し、`FIXED_STEP_MS` 分だけ `Engine.update(engine, 1000/120)` を 0 回以上実行します。1 フレームのステップ数は `MAX_PHYSICS_STEPS_PER_FRAME` で上限し、dt は `MAX_FRAME_DT_MS` でクランプします。物理が 0 回のフレームでも描画は毎回行い、`alpha = accumulatorMs / FIXED_STEP_MS` で直近 2 姿勢を補間します。角度は短い弧で補間します。スナップショットには累積 `physicsStepCount` と `fixedStepHz` を含め、`?debug=1` の HUD で確認できます。
-- **回転**: 毎ステップ `Body.setAngularVelocity` で目標角速度を与え、Matter に積分させます。`Body.setAngle` と `Body.setAngularVelocity(0)` による毎ステップの上書きは行いません。圧縮中も同じ回転モデルで狙いを合わせられます。クリーンな先端バウンドでは `BOUNCE_ANGULAR_KEEP` の割合だけ角速度を持ち越します。
-- **失敗着地**: `resolveLanding` が体ヒット／角度不足の先端ヒットを判定し、線形速度をほぼゼロにし、ブーストを取消し、既存の角速度を保ったまま小さな角インパルスを加えます。圧縮／バウンドサイクルは開始しません。赤フラッシュは表示のみで、操作ロックやスタンタイマーはありません。
-- **SVG 地形の物理化（`src/lib/pogo/svg-terrain.ts`）**: 閉じた（または端点接続で閉路化した）`<path data-terrain>` 要素を `getTotalLength()` と `getPointAtLength()` で `PATH_SAMPLE_SPACING` 間隔で点列化し、`path.getScreenCTM()` と `#world` 要素の矩形から変換行列を作って `#world` 座標系へ変換します。`simulate-bodies.ts` 側で `Common.setDecomp(decomp)` を設定した上で `Bodies.fromVertices` により静的剛体を生成し、バウンディングボックスを元の頂点群へ位置合わせします。
-- **単一 `div` と `#world` カメラ**: プレイヤーは `#world` 内の単一 `<div>` として描画し、毎フレーム `transform: translate3d(...) rotate(...)` のみを更新します（`top` / `left` による座標指定は行いません）。カメラは `#world` へ逆向きの `translate3d(...)` を適用してプレイヤー位置とパンオフセットを追従させます。
-- **背景グリッド**: `#world` 内に `GRID_MIN_X..GRID_MAX_X` × `GRID_MIN_Y..GRID_MAX_Y` の CSS グリッドを敷き、ステージ SVG の外側でもグリッドが見えるようにします。カメラと `.pogo-viewport` の `overflow: hidden` は維持します。
-- **衝突デバッグ表示**: `?debug=1` のときだけ、Matter の静的な地形剛体の頂点をステージ SVG と同じ座標空間へ `<polygon>` として重ねます。通常プレイでは取得・描画しません。
-- **スポーンとリスポーン**: プレイヤーの合成剛体の重心から先端下端までの距離を計算し、スポーン時点で先端下端がスタートパッド `y = 860` に接するように `spawn.y` を決めます。初期角度は 0、速度は 0 です。`R` キーと UI のリセットボタンは `respawn("manual")` を呼び、落下回数を増やしません。キルプレーンを越えた自動リスポーンだけが `respawn("fall")` として落下回数を増やします。手動リセットでもカメラがスポーンへ戻るよう、スナップショットの `resetCount` を別に持ちます。リセットで接触中の位置へテレポートすると Matter.js 0.20 の `collisionStart` が再発火しないため、リセット直後は圧縮サイクルから開始して自動バウンドを保ちます。
-- **入力・ステージ**:
-  - `A` / `D`: 左右回転（圧縮中も次の跳躍角の狙い合わせが可能、仮定）。
-  - `Space`: チャージ・跳躍（`keydown` / `keyup` で `preventDefault()` し、ページスクロールを防止）。
-  - `W` / `S` および矢印キー: カメラパン（`W` / `S` 割り当ては `W_S_CAMERA_PAN` による仮定）。
-  - `R`: スタート地点への手動リスポーン（PoC の UI 補助。Pogostuck の仕様ではなく、落下回数にも数えません）。
-  - ステージはスタート台、通常／チャージで登れる段差、ギャップ、斜面、および `285°` ブーストジャンプで到達できる高台ゴールで構成し、ステージ境界から `KILL_PLANE_MARGIN` を超えて落下した場合はスタート地点へ自動リスポーンします。
-
-## 6. スコープ外
+## 7. スコープ外
 
 - エモート（`E` キー）およびスケートモード
 - 連続ブーストによるジャンプ力の段階的増加（出典 13 は未確認のため不採用）
