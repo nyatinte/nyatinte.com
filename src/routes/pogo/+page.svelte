@@ -18,7 +18,10 @@
     cameraPanDirectionX,
     cameraPanDirectionY,
   } from "../../lib/pogo/keys";
-  import type { PogoSimulation, PogoSnapshot } from "../../lib/pogo/simulate-types";
+  import type {
+    PogoSimulation,
+    PogoSnapshot,
+  } from "../../lib/pogo/simulate-types";
   import { sampleTerrainPaths } from "../../lib/pogo/terrain-sampling";
   import { mergeTune, type PogoTuneOverrides } from "../../lib/pogo/tune";
   import type { PageProps } from "./$types";
@@ -39,9 +42,10 @@
   import "./pogo.css";
 
   let { data }: PageProps = $props();
-
   const debugEnabled = $derived(page.url.searchParams.get("debug") === "1");
-  const tuneEnabled = $derived(debugEnabled || page.url.searchParams.get("tune") === "1");
+  const tuneEnabled = $derived(
+    debugEnabled || page.url.searchParams.get("tune") === "1",
+  );
 
   let viewportEl: HTMLDivElement | undefined = $state();
   let worldEl: HTMLDivElement | undefined = $state();
@@ -61,14 +65,12 @@
   const tunables = $derived(mergeTune(tuneOverrides));
 
   let simulation: PogoSimulation | null = null;
-
   function applyTune(next: PogoTuneOverrides): void {
     tuneOverrides = next;
     simulation?.setTune(next);
   }
 
   const pressedKeys = new SvelteSet<string>();
-
   function keyName(event: KeyboardEvent): string {
     if (event.code === "Space" || event.key === " ") {
       return "Space";
@@ -96,14 +98,12 @@
     }
     pressedKeys.add(key);
   }
-
   function handleKeyUp(event: KeyboardEvent): void {
     if (keyName(event) === "Space") {
       event.preventDefault();
     }
     pressedKeys.delete(keyName(event));
   }
-
   function handleWindowBlur(): void {
     if (!document.hasFocus()) {
       pressedKeys.clear();
@@ -114,7 +114,6 @@
     if (!viewportEl || !worldEl || !bodyEl || !stickEl || !tipEl) {
       return;
     }
-
     const currentViewport = viewportEl;
     const currentWorld = worldEl;
     const currentBody = bodyEl;
