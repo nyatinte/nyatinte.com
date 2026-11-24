@@ -88,17 +88,9 @@ export const ARTICLE_DIRECTIVES = {
   "x-post": {
     component: "XPostCard",
     fromLib: "components/x-post-card.svelte",
-    imageProps: ["avatar", "image"],
-    props: ["href", "author", "handle", "date", "avatar", "image", "imageAlt"],
-    required: [
-      "href",
-      "author",
-      "handle",
-      "date",
-      "avatar",
-      "image",
-      "imageAlt",
-    ],
+    imageProps: [],
+    props: ["href"],
+    required: ["href"],
   },
 } as const;
 

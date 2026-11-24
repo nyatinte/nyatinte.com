@@ -71,8 +71,8 @@ test("transformArticleDirectives converts flow lists and nested figure children"
   expect(result).toContain("</ArticleFigure>");
 });
 
-test("transformArticleDirectives turns local x-post images into imports", () => {
-  const source = `:::x-post{href="https://x.com/nyatinte/status/1" author=nyatinte handle=nyatinte date="2026年11月14日" avatar=./nyatinte-avatar.jpg image=./code-mode-post.png imageAlt="比較図"}
+test("transformArticleDirectives converts x-post to the official embed component", () => {
+  const source = `:::x-post{href="https://x.com/nyatinte/status/1"}
 ポストの本文
 :::
 `;
@@ -84,16 +84,26 @@ test("transformArticleDirectives turns local x-post images into imports", () => 
     'import XPostCard from "../../../lib/components/x-post-card.svelte";',
   );
   expect(result).toContain(
-    'import __directive_img_0 from "./nyatinte-avatar.jpg";',
+    '<XPostCard href={"https://x.com/nyatinte/status/1"}>',
   );
-  expect(result).toContain(
-    'import __directive_img_1 from "./code-mode-post.png";',
-  );
-  expect(result).toContain("avatar={__directive_img_0}");
-  expect(result).toContain("image={__directive_img_1}");
-  expect(result).toContain('imageAlt={"比較図"}');
   expect(result).toContain("ポストの本文");
+  expect(result).not.toContain("__directive_img_");
   expect(result).not.toContain(":::x-post");
+});
+
+test("transformArticleDirectives throws when x-post href is missing", () => {
+  expect(() =>
+    transformArticleDirectives(":::x-post\n本文\n:::\n", "post.svx"),
+  ).toThrow("post.svx: :::x-post is missing href");
+});
+
+test("transformArticleDirectives throws on an unknown x-post attribute", () => {
+  expect(() =>
+    transformArticleDirectives(
+      ':::x-post{href="https://x.com/n/1" author=nyatinte}\n本文\n:::\n',
+      "post.svx",
+    ),
+  ).toThrow("post.svx: :::x-post has an unknown attribute: author");
 });
 
 test("transformArticleDirectives merges imports into an existing script", () => {
@@ -189,14 +199,13 @@ test("stripDirectiveMarkers does not strip ::: inside a code fence", () => {
 });
 
 test("extractPlainText keeps directive body and x-post text, and drops markers", () => {
-  const source = `:::x-post{href="https://x.com/n/1" author=nyatinte handle=nyatinte date="2026年11月14日" avatar=./a.jpg image=./b.png imageAlt="比較図"}
+  const source = `:::x-post{href="https://x.com/n/1"}
 Claude Code に Code Mode 来たんだ
 :::
 `;
   const text = extractPlainText(source);
   expect(text).toContain("Claude Code に Code Mode 来たんだ");
-  expect(text).toContain("比較図");
-  expect(text).toContain("nyatinte");
+  expect(text).toContain("https://x.com/n/1");
   expect(text).not.toContain(":::");
   expect(text).not.toContain("x-post");
 });
