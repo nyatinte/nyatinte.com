@@ -129,12 +129,12 @@
     background-image:
       linear-gradient(
         to right,
-        color-mix(in srgb, currentcolor 8%, transparent) 1px,
+        color-mix(in srgb, var(--home-foreground) 8%, transparent) 1px,
         transparent 1px
       ),
       linear-gradient(
         to bottom,
-        color-mix(in srgb, currentcolor 8%, transparent) 1px,
+        color-mix(in srgb, var(--home-foreground) 8%, transparent) 1px,
         transparent 1px
       );
     pointer-events: none;
@@ -148,10 +148,14 @@
   }
 
   .pogo-terrain {
-    fill: color-mix(in srgb, currentcolor 16%, transparent);
-    stroke: currentcolor;
+    fill: var(--home-foreground);
+    fill-opacity: 0.16;
+    stroke: var(--home-foreground);
     stroke-width: 2;
     stroke-linejoin: round;
+    transition:
+      fill var(--home-theme-duration) var(--home-theme-easing),
+      stroke var(--home-theme-duration) var(--home-theme-easing);
   }
 
   .pogo-start-pad {
@@ -163,7 +167,8 @@
   }
 
   .pogo-flag-pole {
-    stroke: currentcolor;
+    stroke: var(--home-foreground);
+    transition: stroke var(--home-theme-duration) var(--home-theme-easing);
   }
 
   .pogo-flag {
@@ -175,10 +180,11 @@
   }
 
   .pogo-label {
-    fill: currentcolor;
+    fill: var(--home-foreground);
     font-size: 14px;
     font-weight: 700;
     letter-spacing: 0.04em;
+    transition: fill var(--home-theme-duration) var(--home-theme-easing);
   }
 
   .pogo-body {
@@ -188,7 +194,7 @@
     inset-inline-start: 0;
     inline-size: 18px;
     block-size: 44px;
-    border: 2px solid currentcolor;
+    border: 2px solid var(--home-foreground);
     border-radius: 9px 9px 4px 4px;
     background: linear-gradient(to bottom, #fbbf24 0 38%, #38bdf8 38% 100%);
     box-sizing: border-box;

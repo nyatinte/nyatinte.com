@@ -170,7 +170,8 @@ export default defineConfig(({ mode }) => ({
                 "frame-ancestors": ["none"],
                 "img-src": ["self", "https:", "data:"],
                 "object-src": ["none"],
-                "script-src": ["self"],
+                // CSP Level 3 の wasm-unsafe-eval がないと WebAssembly をコンパイルできない
+                "script-src": ["self", "wasm-unsafe-eval"],
                 "style-src": ["self"],
                 "style-src-attr": ["unsafe-inline"],
               },
