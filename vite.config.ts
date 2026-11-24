@@ -8,6 +8,7 @@ import type { Plugin } from "vite";
 import nkzw from "@nkzw/oxlint-config";
 import rsvelteRecommended from "@rsvelte/oxlint-plugin/recommended.json" with { type: "json" };
 import { defineConfig } from "vite-plus";
+import { transformArticleDirectives } from "./src/lib/log/article-directives";
 import { remarkHeadingIds } from "./src/lib/log/remark-heading-ids";
 import { logFrontmatterPlugin } from "./src/lib/log/vite-plugin";
 import { buildZbSearchIndex } from "./src/lib/search/zb-build";
@@ -45,8 +46,13 @@ function svelteMarkdown(): PreprocessorGroup {
   });
   return {
     async markup(options) {
+      const filename = options.filename ?? "";
+      const source =
+        filename.endsWith(".md") || filename.endsWith(".svx")
+          ? transformArticleDirectives(options.content, filename)
+          : options.content;
       const result = await processor.markup({
-        content: options.content,
+        content: source,
         filename: options.filename,
       });
       if (!result?.code) {

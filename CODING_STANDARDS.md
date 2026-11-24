@@ -22,6 +22,14 @@
 - 300 行を超えるファイルは役割に沿って分割を検討する。
 - 全ページに共通する処理・スタイル（テーマのトークンと切り替えの transition、Reduce Motion の扱い、ヘッダー・ナビ、`theme-color` などの head、View Transition の設定）は、ルートレイアウトか共有の場所（`src/lib/styles/`、`src/lib/components/` など）に置き、ページやレイアウトごとにコピーしない。テーマ切り替えのフェードは `src/lib/styles/theme-transition.css` が `.site` 配下の背景色・枠線色と、`.site` 直下の要素（ページの面とヘッダー）の文字色に自動で付ける。ページやコンポーネントでテーマ色の transition を書かない。グローバル CSS が届かないところだけ例外として個別に書く。`.site` の外にある `html`/`body` の背景（ログレイアウト）と、継承されるため全要素には付けられない `fill`/`stroke`、シーン固有の回転や透明度（氷山シーン）がそれにあたる。例外でも長さとイージングは `--home-theme-duration` と `--home-theme-easing` を使う。逆に、グローバルのフェードを付けたくない要素（テーマ切り替えボタンのないエラーページの戻るリンクなど）は、その要素に `transition: none` を明示する。`color` の transition は入れ子にしない（Chrome で子孫側の変化が遅れる）。
 
+## 記事の部品
+
+記事から呼び出す共通部品は、Svelte を import せず、`:::name` の directive で書く。使える名前は `figure`、`flow`、`x-post`、`closing`。新しい名前を足すときは、変換の対応表と部品を同じ変更で追加する。知らない名前はビルドを失敗させる。
+
+図解の枠や X のポスト、締めの吹き出しは部品に任せる。図の中身（SVG の path や、その記事だけの HTML）は `:::figure` の中に直接書く。部品を入れ子にするときは、外側のフェンスをコロン 4 つ以上にする（`::::figure` の中に `:::flow`）。
+
+コピー用 Markdown と `Accept: text/markdown` では、`:::name` を HTML や Svelte に展開せず、記事ファイルと同じ書き方のまま出す。
+
 ## 画像
 
 記事に載せる画像の置き方と書き方。配信時の絶対 URL 化や、Markdown 画像への幅・高さの自動付与はまだ実装しない。

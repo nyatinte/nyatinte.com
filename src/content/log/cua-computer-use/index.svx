@@ -9,24 +9,21 @@ Computer Use などは以前からある概念なので、Cua の何が差別化
 
 ちなみに Cua は「クア」と発音するっぽい。「キュア」ではない。
 
-<figure class="thought before">
-  <figcaption><span class="eyebrow">BEFORE</span><strong>デスクトップ操作の側面しか見えてなかった Cua</strong></figcaption>
-  <div class="before-scene" aria-label="Cua の周りに、デスクトップ操作という一つの機能が浮かんでいる図">
-    <div class="orbit orbit-one"></div>
-    <div class="before-core"><span>Cua</span><small>ひとつのツール？</small></div>
-    <div class="floating-action"><span aria-hidden="true">↗</span><strong>デスクトップ操作</strong><small>クリック・入力など</small></div>
-    <span class="spark spark-one" aria-hidden="true">✳</span><span class="spark spark-two" aria-hidden="true">✧</span>
-  </div>
-  <p class="figure-note">Codex Computer Use でよくないか？</p>
-</figure>
+:::figure{eyebrow=BEFORE title="デスクトップ操作の側面しか見えてなかった Cua" note="Codex Computer Use でよくないか？"}
+<div class="before-scene" aria-label="Cua の周りに、デスクトップ操作という一つの機能が浮かんでいる図">
+  <div class="orbit orbit-one"></div>
+  <div class="before-core"><span>Cua</span><small>ひとつのツール？</small></div>
+  <div class="floating-action"><span aria-hidden="true">↗</span><strong>デスクトップ操作</strong><small>クリック・入力など</small></div>
+  <span class="spark spark-one" aria-hidden="true">✳</span><span class="spark spark-two" aria-hidden="true">✧</span>
+</div>
+:::
 
 ## わかったこと
 
 こんな感じの[エコシステム](https://github.com/trycua/cua#readme)の総称が Cua らしい。
 
-<figure class="thought after">
-  <figcaption><span class="eyebrow">AFTER</span><strong>エコシステムで見る Cua</strong></figcaption>
-  <div class="ecosystem-map">
+:::figure{eyebrow=AFTER title="エコシステムで見る Cua"}
+<div class="ecosystem-map">
     <div class="map-branches">
       <section class="map-group">
         <h3>環境を用意・接続する</h3>
@@ -52,7 +49,7 @@ Computer Use などは以前からある概念なので、Cua の何が差別化
       </section>
     </div>
   </div>
-</figure>
+:::
 
 Lume は「ルーメ」と読むっぽい（自信なし）。
 
@@ -67,17 +64,13 @@ Cua が話題になった時（2026年10月頃？）は、Cua Spaces の文脈�
 - PC やクラウド VM は自分で用意する。エージェントももちろん自前。
 - [Cua Spaces のプラン](https://spaces.cua.ai/pricing) によって、リレー経由で同時に使えるコンピューターの台数やリモート接続時間の枠が変わる。
 
-<figure class="thought spaces-explainer">
-  <figcaption><span class="eyebrow">SPACES</span><strong>PC とエージェントは自分で用意する</strong></figcaption>
-  <div class="spaces-flow">
-    <div><small>Cua は提供しない</small><strong>手元の PC<br />またはクラウド VM</strong></div>
-    <span class="flow-arrow" aria-hidden="true">→</span>
-    <div class="flow-center"><small>管理・接続</small><strong>Cua Spaces</strong></div>
-    <span class="flow-arrow" aria-hidden="true">→</span>
-    <div><small>自分で用意</small><strong>自分・エージェント</strong></div>
-  </div>
-  <p class="figure-note">Space の種類や接続先によって、利用できる機能は異なる。</p>
-</figure>
+::::figure{eyebrow=SPACES title="PC とエージェントは自分で用意する" note="Space の種類や接続先によって、利用できる機能は異なる。"}
+:::flow
+- Cua は提供しない | 手元の PC<br />またはクラウド VM
+- 管理・接続 | Cua Spaces
+- 自分で用意 | 自分・エージェント
+:::
+::::
 
 - Space は必ずしも VM ではない。コンテナや VM のほか、設定を有効にすれば既存の PC のデスクトップも Space として扱える。
 - [Teleport](https://github.com/trycua/cua/blob/main/docs/content/docs/spaces/guides/teleport-an-app.mdx) では、Space にアプリをインストールし、対応するアプリならファイルやセッションの状態も持ち込める。
@@ -110,11 +103,6 @@ Cua が話題になった時（2026年10月頃？）は、Cua Spaces の文脈�
 - [Cua 公式 X](https://x.com/trycua)
 
 <style>
-  .thought { margin: 2rem 0; padding: clamp(1.2rem, 4vw, 2rem); overflow: hidden; border: 1px solid var(--home-nav-border); border-radius: 1.2rem; background: var(--home-nav-background); }
-  figcaption { display: grid; gap: 0.25rem; }
-  figcaption strong { font-size: 1.15rem; }
-  figcaption > span:last-child, .figure-note { font-size: 0.85rem; }
-  .eyebrow { color: var(--home-accent); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; }
   .before-scene { position: relative; display: grid; place-items: center; min-height: 18rem; }
   .orbit { position: absolute; width: min(72%, 19rem); aspect-ratio: 1; border: 1px dashed var(--home-nav-border); border-radius: 50%; }
   .before-core { display: grid; place-content: center; text-align: center; border: 1px solid var(--home-nav-border); border-radius: 50%; background: var(--home-background); }
@@ -128,13 +116,6 @@ Cua が話題になった時（2026年10月頃？）は、Cua Spaces の文脈�
   .spark { position: absolute; color: var(--home-accent); }
   .spark-one { left: 12%; top: 32%; font-size: 1.4rem; }
   .spark-two { right: 19%; bottom: 18%; font-size: 1.6rem; }
-  .figure-note { margin: 0; opacity: 0.8; }
-  .spaces-flow { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin: 1.8rem 0; }
-  .spaces-flow div { display: grid; gap: 0.4rem; text-align: center; }
-  .spaces-flow small { font-size: 0.7rem; }
-  .spaces-flow strong { font-size: 0.85rem; }
-  .flow-center { padding: 1rem; border: 1px solid var(--home-nav-border); border-radius: 50%; background: var(--home-background); }
-  .flow-arrow { color: var(--home-accent); font-size: 1.4rem; }
   .ecosystem-map { margin-top: 1.5rem; }
   .map-branches { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .map-group { min-width: 0; padding: 1.2rem 0.8rem 0 0; }
@@ -146,8 +127,6 @@ Cua が話題になった時（2026年10月頃？）は、Cua Spaces の文脈�
   .map-item strong { font-size: 0.95rem; }
   .map-item span { font-size: 0.75rem; line-height: 1.5; }
   @media (max-width: 540px) {
-    .spaces-flow { flex-direction: column; }
-    .flow-arrow { transform: rotate(90deg); }
     .before-scene { min-height: 15rem; }
     .before-core { width: 7.5rem; }
     .floating-action { top: 8%; right: -0.4rem; }
@@ -157,9 +136,6 @@ Cua が話題になった時（2026年10月頃？）は、Cua Spaces の文脈�
   }
   @supports (zoom: calc(1px / 1px)) {
     @media (max-width: 706px) {
-      .thought { box-sizing: border-box; width: 40rem; padding: 2rem; zoom: min(1, calc((100vw - 4.5rem) / 40rem)); }
-      .spaces-flow { flex-direction: row; }
-      .flow-arrow { transform: none; }
       .before-scene { min-height: 18rem; }
       .before-core { width: 9rem; }
       .floating-action { top: 15%; right: 0; }

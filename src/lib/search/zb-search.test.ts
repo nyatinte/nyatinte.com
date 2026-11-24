@@ -47,6 +47,8 @@ test("extracted article text drops Svelte blocks and CSS but keeps prose", () =>
     expect(text).not.toContain("import ");
   }
   expect(stay).toContain("AI をはじめとした技術の進化が");
+  expect(stay).toContain("Claude Code に Code Mode 来たんだ");
+  expect(stay).not.toContain(":::");
   expect(cua).toContain("デスクトップ操作");
 });
 

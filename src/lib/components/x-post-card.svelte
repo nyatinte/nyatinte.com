@@ -1,22 +1,26 @@
 <script lang="ts">
+  import type { Snippet } from "svelte";
+
   let {
     href,
     author,
     handle,
     avatar,
-    text,
+    text = "",
     image,
     imageAlt,
     date,
+    children,
   }: {
     href: string;
     author: string;
     handle: string;
     avatar: string;
-    text: string;
+    text?: string;
     image: string;
     imageAlt: string;
     date: string;
+    children?: Snippet;
   } = $props();
 </script>
 
@@ -29,7 +33,9 @@
       >
       <span aria-hidden="true" class="mark">𝕏</span>
     </header>
-    <p>{text}</p>
+    {#if text}<p>{text}</p>{:else}
+      <p>{@render children?.()}</p>
+    {/if}
     <img alt={imageAlt} class="post-image" src={image} />
     <small class="date">{date} · Xで見る</small>
   </a>
@@ -75,7 +81,8 @@
     font-size: 1.3rem;
     font-weight: 700;
   }
-  p {
+  p,
+  a :global(p) {
     margin: 0;
     white-space: pre-line;
   }

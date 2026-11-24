@@ -57,8 +57,14 @@ test("copy markdown for cua-computer-use drops svelte blocks but keeps frontmatt
   expect(result.copyMarkdown).not.toContain("</style>");
   expect(result.copyMarkdown.startsWith("---\n")).toBe(true);
   expect(result.copyMarkdown).toContain("title: Cua がなぜ流行っているのか？");
-  expect(result.copyMarkdown).toContain('<figure class="thought before">');
+  expect(result.copyMarkdown).toContain(
+    ':::figure{eyebrow=BEFORE title="デスクトップ操作の側面しか見えてなかった Cua" note="Codex Computer Use でよくないか？"}',
+  );
   expect(result.copyMarkdown).toContain("https://x.com/trycua");
+  expect(result.copyMarkdown).toContain(":::flow");
+  expect(result.copyMarkdown).toContain('<div class="before-scene"');
+  expect(result.copyMarkdown).not.toContain("<ArticleFigure");
+
   expect(result.copyMarkdown).not.toContain("\n\n\n");
 });
 
@@ -71,9 +77,11 @@ test("copy markdown for stay-light-in-ai-era drops every svelte block but keeps 
   expect(result.copyMarkdown).not.toContain("</script>");
   expect(result.copyMarkdown).not.toContain("<XPostCard");
   expect(result.copyMarkdown.startsWith("---\n")).toBe(true);
-  expect(result.copyMarkdown).toContain('<div class="closing-message">');
-  expect(result.copyMarkdown).toContain("<img");
-  expect(result.copyMarkdown).toContain("<p>");
+  expect(result.copyMarkdown).toContain(":::x-post");
+  expect(result.copyMarkdown).toContain("Claude Code に Code Mode 来たんだ");
+  expect(result.copyMarkdown).toContain(":::closing");
+  expect(result.copyMarkdown).toContain("飛びつきます");
+  expect(result.copyMarkdown).not.toContain('<div class="closing-message">');
   expect(result.copyMarkdown).toContain("AI をはじめとした技術の進化が");
   expect(result.copyMarkdown).not.toContain("\n\n\n");
 });

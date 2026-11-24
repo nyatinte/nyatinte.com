@@ -457,12 +457,12 @@ test("published article pages return markdown when requested", async () => {
 test("markdown responses for svx articles omit svelte blocks but keep html and prose", async () => {
   const cases = [
     {
-      html: '<figure class="thought before">',
+      html: ':::figure{eyebrow=BEFORE title="デスクトップ操作の側面しか見えてなかった Cua" note="Codex Computer Use でよくないか？"}',
       prose: "https://x.com/trycua",
       slug: "cua-computer-use",
     },
     {
-      html: '<div class="closing-message">',
+      html: ":::closing",
       prose: "AI をはじめとした技術の進化が",
       slug: "stay-light-in-ai-era",
     },

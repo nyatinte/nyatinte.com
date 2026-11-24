@@ -1,3 +1,4 @@
+import { stripDirectiveMarkers } from "../log/article-directives";
 import type { SearchSegment } from "./types";
 
 const scriptBlock = /<script\b[^>]*>[\s\S]*?<\/script>/giu;
@@ -19,11 +20,13 @@ const whitespace = /\s+/gu;
 const querySeparator = /\s+/u;
 
 export function extractPlainText(source: string) {
-  return source
-    .replaceAll(scriptBlock, "")
-    .replaceAll(styleBlock, "")
-    .replaceAll(selfClosingComponent, "")
-    .replaceAll(pairedComponent, "")
+  return stripDirectiveMarkers(
+    source
+      .replaceAll(scriptBlock, "")
+      .replaceAll(styleBlock, "")
+      .replaceAll(selfClosingComponent, "")
+      .replaceAll(pairedComponent, ""),
+  )
     .replaceAll(image, "")
     .replaceAll(link, "$1")
     .replaceAll(fencedCodeMarker, "")
