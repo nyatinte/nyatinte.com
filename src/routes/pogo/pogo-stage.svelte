@@ -1,6 +1,15 @@
 <script lang="ts">
-  let { stageHeight, stageWidth }: { stageHeight: number; stageWidth: number } =
-    $props();
+  import type { Point2D } from "../../lib/pogo/svg-terrain";
+
+  let {
+    debugPolygons = [],
+    stageHeight,
+    stageWidth,
+  }: {
+    debugPolygons?: ReadonlyArray<ReadonlyArray<Point2D>>;
+    stageHeight: number;
+    stageWidth: number;
+  } = $props();
 </script>
 
 <svg
@@ -10,30 +19,6 @@
   viewBox="0 0 {stageWidth} {stageHeight}"
   width={stageWidth}
 >
-  <defs>
-    <pattern
-      height="40"
-      id="pogo-grid"
-      patternUnits="userSpaceOnUse"
-      width="40"
-    >
-      <path
-        class="pogo-grid-line"
-        d="M 40 0 L 0 0 0 40"
-        fill="none"
-        stroke-width="1"
-      />
-    </pattern>
-  </defs>
-
-  <rect
-    fill="url(#pogo-grid)"
-    height={stageHeight}
-    width={stageWidth}
-    x="0"
-    y="0"
-  />
-
   <path
     class="pogo-terrain"
     d="M 100 860 L 360 860 L 390 770 L 650 770 L 650 980 L 100 980 Z"
@@ -44,6 +29,13 @@
     d="M 740 650 L 980 650 L 1080 580 L 1320 580 L 1380 140 L 1720 140 L 1720 980 L 740 980 Z"
     data-terrain
   />
+
+  {#each debugPolygons as polygon, index (index)}
+    <polygon
+      class="pogo-debug-terrain"
+      points={polygon.map((point) => `${point.x},${point.y}`).join(" ")}
+    />
+  {/each}
 
   <line
     class="pogo-start-pad"

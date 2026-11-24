@@ -1,15 +1,25 @@
 <script lang="ts">
+  import { page } from "$app/state";
   import { onMount } from "svelte";
   import { SvelteSet } from "svelte/reactivity";
   import PageMeta from "../../lib/components/page-meta.svelte";
   import {
     CAMERA_PAN_LIMIT,
     CAMERA_PAN_SPEED,
+    GRID_CELL_PX,
+    GRID_MAX_X,
+    GRID_MAX_Y,
+    GRID_MIN_X,
+    GRID_MIN_Y,
     W_S_CAMERA_PAN,
   } from "../../lib/pogo/constants";
-  import type { PogoSimulation, PogoSnapshot } from "../../lib/pogo/simulate";
-  import { sampleTerrainPaths } from "../../lib/pogo/svg-terrain";
+  import type {
+    PogoSimulation,
+    PogoSnapshot,
+  } from "../../lib/pogo/simulate-types";
+  import { sampleTerrainPaths, type Point2D } from "../../lib/pogo/svg-terrain";
   import type { PageProps } from "./$types";
+  import PogoHud from "./pogo-hud.svelte";
   import PogoStage from "./pogo-stage.svelte";
   import "./pogo.css";
 
@@ -17,7 +27,8 @@
 
   const STAGE_WIDTH = 1840;
   const STAGE_HEIGHT = 1040;
-  const SPAWN = { x: 220, y: 800 } as const;
+  const START_PAD_Y = 860;
+  const SPAWN = { x: 220, y: START_PAD_Y } as const;
   const GOAL_ZONE = {
     maxX: 1710,
     maxY: 170,
@@ -33,19 +44,22 @@
 
   const PLAYER_HALF_W = 18;
   const PLAYER_BASE_PIVOT_Y = 36;
+  const debugEnabled = $derived(page.url.searchParams.get("debug") === "1");
+
   let viewportEl: HTMLDivElement | undefined = $state();
   let worldEl: HTMLDivElement | undefined = $state();
   let playerEl: HTMLDivElement | undefined = $state();
-  let resetButtonEl: HTMLButtonElement | undefined = $state();
 
   let boostReady = $state(false);
   let ouch = $state(false);
   let reachedGoal = $state(false);
   let respawns = $state(0);
+  let physicsStepCount = $state(0);
+  let debugPolygons: ReadonlyArray<ReadonlyArray<Point2D>> = $state([]);
   let ready = $state(false);
 
   let simulation: PogoSimulation | null = null;
-  let lastKnownRespawns = 0;
+  let lastKnownResets = 0;
 
   const pressedKeys = new SvelteSet<string>();
 
@@ -91,11 +105,6 @@
 
   function handleWindowBlur(): void {
     pressedKeys.clear();
-  }
-
-  function handleRespawnClick(): void {
-    resetButtonEl?.blur();
-    simulation?.respawn();
   }
 
   onMount(() => {
@@ -149,11 +158,11 @@
       const targetX = snapshot.x + panX;
       const targetY = snapshot.y + panY;
 
-      if (!hasCameraAnchor || snapshot.respawns !== lastKnownRespawns) {
+      if (!hasCameraAnchor || snapshot.resetCount !== lastKnownResets) {
         camX = targetX;
         camY = targetY;
         hasCameraAnchor = true;
-        lastKnownRespawns = snapshot.respawns;
+        lastKnownResets = snapshot.resetCount;
       } else {
         const lerp = 1 - Math.exp(-8 * dtSec);
         camX += (targetX - camX) * lerp;
@@ -183,6 +192,10 @@
       });
       simulation = sim;
 
+      if (debugEnabled) {
+        debugPolygons = sim.getTerrainPolygons();
+      }
+
       const pivotY = PLAYER_BASE_PIVOT_Y + sim.pivotOffsetY;
       currentPlayer.style.transformOrigin = `${PLAYER_HALF_W}px ${pivotY.toFixed(2)}px`;
       ready = true;
@@ -191,8 +204,7 @@
         if (disposed) {
           return;
         }
-        const dtMs =
-          lastTimestamp === 0 ? 16.67 : Math.min(50, timestamp - lastTimestamp);
+        const dtMs = lastTimestamp === 0 ? 0 : timestamp - lastTimestamp;
         lastTimestamp = timestamp;
 
         const snapshot = sim.step(dtMs, {
@@ -205,6 +217,7 @@
         ouch = snapshot.ouch;
         reachedGoal = snapshot.reachedGoal;
         respawns = snapshot.respawns;
+        physicsStepCount = snapshot.physicsStepCount;
 
         applyTransforms(snapshot, pivotY, dtMs / 1000);
         rafId = requestAnimationFrame(tick);
@@ -239,32 +252,14 @@
 />
 
 <main class="pogo-page">
-  <header class="pogo-hud">
-    <div class="pogo-status">
-      <h1>ポゴ PoC</h1>
-      <span class="pogo-badge" data-active={boostReady}>
-        {boostReady ? "BOOST READY (285°)" : "285° でブースト"}
-      </span>
-      {#if reachedGoal}
-        <span class="pogo-goal-badge">GOAL!</span>
-      {/if}
-      <span class="pogo-counter">落下回数: {respawns}</span>
-    </div>
-    <div class="pogo-controls">
-      <span><kbd>A</kbd> / <kbd>D</kbd> 回転</span>
-      <span><kbd>Space</kbd> チャージ</span>
-      <span><kbd>W</kbd> / <kbd>S</kbd> / 矢印 カメラ先読み</span>
-      <span><kbd>R</kbd> 戻る</span>
-      <button
-        bind:this={resetButtonEl}
-        class="pogo-reset"
-        onclick={handleRespawnClick}
-        type="button"
-      >
-        スタートへ戻す
-      </button>
-    </div>
-  </header>
+  <PogoHud
+    {boostReady}
+    {debugEnabled}
+    onRespawn={() => simulation?.respawn()}
+    {physicsStepCount}
+    {reachedGoal}
+    {respawns}
+  />
 
   <div
     aria-label="ポゴ物理ステージ"
@@ -275,7 +270,20 @@
       <p class="pogo-loading">物理エンジンを読み込み中...</p>
     {/if}
     <div bind:this={worldEl} class="pogo-world" id="world">
-      <PogoStage stageHeight={STAGE_HEIGHT} stageWidth={STAGE_WIDTH} />
+      <div
+        aria-hidden="true"
+        class="pogo-grid"
+        style:background-size="{GRID_CELL_PX}px {GRID_CELL_PX}px"
+        style:block-size="{GRID_MAX_Y - GRID_MIN_Y}px"
+        style:inline-size="{GRID_MAX_X - GRID_MIN_X}px"
+        style:inset-block-start="{GRID_MIN_Y}px"
+        style:inset-inline-start="{GRID_MIN_X}px"
+      ></div>
+      <PogoStage
+        debugPolygons={debugEnabled ? debugPolygons : []}
+        stageHeight={STAGE_HEIGHT}
+        stageWidth={STAGE_WIDTH}
+      />
       <div
         bind:this={playerEl}
         class="pogo-player"

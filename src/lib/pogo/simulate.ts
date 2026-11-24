@@ -8,63 +8,41 @@ import {
   type BoostState,
 } from "./boost";
 import {
+  BOUNCE_ANGULAR_KEEP,
   COMPRESSION_HORIZONTAL_DAMP,
+  FIXED_STEP_HZ,
+  FIXED_STEP_MS,
   GRAVITY_Y,
-  OUCH_BODY_HORIZONTAL_DAMP,
-  OUCH_GLANCING_HORIZONTAL_DAMP,
-  OUCH_RECOVERY_MS,
-  OUCH_ROTATION_SCALE,
-  ROTATION_SPEED_DEG_PER_SEC,
+  MAX_FRAME_DT_MS,
+  MAX_PHYSICS_STEPS_PER_FRAME,
+  OUCH_FLASH_MS,
 } from "./constants";
 import { computeBounce } from "./impulse";
 import {
-  alignmentDegrees,
+  degPerSecToMatterAngularVelocity,
+  lerpPose,
+  matterAngularVelocityToDegPerSec,
+  ROTATION_MODEL,
+  stepAngularVelocity,
+  type Pose,
+} from "./rotation";
+import { shouldCountFall, type RespawnReason } from "./respawn";
+import { decideContact } from "./simulate-collision";
+import {
   computeLaunchVelocity,
   createPlayerRig,
   createTerrainBodies,
-  degToRad,
-  isInsideBox,
   isOutsideKillBounds,
-  normalImpactSpeed,
-  outwardNormal,
-  type PogoBox,
 } from "./simulate-bodies";
+import type {
+  PogoInputState,
+  PogoSimulation,
+  PogoSimulationConfig,
+  PogoSnapshot,
+} from "./simulate-types";
 import type { Point2D } from "./svg-terrain";
 
 const { Body, Composite, Engine, Events } = Matter;
-
-const FIXED_STEP_MS = 1000 / 60;
-const MAX_FRAME_DT_MS = 50;
-export type PogoInputState = {
-  readonly left: boolean;
-  readonly right: boolean;
-  readonly jump: boolean;
-};
-
-export type PogoSnapshot = {
-  readonly x: number;
-  readonly y: number;
-  readonly angleRad: number;
-  readonly boostReady: boolean;
-  readonly grounded: boolean;
-  readonly ouch: boolean;
-  readonly reachedGoal: boolean;
-  readonly respawns: number;
-};
-
-export type PogoSimulationConfig = {
-  readonly terrainPolygons: ReadonlyArray<ReadonlyArray<Point2D>>;
-  readonly spawn: Point2D;
-  readonly goalZone: PogoBox;
-  readonly stageBounds: PogoBox;
-};
-
-export type PogoSimulation = {
-  readonly pivotOffsetY: number;
-  step(dtMs: number, input: PogoInputState): PogoSnapshot;
-  respawn(): void;
-  destroy(): void;
-};
 
 export function createPogoSimulation(
   config: PogoSimulationConfig,
@@ -88,144 +66,157 @@ export function createPogoSimulation(
   let boostState: BoostState = createBoostState();
   let compressionRemainingMs = 0;
   let contactImpactSpeed = 0;
-  let ouchTimerMs = 0;
+  let ouchFlashRemainingMs = 0;
   let reachedGoal = false;
   let respawns = 0;
+  let resetCount = 0;
+  let physicsStepCount = 0;
+  let appliedAngularVelocityDegPerSec = 0;
   let prevVelocity: Point2D = { x: 0, y: 0 };
   let currentInput: PogoInputState = { jump: false, left: false, right: false };
+  let prevPose: Pose = {
+    angleRad: 0,
+    x: rig.spawnPosition.x,
+    y: rig.spawnPosition.y,
+  };
+  let currPose: Pose = prevPose;
+
+  function poseOfPlayer(): Pose {
+    return {
+      angleRad: player.angle,
+      x: player.position.x,
+      y: player.position.y,
+    };
+  }
+
+  function rotationInput(): number {
+    return (currentInput.right ? 1 : 0) - (currentInput.left ? 1 : 0);
+  }
 
   function resetPlayerState(): void {
-    Body.setPosition(player, { x: config.spawn.x, y: config.spawn.y });
+    Body.setPosition(player, rig.spawnPosition);
     Body.setVelocity(player, { x: 0, y: 0 });
     Body.setAngle(player, 0);
     Body.setAngularVelocity(player, 0);
     boostState = createBoostState();
     compressionRemainingMs = 0;
     contactImpactSpeed = 0;
-    ouchTimerMs = 0;
+    ouchFlashRemainingMs = 0;
     reachedGoal = false;
+    appliedAngularVelocityDegPerSec = 0;
     prevVelocity = { x: 0, y: 0 };
+    accumulatorMs = 0;
+    prevPose = poseOfPlayer();
+    currPose = prevPose;
+    resetCount += 1;
   }
 
-  function applyOuchBounce(
-    normal: Point2D,
-    bounceSpeed: number,
-    horizontalDamp: number,
-  ): void {
-    boostState = cancelBoost();
-    compressionRemainingMs = 0;
-    ouchTimerMs = OUCH_RECOVERY_MS;
-    Body.setVelocity(player, {
-      x: player.velocity.x * horizontalDamp + normal.x * bounceSpeed,
-      y: normal.y * bounceSpeed,
-    });
-  }
-
-  function handleCollisionPairs(pairs: Array<Matter.Pair>): void {
-    let tipPair: Matter.Pair | null = null;
-    let bodyPair: Matter.Pair | null = null;
-
-    for (const pair of pairs) {
-      const aIsPlayer = playerPartIds.has(pair.bodyA.id);
-      const bIsPlayer = playerPartIds.has(pair.bodyB.id);
-      if (aIsPlayer === bIsPlayer) {
-        continue;
-      }
-      const playerPart = aIsPlayer ? pair.bodyA : pair.bodyB;
-      const otherBody = aIsPlayer ? pair.bodyB : pair.bodyA;
-      if (!otherBody.isStatic) {
-        continue;
-      }
-      if (playerPart.id === tipId) {
-        tipPair = pair;
-      } else {
-        bodyPair = pair;
-      }
+  function respawn(reason: RespawnReason = "manual"): void {
+    if (shouldCountFall(reason)) {
+      respawns += 1;
     }
-
-    if (bodyPair) {
-      const normal = outwardNormal(bodyPair, player.position);
-      const result = computeBounce({
-        alignmentAngleDeg: 90,
-        boostReady: boostState.ready,
-        contactPart: "body",
-        impactSpeed: normalImpactSpeed(prevVelocity, normal),
-        jumpHeld: currentInput.jump,
-      });
-      applyOuchBounce(normal, result.bounceSpeed, OUCH_BODY_HORIZONTAL_DAMP);
-      return;
-    }
-
-    if (!tipPair) {
-      return;
-    }
-
-    const normal = outwardNormal(tipPair, player.position);
-    const alignmentAngleDeg = alignmentDegrees(player.angle, normal);
-    const impactSpeed = normalImpactSpeed(prevVelocity, normal);
-    const result = computeBounce({
-      alignmentAngleDeg,
-      boostReady: boostState.ready,
-      contactPart: "tip",
-      impactSpeed,
-      jumpHeld: currentInput.jump,
-    });
-
-    if (result.outcome === "clean") {
-      if (compressionRemainingMs <= 0) {
-        compressionRemainingMs = result.contactDurationMs;
-        contactImpactSpeed = impactSpeed;
-        ouchTimerMs = 0;
-      }
-      boostState = handleContactBoost(boostState, {
-        isTipContact: true,
-        jumpHeld: currentInput.jump,
-      });
-      if (isInsideBox(player.position, config.goalZone)) {
-        reachedGoal = true;
-      }
-      return;
-    }
-
-    applyOuchBounce(normal, result.bounceSpeed, OUCH_GLANCING_HORIZONTAL_DAMP);
+    resetPlayerState();
   }
 
   function onCollisionStart(
     event: Matter.IEventCollision<Matter.Engine>,
   ): void {
-    handleCollisionPairs(event.pairs);
+    const decision = decideContact({
+      angularVelocityDegPerSec: appliedAngularVelocityDegPerSec,
+      goalZone: config.goalZone,
+      pairs: event.pairs,
+      player,
+      playerPartIds,
+      prevVelocity,
+      rotationInput: rotationInput(),
+      tipId,
+    });
+
+    if (decision.kind === "none") {
+      return;
+    }
+
+    if (decision.kind === "clean") {
+      if (compressionRemainingMs <= 0) {
+        compressionRemainingMs = computeBounce({
+          boostReady: boostState.ready,
+          impactSpeed: decision.impactSpeed,
+          jumpHeld: currentInput.jump,
+        }).contactDurationMs;
+        contactImpactSpeed = decision.impactSpeed;
+        ouchFlashRemainingMs = 0;
+      }
+      boostState = handleContactBoost(boostState, {
+        isTipContact: true,
+        jumpHeld: currentInput.jump,
+      });
+      if (decision.reachedGoal) {
+        reachedGoal = true;
+      }
+      return;
+    }
+
+    compressionRemainingMs = 0;
+    ouchFlashRemainingMs = OUCH_FLASH_MS;
+    if (decision.resolution.cancelBoost) {
+      boostState = cancelBoost();
+    }
+    Body.setVelocity(player, decision.resolution.velocity);
+    Body.setAngularVelocity(
+      player,
+      degPerSecToMatterAngularVelocity(
+        decision.resolution.angularVelocityDegPerSec,
+      ),
+    );
   }
 
   Events.on(engine, "collisionStart", onCollisionStart);
 
   function stepFixed(input: PogoInputState): void {
+    const dtSec = FIXED_STEP_MS / 1000;
     const dir = (input.right ? 1 : 0) - (input.left ? 1 : 0);
-    const deltaDeg = dir * ROTATION_SPEED_DEG_PER_SEC * (FIXED_STEP_MS / 1000);
+
+    prevPose = poseOfPlayer();
+    prevVelocity = { x: player.velocity.x, y: player.velocity.y };
+
+    const currentDegPerSec = matterAngularVelocityToDegPerSec(
+      player.angularVelocity,
+    );
+    const nextDegPerSec = stepAngularVelocity(
+      currentDegPerSec,
+      dir,
+      dtSec,
+      ROTATION_MODEL,
+    );
+    appliedAngularVelocityDegPerSec = nextDegPerSec;
+    Body.setAngularVelocity(
+      player,
+      degPerSecToMatterAngularVelocity(nextDegPerSec),
+    );
 
     if (compressionRemainingMs > 0) {
-      Body.setAngularVelocity(player, 0);
-      Body.setAngle(player, player.angle + degToRad(deltaDeg));
       boostState = handleContactBoost(boostState, {
         isTipContact: true,
         jumpHeld: input.jump,
       });
       compressionRemainingMs -= FIXED_STEP_MS;
-
       if (compressionRemainingMs <= 0) {
         const { boosted, nextState } = consumeBoostOnLaunch(
           boostState,
           input.jump,
         );
         const launch = computeBounce({
-          alignmentAngleDeg: 0,
           boostReady: boosted,
-          contactPart: "tip",
           impactSpeed: contactImpactSpeed,
           jumpHeld: input.jump,
         });
         Body.setVelocity(
           player,
           computeLaunchVelocity(player.angle, launch.bounceSpeed),
+        );
+        Body.setAngularVelocity(
+          player,
+          degPerSecToMatterAngularVelocity(nextDegPerSec * BOUNCE_ANGULAR_KEEP),
         );
         boostState = nextState;
       } else {
@@ -234,24 +225,23 @@ export function createPogoSimulation(
           y: Math.min(0, player.velocity.y),
         });
       }
-    } else {
-      const rotationScale = ouchTimerMs > 0 ? OUCH_ROTATION_SCALE : 1;
-      if (ouchTimerMs > 0) {
-        ouchTimerMs = Math.max(0, ouchTimerMs - FIXED_STEP_MS);
-      }
-      Body.setAngularVelocity(player, 0);
-      Body.setAngle(player, player.angle + degToRad(deltaDeg * rotationScale));
-      if (ouchTimerMs <= 0 && deltaDeg !== 0) {
-        boostState = accumulateAirborneRotation(boostState, deltaDeg);
-      }
+    } else if (dir !== 0) {
+      boostState = accumulateAirborneRotation(
+        boostState,
+        nextDegPerSec * dtSec,
+      );
     }
 
-    prevVelocity = { x: player.velocity.x, y: player.velocity.y };
+    if (ouchFlashRemainingMs > 0) {
+      ouchFlashRemainingMs = Math.max(0, ouchFlashRemainingMs - FIXED_STEP_MS);
+    }
+
     Engine.update(engine, FIXED_STEP_MS);
+    currPose = poseOfPlayer();
+    physicsStepCount += 1;
 
     if (isOutsideKillBounds(player.position, config.stageBounds)) {
-      respawns += 1;
-      resetPlayerState();
+      respawn("fall");
     }
   }
 
@@ -261,32 +251,46 @@ export function createPogoSimulation(
       Composite.clear(engine.world, false, true);
       Engine.clear(engine);
     },
-    pivotOffsetY,
-    respawn(): void {
-      respawns += 1;
-      resetPlayerState();
+    getTerrainPolygons(): Array<Array<Point2D>> {
+      return terrainBodies.map((body) =>
+        body.vertices.map((vertex) => ({ x: vertex.x, y: vertex.y })),
+      );
     },
+    pivotOffsetY,
+    respawn,
+    spawn: rig.spawnPosition,
     step(dtMs: number, input: PogoInputState): PogoSnapshot {
       currentInput = input;
-      accumulatorMs = Math.min(
-        accumulatorMs + Math.min(dtMs, MAX_FRAME_DT_MS),
-        MAX_FRAME_DT_MS * 2,
-      );
+      accumulatorMs += Math.min(Math.max(dtMs, 0), MAX_FRAME_DT_MS);
 
-      while (accumulatorMs >= FIXED_STEP_MS) {
-        stepFixed(input);
+      let steps = 0;
+      while (
+        accumulatorMs >= FIXED_STEP_MS &&
+        steps < MAX_PHYSICS_STEPS_PER_FRAME
+      ) {
         accumulatorMs -= FIXED_STEP_MS;
+        stepFixed(input);
+        steps += 1;
+      }
+      if (accumulatorMs >= FIXED_STEP_MS) {
+        accumulatorMs = 0;
       }
 
+      const alpha = Math.min(1, Math.max(0, accumulatorMs / FIXED_STEP_MS));
+      const pose = lerpPose(prevPose, currPose, alpha);
+
       return {
-        angleRad: player.angle,
+        angleRad: pose.angleRad,
         boostReady: boostState.ready,
+        fixedStepHz: FIXED_STEP_HZ,
         grounded: compressionRemainingMs > 0,
-        ouch: ouchTimerMs > 0,
+        ouch: ouchFlashRemainingMs > 0,
+        physicsStepCount,
         reachedGoal,
+        resetCount,
         respawns,
-        x: player.position.x,
-        y: player.position.y,
+        x: pose.x,
+        y: pose.y,
       };
     },
   };

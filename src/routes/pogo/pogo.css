@@ -118,11 +118,33 @@
   }
 
   .pogo-stage {
+    position: relative;
+    z-index: 1;
     display: block;
   }
 
-  .pogo-grid-line {
-    stroke: color-mix(in srgb, currentcolor 8%, transparent);
+  .pogo-grid {
+    position: absolute;
+    z-index: 0;
+    background-image:
+      linear-gradient(
+        to right,
+        color-mix(in srgb, currentcolor 8%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, currentcolor 8%, transparent) 1px,
+        transparent 1px
+      );
+    pointer-events: none;
+  }
+
+  .pogo-debug-terrain {
+    fill: color-mix(in srgb, #f472b6 22%, transparent);
+    stroke: #f472b6;
+    stroke-width: 1.5;
+    pointer-events: none;
   }
 
   .pogo-terrain {
@@ -161,6 +183,7 @@
 
   .pogo-player {
     position: absolute;
+    z-index: 2;
     inset-block-start: 0;
     inset-inline-start: 0;
     inline-size: 36px;

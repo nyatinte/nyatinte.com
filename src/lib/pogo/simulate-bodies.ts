@@ -3,6 +3,7 @@ import decomp from "poly-decomp";
 import {
   BODY_FRICTION,
   KILL_PLANE_MARGIN,
+  PLAYER_FRICTION_AIR,
   PLAYER_HEIGHT,
   PLAYER_WIDTH,
   STICK_LENGTH,
@@ -24,18 +25,15 @@ export type PogoBox = {
 
 export type PlayerRig = {
   readonly player: Matter.Body;
-  readonly torsoId: number;
+  readonly pivotOffsetY: number;
+  readonly spawnPosition: Point2D;
   readonly stickId: number;
   readonly tipId: number;
-  readonly pivotOffsetY: number;
+  readonly torsoId: number;
 };
 
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
-}
-
-export function degToRad(deg: number): number {
-  return (deg * Math.PI) / 180;
 }
 
 export function stickUpVector(angleRad: number): Point2D {
@@ -151,17 +149,20 @@ export function createPlayerRig(spawn: Point2D): PlayerRig {
   });
 
   const player = Body.create({
-    frictionAir: 0.01,
+    frictionAir: PLAYER_FRICTION_AIR,
     parts: [torso, stick, tip],
     restitution: 0.05,
   });
 
   const pivotOffsetY = player.position.y;
-  Body.setPosition(player, { x: spawn.x, y: spawn.y });
+  const tipBottomOffsetY = player.bounds.max.y - player.position.y;
+  const spawnPosition = { x: spawn.x, y: spawn.y - tipBottomOffsetY };
+  Body.setPosition(player, spawnPosition);
 
   return {
     pivotOffsetY,
     player,
+    spawnPosition,
     stickId: stick.id,
     tipId: tip.id,
     torsoId: torso.id,
