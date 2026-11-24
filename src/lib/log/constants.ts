@@ -1,6 +1,6 @@
 export const logTitle = "ログ";
 
-export const logDescription = "わからなかったことを調べて書く。";
+export const logDescription = "学びの記録";
 
 export const logRssPath = "/log/rss.xml";
 

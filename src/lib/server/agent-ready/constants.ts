@@ -4,7 +4,7 @@ export const siteAuthor = {
 } as const;
 
 export const siteIdentity = {
-  description: "nyatinte のパーソナルサイト",
+  description: "nyatinte.com",
   inLanguage: "ja",
   name: "nyatinte.com",
   publicSite: "https://nyatinte.com",
