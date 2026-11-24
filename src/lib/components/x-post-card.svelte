@@ -68,3 +68,9 @@
     </blockquote>
   </div>
 {/key}
+
+<style>
+  :global(iframe[id^="twitter-widget"]) {
+    border-radius: 12px;
+  }
+</style>
