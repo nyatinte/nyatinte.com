@@ -46,6 +46,15 @@ _Pogostuck: Rage With Your Friends_（開発者 Superku / Hendrik Felix Pohl、2
 
 ばね・スライダ・先端ピボットの公式記述、着地バッファの公式ミリ秒、接地摩擦の公式数値は、Steam / note / NamuWiki / speedrun / 検索した範囲では見つかりませんでした。一般的なポゴの力学や汎用の jump buffer 解説は本家の出典にしません。
 
+### 追加調査（ラウンド4）
+
+22. Steam ガイド「Beating map 1」（k3llyapplebee、出典 11 の再確認）: https://steamcommunity.com/sharedfiles/filedetails/?id=3323449872
+    - 「If you hit your body on any ledge you will lose all momentum potentially loosing a lot of progress」。体が崖に当たると運動量を失う、というコミュニティ記述。開発者の式ではない。
+23. NamuWiki Speedrun 記事: https://en.namu.wiki/w/Pogostuck:%20Rage%20With%20Your%20Friends/%EC%8A%A4%ED%94%BC%EB%93%9C%EB%9F%B0
+    - Map 1 石炭洞窟の "Head bonk"：右壁に頭を当て、recoil（反動）で左へ落ちる、というコミュニティの技術名。法線反射の式や数値は無い。動画は見ていない。
+
+Superku の公開スレッドと Reddit の非公式測定リストからは、体・頭ヒットの反射式は見つかりませんでした。法線まわりに速度を鏡映するモデルは未確認のため仮定です。既定の体ヒットは出典 11 / 22 の「運動量を失う」に合わせ、`OUCH_BODY_RESTITUTION = 0` とします。
+
 ## 2. 確定した仕様（出典あり）
 
 - **自動バウンド**: ポゴ先端が地形へ着地するたびに自動で跳ねます。ボタン無操作でも跳び続けます（出典 8, 9）。
@@ -71,12 +80,12 @@ _Pogostuck: Rage With Your Friends_（開発者 Superku / Hendrik Felix Pohl、2
 
 ### エンジン
 
-- **パッケージ**: `@dimforge/rapier2d-compat` 0.21.0。`-compat` 版は WASM を base64 で内包するため、SvelteKit on Cloudflare Workers のリポジトリ全体へ Vite の WASM プラグインを足さずに済み、`await init()` がそのまま読み込み表示になります。`@dimforge/rapier2d`（非 compat）は別 WASM ファイルの配信設定が要り、同じ隔離を保てる根拠が無いため採用しません。
+- **パッケージ**: `@dimforge/rapier2d` 0.21.0（非 compat）。Vite / Rolldown が `.wasm` を別アセットとして出力するため、追加の WASM プラグインは不要でした。compat の base64 内包よりダウンロードが軽いのでこちらを採用し、`@dimforge/rapier2d-compat` は削除しました。
 - **2 剛体**: 胴体（`PLAYER_WIDTH` × `PLAYER_HEIGHT` の箱）とスティック（先端の球）。スティック軸方向のプリズマティック・ジョイントでつなぎ、相対回転を固定します。`PRISMATIC_TRAVEL_PX` の範囲で伸縮し、胴体とスティックの接触は無効にします。
 - **ばね**: ジョイントの位置モーター。チャージ中は圧縮目標へ、離陸時は自然長へ戻します。剛性・減衰・最大力・限界は `constants.ts` に置きます。スティックの剛体は CCD 有効です。
 - **座標**: Rapier は Y 上向き・メートル、ステージは Y 下向き・ピクセル。`PIXELS_PER_METER` で境界変換し、角度と角速度の符号を反転します（`coords.ts`）。
 - **120Hz**: `FIXED_STEP_MS` のアキュムレータとスパイラル・オブ・デス上限を維持し、`world.timestep` を固定ステップに合わせます。描画は直近 2 姿勢の補間です。スナップショットに `physicsStepCount` を含めます。
-- **WASM 初期化**: `/pogo` の `onMount` だけが `simulate` を動的 import し、その中で Rapier を動的 import して `await init()` します。完了までは読み込み表示（`role="status"`）を出し、失敗時は `role="alert"` に切り替えます。
+- **WASM 初期化**: `/pogo` の `onMount` だけが `simulate` を動的 import し、その中で `@dimforge/rapier2d` を動的 import します（モジュール読み込みが WASM の取得とコンパイルを含む）。完了までは読み込み表示（`role="status"`）を出し、失敗時は `role="alert"` に切り替えます。
 - **描画**: 胴体・軸・先端の 3 つの div を `translate3d` / `rotate` で更新します。カメラは `#world` への逆向き `translate3d` のままです。
 
 ### チャージ・離陸・自動発射
@@ -188,13 +197,14 @@ _Pogostuck: Rage With Your Friends_（開発者 Superku / Hendrik Felix Pohl、2
 | `TIP_ALIGN_MAX_ANGLE_DEG`                 | `50`   | 仮定（定性のみ出典 8）    | スティック軸と着地面法線の許容ずれ角（度）        |
 | `TIP_PIVOT_MAX_SLOPE_DEG`                 | `55`   | 仮定                      | 先端ピボットを解除する斜面の上限（度）            |
 | `TIP_PIVOT_MAX_FORCE_N`                   | `60`   | 仮定                      | 先端ピボットを解除する横力の上限（N）             |
-| `OUCH_BODY_LINEAR_KEEP`                   | `0.05` | 仮定（出典 11 は定性）    | 体ヒット時に残す線形速度の割合                    |
+| `OUCH_BODY_LINEAR_KEEP`                   | `0.05` | 仮定（出典 11 / 22 は定性） | 体ヒット時に残す線形速度の割合（restitution 0 のとき） |
+| `OUCH_BODY_RESTITUTION`                   | `0`    | 仮定（反射式は未確認）    | 0 は運動量カット、1 は法線反射。既定は出典 11 / 22 に合わせ 0 |
 | `OUCH_GLANCING_LINEAR_KEEP`               | `0.3`  | 仮定                      | 角度不足の先端ヒットで残す線形速度の割合          |
 | `OUCH_RESIDUAL_BOUNCE_SPEED_M_PER_SEC`    | `0.36` | 仮定                      | 失敗着地で埋まり込みを避ける微小な分離速度（m/s） |
 | `OUCH_TUMBLE_ANGULAR_IMPULSE_DEG_PER_SEC` | `180`  | 仮定                      | 体ヒット時に加える角速度インパルス                |
 | `OUCH_FLASH_MS`                           | `260`  | 仮定                      | 失敗着地の赤フラッシュ表示時間                    |
 
-失敗着地は、体ヒットで線形速度をほぼゼロにし、ブーストを取消し、既存の角速度を保ったまま小さな角インパルスを足します。角度不足の先端ヒットは体ヒットより運動量を残します。操作ロック・スタン・自動直立はありません（仮定）。
+失敗着地は、体ヒットでブーストを取消し、既存の角速度を保ったまま小さな角インパルスを足します。`OUCH_BODY_RESTITUTION = 0`（既定）では線形速度をほぼゼロにします（出典 11 / 22）。1 に近づけると速度を接触法線で鏡映しますが、この反射モデルは仮定です。角度不足の先端ヒットは体ヒットより運動量を残します。操作ロック・スタン・自動直立はありません（仮定）。
 
 ### 地形・ステージ・カメラ
 
@@ -241,7 +251,9 @@ _Pogostuck: Rage With Your Friends_（開発者 Superku / Hendrik Felix Pohl、2
 ## 6. PoC アーキテクチャ
 
 - **物理と描画の分離**: 物理は `src/lib/pogo/simulate.ts`（アキュムレータ・補間・スナップショット）、`cycle.ts`（固定ステップの状態機械）、`contact.ts`（接地判定・ピボット・失敗着地）、`rapier-world.ts`（剛体・ジョイント・地形コライダー）に限定します。描画は DOM と SVG のみです。
-- **遅延ロードの境界**: `@dimforge/rapier2d-compat` を import するのは `rapier-load.ts` だけで、しかも `import()` です。`src/routes/pogo/+page.svelte` は `onMount` 内で `import("../../lib/pogo/simulate")` を呼びます。他ルート・レイアウト・SSR / Worker バンドルへ物理エンジンを含めません。
+- **遅延ロードの境界**: `@dimforge/rapier2d` を import するのは `rapier-load.ts` だけで、しかも `import()` です。`src/routes/pogo/+page.svelte` は `onMount` 内で `import("../../lib/pogo/simulate")` を呼びます。他ルート・レイアウト・SSR / Worker バンドルへ物理エンジンを含めません。
+- **CSP**: `kit.csp` の `script-src` は `main` と同じ `self`（と nonce）のままです。`wasm-unsafe-eval` は `hooks.server.ts` が `/pogo` の既存 CSP ヘッダへだけ足します。他ルートの CSP は変えません。
+- **チューニングパネル**: `?debug=1` または `?tune=1` のときだけ、仮定定数のスライダーを遅延ロードします。既定値の唯一のソースは `constants.ts` で、スライダーは `mergeTune` の overrides を sim に渡すだけです。
 - **120Hz 固定ステップと補間描画**: rAF ごとに経過時間をアキュムレータへ足し、`FIXED_STEP_MS` 分だけ `world.step()` を 0 回以上実行します。1 フレームのステップ数は `MAX_PHYSICS_STEPS_PER_FRAME`、dt は `MAX_FRAME_DT_MS` で上限します。物理が 0 回のフレームでも描画し、`alpha` で直近 2 姿勢を補間します。
 - **接地と離陸**: 先端コンタクトの立ち上がりでチャージを開始し、接触窓の終わりか Space の早期解放でモーターを自然長へ戻します。伸びが `PIVOT_RELEASE_EXTENSION_FRACTION` に達したら先端ピボットを外します。接触の取得と状態遷移は `world.step()` の後に行い、イベント配信中にジョイントを触りません。
 - **描画**: 胴体・軸・先端の 3 つの div を毎フレーム `transform` だけで更新します。カメラは `#world` へ逆向きの `translate3d` を適用します。
