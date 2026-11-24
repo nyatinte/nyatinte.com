@@ -62,6 +62,9 @@ describe("resolveLanding", () => {
     expect(result.startBounceCycle).toBe(false);
     expect(result.cancelBoost).toBe(true);
     expect(Math.hypot(result.velocity.x, result.velocity.y)).toBeLessThan(1);
+    expect(
+      result.velocity.x * UP_NORMAL.x + result.velocity.y * UP_NORMAL.y,
+    ).toBeGreaterThan(0);
   });
 
   it("keeps the body tumbling instead of resetting the angle", () => {
@@ -123,5 +126,11 @@ describe("resolveLanding", () => {
     expect(
       Math.hypot(glancing.velocity.x, glancing.velocity.y),
     ).toBeGreaterThan(Math.hypot(body.velocity.x, body.velocity.y) * 3);
+    expect(
+      glancing.velocity.x * UP_NORMAL.x + glancing.velocity.y * UP_NORMAL.y,
+    ).toBeGreaterThan(0);
+    expect(
+      body.velocity.x * UP_NORMAL.x + body.velocity.y * UP_NORMAL.y,
+    ).toBeGreaterThan(0);
   });
 });

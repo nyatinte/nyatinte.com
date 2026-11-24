@@ -252,9 +252,12 @@ export function createPogoSimulation(
       Engine.clear(engine);
     },
     getTerrainPolygons(): Array<Array<Point2D>> {
-      return terrainBodies.map((body) =>
-        body.vertices.map((vertex) => ({ x: vertex.x, y: vertex.y })),
-      );
+      return terrainBodies.flatMap((body) => {
+        const parts = body.parts.length > 1 ? body.parts.slice(1) : [body];
+        return parts.map((part) =>
+          part.vertices.map((vertex) => ({ x: vertex.x, y: vertex.y })),
+        );
+      });
     },
     pivotOffsetY,
     respawn,

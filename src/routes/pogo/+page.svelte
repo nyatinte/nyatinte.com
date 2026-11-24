@@ -7,6 +7,7 @@
     CAMERA_PAN_LIMIT,
     CAMERA_PAN_SPEED,
     GRID_CELL_PX,
+    MAX_FRAME_DT_MS,
     GRID_MAX_X,
     GRID_MAX_Y,
     GRID_MIN_X,
@@ -192,9 +193,7 @@
       });
       simulation = sim;
 
-      if (debugEnabled) {
-        debugPolygons = sim.getTerrainPolygons();
-      }
+      debugPolygons = sim.getTerrainPolygons();
 
       const pivotY = PLAYER_BASE_PIVOT_Y + sim.pivotOffsetY;
       currentPlayer.style.transformOrigin = `${PLAYER_HALF_W}px ${pivotY.toFixed(2)}px`;
@@ -219,7 +218,11 @@
         respawns = snapshot.respawns;
         physicsStepCount = snapshot.physicsStepCount;
 
-        applyTransforms(snapshot, pivotY, dtMs / 1000);
+        applyTransforms(
+          snapshot,
+          pivotY,
+          Math.min(MAX_FRAME_DT_MS, Math.max(0, dtMs)) / 1000,
+        );
         rafId = requestAnimationFrame(tick);
       };
 

@@ -34,6 +34,27 @@ const PAD: Array<Point2D> = [
   { x: -500, y: 1000 },
 ];
 
+function pointInPolygon(
+  point: Point2D,
+  polygon: ReadonlyArray<Point2D>,
+): boolean {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i, i += 1) {
+    const a = polygon[i];
+    const b = polygon[j];
+    if (!a || !b) {
+      continue;
+    }
+    const intersect =
+      a.y > point.y !== b.y > point.y &&
+      point.x < ((b.x - a.x) * (point.y - a.y)) / (b.y - a.y) + a.x;
+    if (intersect) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
 function config(
   overrides: Partial<PogoSimulationConfig> = {},
 ): PogoSimulationConfig {
@@ -165,6 +186,25 @@ describe("spawn and fall counter", () => {
       expect(point.x).toBeGreaterThanOrEqual(-500);
       expect(point.x).toBeLessThanOrEqual(1000);
       expect(point.y).toBeGreaterThanOrEqual(START_PAD_Y);
+    }
+    sim.destroy();
+  });
+
+  it("exposes decomposed parts for concave terrain, not the convex hull", () => {
+    const ledge: Array<Point2D> = [
+      { x: 0, y: 100 },
+      { x: 200, y: 100 },
+      { x: 200, y: 40 },
+      { x: 400, y: 40 },
+      { x: 400, y: 200 },
+      { x: 0, y: 200 },
+    ];
+    const sim = createPogoSimulation(config({ terrainPolygons: [ledge] }));
+    const polygons = sim.getTerrainPolygons();
+    expect(polygons.length).toBeGreaterThan(1);
+    const notch = { x: 100, y: 70 };
+    for (const polygon of polygons) {
+      expect(pointInPolygon(notch, polygon)).toBe(false);
     }
     sim.destroy();
   });

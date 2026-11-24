@@ -48,6 +48,22 @@ function tumbleDirection(input: LandingInput, tangentialSign: number): number {
   return tangentialSign === 0 ? 1 : tangentialSign;
 }
 
+function failedLandingVelocity(
+  velocity: Point2D,
+  normal: Point2D,
+  linearKeep: number,
+): Point2D {
+  const normalSpeed = velocity.x * normal.x + velocity.y * normal.y;
+  const tangentX = velocity.x - normal.x * normalSpeed;
+  const tangentY = velocity.y - normal.y * normalSpeed;
+  const outwardNormalSpeed =
+    Math.max(0, normalSpeed) * linearKeep + OUCH_RESIDUAL_BOUNCE_SPEED;
+  return {
+    x: tangentX * linearKeep + normal.x * outwardNormalSpeed,
+    y: tangentY * linearKeep + normal.y * outwardNormalSpeed,
+  };
+}
+
 export function resolveLanding(input: LandingInput): LandingResolution {
   const outcome = classifyLanding(input.contactPart, input.alignmentAngleDeg);
 
@@ -77,13 +93,6 @@ export function resolveLanding(input: LandingInput): LandingResolution {
     cancelBoost: true,
     outcome,
     startBounceCycle: false,
-    velocity: {
-      x:
-        input.velocity.x * linearKeep +
-        input.normal.x * OUCH_RESIDUAL_BOUNCE_SPEED,
-      y:
-        input.velocity.y * linearKeep +
-        input.normal.y * OUCH_RESIDUAL_BOUNCE_SPEED,
-    },
+    velocity: failedLandingVelocity(input.velocity, input.normal, linearKeep),
   };
 }
