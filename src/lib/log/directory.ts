@@ -1,5 +1,9 @@
 import { type Dirent, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
+import {
+  assertArticleBodyImages,
+  localArticleImagePaths,
+} from "./article-images";
 import { articlesFromSources } from "./frontmatter";
 
 export function loadArticlesFromDirectory(directory: string) {
@@ -35,14 +39,19 @@ export function loadArticlesFromDirectory(directory: string) {
   }
   const articles = articlesFromSources(sources);
   for (const article of articles) {
-    if (article.image?.startsWith("./")) {
-      const image = join(directory, article.slug, article.image.slice(2));
+    assertArticleBodyImages(article.slug, article.body);
+    const images = [
+      ...(article.image?.startsWith("./") ? [article.image] : []),
+      ...localArticleImagePaths(article.body),
+    ];
+    for (const image of images) {
+      const path = join(directory, article.slug, image.slice(2));
       try {
-        if (!statSync(image).isFile()) {
+        if (!statSync(path).isFile()) {
           throw new Error("Not a file");
         }
       } catch (error) {
-        throw new Error(`${article.slug}: image not found: ${article.image}`, {
+        throw new Error(`${article.slug}: image not found: ${image}`, {
           cause: error,
         });
       }

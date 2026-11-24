@@ -1,4 +1,5 @@
 import { expect, test } from "vite-plus/test";
+import { logDescription } from "../lib/log/constants";
 import {
   canonicalSiteUrl,
   siteIdentity,
@@ -265,7 +266,7 @@ test("GET /log/rss.xml lists articles", async () => {
   expect(response.status).toBe(200);
   expect(response.headers.get("content-type")).toContain("application/rss+xml");
   expect(body).toContain("<rss");
-  expect(body).toContain("わからなかったことを調べて書く");
+  expect(body).toContain(logDescription);
   expect(body).toContain("/log/template");
 });
 
