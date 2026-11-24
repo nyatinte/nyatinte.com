@@ -5,6 +5,16 @@
     inline-size: min(100%, 72rem);
     margin-inline: auto;
     padding: 5.5rem 1rem 2rem;
+    color: var(--home-foreground);
+    background: var(--home-background);
+  }
+
+  .pogo-page::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: var(--home-background);
   }
 
   .pogo-hud {
