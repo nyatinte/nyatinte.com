@@ -82,7 +82,6 @@ export function createPogoSimulation(
   let boostState: BoostState = createBoostState();
   let compressionRemainingMs = 0;
   let contactImpactSpeed = 0;
-  let contactNormal: Point2D = { x: 0, y: -1 };
   let ouchTimerMs = 0;
   let reachedGoal = false;
   let respawns = 0;
@@ -97,7 +96,6 @@ export function createPogoSimulation(
     boostState = createBoostState();
     compressionRemainingMs = 0;
     contactImpactSpeed = 0;
-    contactNormal = { x: 0, y: -1 };
     ouchTimerMs = 0;
     reachedGoal = false;
     prevVelocity = { x: 0, y: 0 };
@@ -171,7 +169,6 @@ export function createPogoSimulation(
       if (compressionRemainingMs <= 0) {
         compressionRemainingMs = result.contactDurationMs;
         contactImpactSpeed = impactSpeed;
-        contactNormal = normal;
         ouchTimerMs = 0;
       }
       boostState = handleContactBoost(boostState, {
@@ -222,11 +219,7 @@ export function createPogoSimulation(
         });
         Body.setVelocity(
           player,
-          computeLaunchVelocity(
-            player.angle,
-            contactNormal,
-            launch.bounceSpeed,
-          ),
+          computeLaunchVelocity(player.angle, launch.bounceSpeed),
         );
         boostState = nextState;
       } else {

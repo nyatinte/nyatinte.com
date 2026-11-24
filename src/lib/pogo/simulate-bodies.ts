@@ -87,17 +87,12 @@ export function alignmentDegrees(angleRad: number, normal: Point2D): number {
 
 export function computeLaunchVelocity(
   angleRad: number,
-  contactNormal: Point2D,
   bounceSpeed: number,
 ): Point2D {
   const up = stickUpVector(angleRad);
-  const normalDot = up.x * contactNormal.x + up.y * contactNormal.y;
-  const rawDirX = normalDot < 0.25 ? up.x + contactNormal.x * 0.5 : up.x;
-  const rawDirY = normalDot < 0.25 ? up.y + contactNormal.y * 0.5 : up.y;
-  const len = Math.hypot(rawDirX, rawDirY) || 1;
   return {
-    x: (rawDirX / len) * bounceSpeed,
-    y: (rawDirY / len) * bounceSpeed,
+    x: up.x * bounceSpeed,
+    y: up.y * bounceSpeed,
   };
 }
 

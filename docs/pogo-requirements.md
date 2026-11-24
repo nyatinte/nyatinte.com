@@ -21,7 +21,7 @@ _Pogostuck: Rage With Your Friends_（開発者 Superku / Hendrik Felix Pohl、2
 10. NamuWiki: https://en.namu.wiki/w/Pogostuck:%20Rage%20With%20Your%20Friends
 11. Steam ガイド「Beating map 1」（k3llyapplebee）: https://steamcommunity.com/sharedfiles/filedetails/?id=3323449872
 12. Speedrun.com: https://www.speedrun.com/pogostuck
-13. コミュニティ投稿 kakitsubata（出典 6 と同一スレッド、2019-07-21）
+13. コミュニティ投稿 kakitsubata（2019-07-21、出典 6 と同一スレッド）: https://steamcommunity.com/app/688130/discussions/0/1643169167159043608/
 
 ## 2. 確定した仕様（出典あり）
 
@@ -81,7 +81,7 @@ _Pogostuck: Rage With Your Friends_（開発者 Superku / Hendrik Felix Pohl、2
 - **`src/lib/pogo/impulse.ts`**:
   - `classifyLanding(contactPart, alignmentAngleDeg)`: 胴体接地は `"ouch"`、先端接地で `|alignmentAngleDeg| <= TIP_ALIGN_MAX_ANGLE_DEG` なら `"clean"`、超過なら `"glancing"` を返します。
   - `computeContactDurationMs(impactSpeed)`: `GROUND_CONTACT_BASE_MS + Math.max(0, impactSpeed) * GROUND_CONTACT_FALL_MS_PER_SPEED` を返します。
-  - `computeBounce(input)`: `"ouch"` / `"glancing"` は `OUCH_BOUNCE_SCALE` の減衰反発と接地時間 `0`・ブースト無効を返します。`"clean"` は `usedBoost = jumpHeld && boostReady` に応じて基本速度（`AUTO_BOUNCE_SPEED` / `CHARGED_BOUNCE_SPEED` / `CHARGED_BOUNCE_SPEED * BOOST_BOUNCE_MULTIPLIER`）に `impactSpeed * FALL_SPEED_BOUNCE_SCALE` を加え、`MAX_BOUNCE_SPEED` で上限を掛けて返します。
+  - `computeBounce(input)`: `"ouch"` / `"glancing"` は `OUCH_BOUNCE_SCALE` の減衰反発と接地時間 `0`・ブースト無効を返します。`"clean"` は `usedBoost = jumpHeld && boostReady` に応じて基本速度（`AUTO_BOUNCE_SPEED` / `CHARGED_BOUNCE_SPEED` / `CHARGED_BOUNCE_SPEED * BOOST_BOUNCE_MULTIPLIER`）に `impactSpeed * FALL_SPEED_BOUNCE_SCALE` を加え、`MAX_BOUNCE_SPEED` でクランプして返します。
 
 ## 5. PoC アーキテクチャ
 
@@ -93,7 +93,7 @@ _Pogostuck: Rage With Your Friends_（開発者 Superku / Hendrik Felix Pohl、2
   - `A` / `D`: 左右回転（圧縮中も次の跳躍角の狙い合わせが可能、仮定）。
   - `Space`: チャージ・跳躍（`keydown` / `keyup` で `preventDefault()` し、ページスクロールを防止）。
   - `W` / `S` および矢印キー: カメラパン（`W` / `S` 割り当ては `W_S_CAMERA_PAN` による仮定）。
-  - `R`: スタート地点への手動リスポーン（仮定）。
+  - `R`: スタート地点への手動リスポーン（PoC の UI 補助。Pogostuck の仕様ではなく、仮定のゲームルールでもありません）。
   - ステージはスタート台、通常／チャージで登れる段差、ギャップ、斜面、および `285°` ブーストジャンプで到達できる高台ゴールで構成し、ステージ境界から `KILL_PLANE_MARGIN` を超えて落下した場合はスタート地点へ自動リスポーンします。
 
 ## 6. スコープ外
