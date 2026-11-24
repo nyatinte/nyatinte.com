@@ -4,7 +4,7 @@ import {
   OUCH_BODY_RESTITUTION,
   UNCHARGED_COMPRESSION_PX,
 } from "./constants";
-import { defaultTunables, mergeTune } from "./tune";
+import { defaultTunables, mergeTune, patchTuneOverrides } from "./tune";
 
 describe("mergeTune", () => {
   it("returns constants-module defaults when given no overrides", () => {
@@ -24,5 +24,18 @@ describe("mergeTune", () => {
       OUCH_BODY_RESTITUTION,
     );
     expect(mergeTune({}).chargeFullMs).toBe(CHARGE_FULL_MS);
+  });
+});
+
+describe("patchTuneOverrides", () => {
+  it("adds only the changed key to the overrides object", () => {
+    const once = patchTuneOverrides({}, "chargeFullMs", 90);
+    expect(once).toEqual({ chargeFullMs: 90 });
+    expect(Object.keys(once)).toEqual(["chargeFullMs"]);
+    const twice = patchTuneOverrides(once, "ouchBodyRestitution", 0.8);
+    expect(twice).toEqual({ chargeFullMs: 90, ouchBodyRestitution: 0.8 });
+    expect(mergeTune(twice).unchargedCompressionPx).toBe(
+      UNCHARGED_COMPRESSION_PX,
+    );
   });
 });

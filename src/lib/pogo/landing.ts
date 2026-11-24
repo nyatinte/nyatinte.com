@@ -66,6 +66,9 @@ function failedLandingVelocity(
 
 function reflectedVelocity(velocity: Point2D, normal: Point2D): Point2D {
   const normalSpeed = velocity.x * normal.x + velocity.y * normal.y;
+  if (normalSpeed >= 0) {
+    return velocity;
+  }
   return {
     x: velocity.x - 2 * normalSpeed * normal.x,
     y: velocity.y - 2 * normalSpeed * normal.y,

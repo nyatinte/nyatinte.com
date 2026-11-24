@@ -159,4 +159,18 @@ describe("resolveLanding", () => {
       bounce.velocity.x * UP_NORMAL.x + bounce.velocity.y * UP_NORMAL.y,
     ).toBeCloseTo(-incoming, 9);
   });
+
+  it("does not pull a separating body hit back into the surface", () => {
+    const input = {
+      alignmentAngleDeg: 90,
+      angularVelocityDegPerSec: 0,
+      contactPart: "body" as const,
+      normal: UP_NORMAL,
+      rotationInput: 0,
+      velocity: { x: 4, y: -12 },
+    };
+    const bounce = resolveLanding(input, mergeTune({ ouchBodyRestitution: 1 }));
+    expect(bounce.velocity.x).toBeCloseTo(4, 9);
+    expect(bounce.velocity.y).toBeCloseTo(-12, 9);
+  });
 });

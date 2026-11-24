@@ -240,7 +240,7 @@
 
   <PogoTuneGate
     enabled={tuneEnabled}
-    onChange={applyTune}
+    onChange={(patch) => applyTune({ ...tuneOverrides, ...patch })}
     onReset={() => applyTune({})}
     values={tunables}
   />

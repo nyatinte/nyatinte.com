@@ -184,3 +184,11 @@ export function mergeTune(overrides: PogoTuneOverrides = {}): PogoTunables {
     ...overrides,
   };
 }
+
+export function patchTuneOverrides(
+  overrides: PogoTuneOverrides,
+  key: keyof PogoTunables,
+  value: number,
+): PogoTuneOverrides {
+  return { ...overrides, [key]: value };
+}

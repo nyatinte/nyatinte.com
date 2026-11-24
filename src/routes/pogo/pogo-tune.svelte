@@ -20,7 +20,7 @@
     if (!Number.isFinite(value)) {
       return;
     }
-    onChange({ ...values, [key]: value });
+    onChange({ [key]: value });
   }
 </script>
 
