@@ -49,8 +49,11 @@
 - コミットは Conventional Commits。本文は日本語。
 - Issue と PR のタイトル・本文、レビューコメント、返信は日本語で書く。コード・識別子・コマンドは原文のまま。
 - pullfrog およびこのリポジトリで動く AI レビュー・エージェントは、レビュー本文、インラインコメント、PR・Issue へのコメントをすべて日本語で書く。
+- Issue は新しく作らない。作業は PR として直接出す。
 - 作業は原則ブランチを切り、PR を出す。PR は `pr` スキルに従う。
+- PR のスクリーンショットは `gh --attach` だけを使う。非公式の uploads.github.com の API とブラウザのセッショントークンは使わない。
 - PR はマージコミットでマージする（squash・rebase は使わない）。Stack は `gh stack merge --yes --merge`、単体は `gh pr merge --merge`。
+- `main` にマージしたあとの本番デプロイは `gh workflow run ci.yml --ref main -f production_deploy=deploy` で行う。
 - push 前に、Vite+ の pre-push hook が `pnpm check:ci`（check、build、ビルド済み Worker への HTTP テスト）を走らせる。変更がルートの `README.md`・`AGENTS.md`・`CLAUDE.md` と `docs/**`・`.agents/**` だけのときは hook がスキップする。飛ばす場合は `git push --no-verify` を使う。GitHub Actions の Verify をこの処理に揃える作業は #114。
 - 破壊的な操作（削除・履歴改変・force push）は先に確認を取る。
 - 判断に迷ったら [CODING_STANDARDS.md](CODING_STANDARDS.md) と本ファイルの決定事項を確認し、決定がなければ相談する。
