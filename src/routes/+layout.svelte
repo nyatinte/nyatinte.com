@@ -181,7 +181,7 @@
   :global(:root[data-home-transition="out"]::view-transition-old(scene-back)),
   :global(:root[data-home-transition="out"]::view-transition-old(scene-middle)),
   :global(:root[data-home-transition="out"]::view-transition-old(scene-front)) {
-    animation: scene-out 550ms both cubic-bezier(0.4, 0, 1, 1);
+    animation: scene-out 600ms both cubic-bezier(0.4, 0, 1, 1);
   }
   :global(:root[data-home-transition="in"]::view-transition-new(scene-back)),
   :global(:root[data-home-transition="in"]::view-transition-new(scene-middle)),
@@ -221,7 +221,7 @@
   :global(:root[data-home-transition="out"]::view-transition-old(cloud-right)),
   :global(:root[data-home-transition="out"]::view-transition-old(scene-aurora)),
   :global(:root[data-home-transition="out"]::view-transition-old(scene-sky)) {
-    animation: detail-out 550ms both cubic-bezier(0.4, 0, 1, 1);
+    animation: detail-out 600ms both cubic-bezier(0.4, 0, 1, 1);
   }
   :global(:root[data-home-transition="in"]::view-transition-new(home-title)),
   :global(:root[data-home-transition="in"]::view-transition-new(cloud-left)),
