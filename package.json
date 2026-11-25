@@ -19,7 +19,7 @@
   "type": "module",
   "scripts": {
     "build": "wrangler types --include-main-module=false && svelte-kit sync && vp build && pnpm search:index",
-    "check": "node --test scripts/test-parse-wrangler-version-id.mjs && wrangler types --include-main-module=false && svelte-kit sync && pnpm run fmt:svelte:check && pnpm run lint && vp check && svelte-check --tsconfig ./tsconfig.json",
+    "check": "node --test scripts/test-parse-wrangler-version-id.mjs scripts/test-parse-preview-url.mjs && wrangler types --include-main-module=false && svelte-kit sync && pnpm run fmt:svelte:check && pnpm run lint && vp check && svelte-check --tsconfig ./tsconfig.json",
     "check:ci": "APP_ENV=test CF_SEND_TELEMETRY=false sh -c 'pnpm check && pnpm build && pnpm test:http'",
     "deploy": "sh scripts/deploy-worker.sh",
     "dev": "vp dev",
