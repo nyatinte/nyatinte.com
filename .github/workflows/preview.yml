@@ -71,7 +71,9 @@ jobs:
           rm -f "$output"
           WRANGLER_OUTPUT_FILE_PATH="$output" \
             pnpm exec varlock-wrangler preview --name "$PREVIEW_NAME"
-          echo "preview_url=$(node scripts/parse-preview-url.mjs "$output")" >> "$GITHUB_OUTPUT"
+          # 代入で受けないと、抽出が失敗しても echo の終了コードで成功扱いになる。
+          preview_url="$(node scripts/parse-preview-url.mjs "$output")"
+          echo "preview_url=$preview_url" >> "$GITHUB_OUTPUT"
 
       - name: Comment on pull request
         if: github.event.action != 'closed'
