@@ -10,7 +10,13 @@
   "preview_urls": true,
   "previews": {},
   "observability": { "enabled": false },
-  "routes": [{ "pattern": "nyatinte.com", "custom_domain": true }],
+  "routes": [
+    {
+      "pattern": "nyatinte.com",
+      "custom_domain": true,
+      "previews_enabled": true
+    }
+  ],
   "assets": {
     "binding": "ASSETS",
     "directory": ".svelte-kit/cloudflare"

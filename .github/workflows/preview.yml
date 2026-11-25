@@ -82,7 +82,8 @@ jobs:
               idx = end
               urls = (obj.get("preview") or {}).get("urls") or []
               if urls:
-                  print(urls[0])
+                  # previews_enabled を入れたら nyatinte.com 側の URL を使う。
+                  print(next((u for u in urls if ".workers.dev" not in u), urls[0]))
                   sys.exit(0)
           sys.stderr.write("preview URL を出力から取り出せませんでした:\n" + text)
           sys.exit(1)
