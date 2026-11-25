@@ -1,0 +1,214 @@
+---
+title: 人間が 1 秒に読めるトークンはどれくらいか
+description: LLM の tps を見ていて、そもそも人間は 1 秒にどれくらい読めるのか気になったので計算してみた
+date: 2026-11-25
+---
+
+普通の文章を黙読するとき、人間が読める速さはだいたい 1 秒に 5〜10 トークンくらいになる。
+
+- 日本語: 約 7〜11 字/秒（約 400〜650 字/分）≒ 約 6〜9 tokens/秒（`o200k_base` 換算）
+- 英語: 約 4 語/秒（238 wpm）≒ 約 5.5 tokens/秒（幅は 4〜7 tokens/秒）
+
+ただしこれは普通の文章を普通に黙読するときの話で、コードや表、斜め読み、論文の精読では変わる。LLM の出力を流し読みするときはもっと速い人もいて、日本語の研究でも最速は約 1200 字/分まで個人差があるらしい。
+
+## 1 秒に読める文字数と tps は近いのか？
+
+LLM の速さを表す指標として tps (tokens per second) をよく見る。これが人間にとってどれくらいの感覚なのか、「1 秒に読める文字数と近いのでは？」と思ったので確かめてみた。先に言うと、日本語は文字数ベース、英語は語数ベースで考えないとずれる。
+
+人間の黙読速度は、日本語と英語で測り方が違う。
+
+日本語は文字数で測る研究が多い。[小林潤平・川嶋稔夫 (2018)](https://www.jstage.jst.go.jp/article/itej/72/10/72_J154/_article/-char/ja/)（[解説](https://www.kbys-lab.org/archives/2021)）では、大学生 200 名が飛ばし読みなしの通常読みで小説を読み、約 300〜1200 字/分、平均 653 字/分だった（最速と最遅で 3 倍以上の差がある）。[小林潤平 (2016)](https://www.jstage.jst.go.jp/article/jkg/66/10/66_525/_pdf) では「日本語の平均的な読み速度は 1 分あたり 500〜600 文字と云われている」とあるし、1,111 名を対象にした [氏間和仁・今津麻衣・永井伸幸 (2025)](https://home.hiroshima-u.ac.jp/ujima/src/file/yomisokudo202503.pdf) では大学生 101 名の平均が短文 433 cpm（SD 48.2）、長文 405 cpm（SD 48）だった（cpm = characters per minute）。素材が小説か短文かや被験者で 433〜653 字/分と幅があるので、代表値として約 400〜650 字/分を使う。
+
+英語は文字数ではなく語数（wpm）で測る。[Brysbaert (2019)](https://doi.org/10.1016/j.jml.2019.104047) は 190 研究・18,573 人のメタ分析で、成人の黙読はノンフィクションが 238 wpm、フィクションが 260 wpm と報告している。多くの成人の範囲はノンフィクション 175〜300 wpm、フィクション 200〜320 wpm で、音読は 183 wpm。よく引用される数字より遅い、と論文自身も書いている。
+
+次に、1 文字や 1 語が何トークンになるかを調べるため、2026-11-25 に Python の tiktoken（`o200k_base` と `cl100k_base`）で手元のサンプルを測ってみた。英語は英語版 Wikipedia の「Large language model」「Photosynthesis」本文プレーンテキスト（空白区切りで 15,625 語、空白を除いて 89,388 文字）、日本語は日本語版 Wikipedia の「大規模言語モデル」「日本」「光合成」、青空文庫の芥川龍之介「羅生門」（ルビ除去）、このサイトの別記事 1 本（本文とマークアップ）を合わせた 75,400 文字（空白・改行除外）である。サンプルが Wikipedia などの説明的な文章に偏っているので会話文やコードでは変わるし、Claude や Gemini のトークナイザは測っていない（ここは正直に書いておく）。
+
+- 英語（15,625 語）: `o200k_base` で 21,711 tokens（1.39 tokens/語、0.72 語/token、約 4.1 文字/token）。`cl100k_base` で 22,075 tokens（1.41 tokens/語）。[OpenAI Help Center](https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them) の目安「1 token ≒ 4 文字 ≒ 0.75 語（100 tokens ≒ 75 語）」とほぼ一致する。同ページにも、トークン数は語数と同じではなくモデルのエンコーディングと言語で変わると書かれている。
+- 日本語（75,400 文字）: `o200k_base` で 59,697 tokens（0.79 tokens/字、1.26 字/token、ファイル別では 0.73〜0.85 の幅）。`cl100k_base` で 81,344 tokens（1.08 tokens/字）。`o200k_base` だとだいたい 1 トークン ≒ 1.3 文字、`cl100k_base` だと 1 文字 ≒ 1 トークン強になる。
+
+ちなみに [Artificial Analysis](https://artificialanalysis.ai/methodology/performance-benchmarking) も以前は出力トークンを tiktoken の `o200k_base` で数えていたが、v3.0.0（2026-11-03）から各プロバイダーの API が報告するトークン数に変えたらしい。
+
+この比率で、人間の読む速さを `o200k_base` の tokens/秒に換算してみる。
+
+日本語の計算（0.79 tokens/字）はこうなる。
+
+- 433 字/分 ÷ 60 ≒ 7.2 字/秒 → × 0.79 ≒ 5.7 tokens/秒
+- 500〜600 字/分 ÷ 60 ≒ 8.3〜10.0 字/秒 → × 0.79 ≒ 6.6〜7.9 tokens/秒
+- 653 字/分 ÷ 60 ≒ 10.9 字/秒 → × 0.79 ≒ 8.6 tokens/秒（`cl100k_base` の 1.08 だと 11.7 tokens/秒）
+
+代表幅の 433〜653 字/分は 7.2〜10.9 字/秒、トークン換算で 5.7〜8.6 tokens/秒になる。だいたい約 7〜11 字/秒、約 6〜9 tokens/秒だ。
+
+英語の計算（1.39 tokens/語）はこうなる。
+- 238 wpm ÷ 60 ≒ 3.97 語/秒（約 4 語/秒）→ × 1.39 ≒ 5.5 tokens/秒（OpenAI 目安の 1.33 tokens/語なら 5.3 tokens/秒）
+- 幅（ノンフィクション）: 175 wpm → 2.92 語/秒 → × 1.39 ≒ 4.1 tokens/秒 ／ 300 wpm → 5.00 語/秒 → × 1.39 ≒ 6.9 tokens/秒
+- フィクション 260 wpm → 4.33 語/秒 → × 1.39 ≒ 6.0 tokens/秒
+- 文字数換算: 3.97 語/秒 × 5.72 文字/語（89,388 ÷ 15,625）≒ 22.7 文字/秒
+
+最初の仮説「1 秒に読める文字数と tps は近い」は、日本語だけの話だった。日本語は 7〜11 字/秒に対して 6〜9 tokens/秒（1 字 ≒ 0.8 トークン）なのでまあ近い。一方、英語は文字数だと約 23 文字/秒なのにトークン数は約 5.5 tokens/秒で約 4 倍も開きがあり、全然近くない。英語では 1 秒に読める語数（約 4 語/秒）を 1.4 倍するのが正しい。
+
+## そもそも tps って何を測っているのか？
+
+ところで、一口に tps と言っても何を測っているかがいくつかに分かれる。大きく分けると、decode だけの速さ（TPOT や ITL の逆数）、TTFT を含めたリクエスト全体の出力トークン/秒（e2e）、サーバー全体の同時処理スループットの 3 通りがある。サーバー全体のスループットは同時接続が増えると上がるが、1 人あたりの tps は下がる。
+
+1 回の応答の中身を時間で並べると、入力側と出力側で起きていることが違う（[AWS Prescriptive Guidance](https://docs.aws.amazon.com/pdfs/prescriptive-guidance/latest/gen-ai-inference-architecture-and-best-practices-on-aws/gen-ai-inference-architecture-and-best-practices-on-aws.pdf)、[NVIDIA Technical Blog](https://developer.nvidia.com/blog/mastering-llm-techniques-inference-optimization/)、[llama.app](https://llama.app/docs/prefill-vs-decode)）。
+
+prefill はユーザーの入力や過去の会話、ツール出力などの入力トークンをすべて並列に処理して KV キャッシュを作り、最初の出力トークンを出す段階だ。並列度が高く主に計算律速（compute-bound）で、TTFT に影響する。プロンプトキャッシュを使えば、この prefill が軽くなる。decode は出力トークンをひとつずつ自己回帰で生成する段階で、トークンごとにモデルのウェイトと KV キャッシュをメモリから読むためメモリ帯域律速（memory-bound）になる。
+
+:::figure{eyebrow=TIMELINE title="1 回の応答で起きていることと tps の範囲" note="prefill は入力トークン全体の処理、decode は出力トークンの生成。ツール実行時間は含まない。"}
+<svg class="tps-timeline" viewBox="0 0 576 268" role="img" aria-label="リクエスト送信から最後のトークンまでの時間軸と、TTFT・decode だけ・e2e の範囲を示す図">
+  <g class="tl-guides">
+    <line x1="24" y1="44" x2="24" y2="242" />
+    <line x1="304" y1="44" x2="304" y2="190" class="tl-guide-accent" />
+    <line x1="552" y1="44" x2="552" y2="242" />
+  </g>
+  <g class="tl-milestones">
+    <circle cx="24" cy="44" r="4" />
+    <text x="24" y="26" text-anchor="start">リクエスト送信</text>
+    <circle cx="304" cy="44" r="4.5" class="tl-dot-accent" />
+    <text x="304" y="26" text-anchor="middle" class="tl-label-accent">最初のトークン</text>
+    <circle cx="552" cy="44" r="4" />
+    <text x="552" y="26" text-anchor="end">最後のトークン</text>
+  </g>
+  <g class="tl-stages">
+    <rect x="24" y="64" width="100" height="84" rx="8" class="tl-box-queue" />
+    <text x="74" y="102" text-anchor="middle" class="tl-stage-sub">ネットワーク</text>
+    <text x="74" y="119" text-anchor="middle" class="tl-stage-sub">・キュー</text>
+    <path d="M126 106h10m-3-3 3 3-3 3" class="tl-arrow" />
+    <rect x="138" y="64" width="158" height="84" rx="8" class="tl-box-prefill" />
+    <text x="217" y="92" text-anchor="middle" class="tl-stage-title">prefill</text>
+    <text x="217" y="112" text-anchor="middle" class="tl-stage-sub">入力プロンプトや</text>
+    <text x="217" y="128" text-anchor="middle" class="tl-stage-sub">ツール出力を読む</text>
+    <path d="M298 106h12m-3-3 3 3-3 3" class="tl-arrow" />
+    <rect x="312" y="64" width="240" height="84" rx="8" class="tl-box-decode" />
+    <text x="432" y="90" text-anchor="middle" class="tl-stage-title">decode</text>
+    <text x="432" y="109" text-anchor="middle" class="tl-stage-sub">トークンをひとつずつ出す</text>
+    <g class="tl-tokens">
+      <rect x="364" y="122" width="14" height="12" rx="2.5" />
+      <rect x="383" y="122" width="14" height="12" rx="2.5" />
+      <rect x="402" y="122" width="14" height="12" rx="2.5" />
+      <rect x="421" y="122" width="14" height="12" rx="2.5" />
+      <rect x="440" y="122" width="14" height="12" rx="2.5" />
+      <rect x="459" y="122" width="14" height="12" rx="2.5" />
+      <rect x="478" y="122" width="14" height="12" rx="2.5" />
+    </g>
+  </g>
+  <g class="tl-brackets">
+    <path d="M24 166v10h276v-10" />
+    <text x="162" y="196" text-anchor="middle">TTFT（送信〜最初のトークン）</text>
+    <path d="M308 166v10h244v-10" class="tl-bracket-accent" />
+    <text x="430" y="196" text-anchor="middle" class="tl-label-accent">decode だけ（TPOT の逆数）</text>
+    <path d="M24 218v10h528v-10" />
+    <text x="288" y="248" text-anchor="middle">e2e（送信〜最後のトークン）</text>
+  </g>
+</svg>
+:::
+
+[NVIDIA NIM Benchmarking の指標ドキュメント](https://docs.nvidia.com/nim/benchmarking/llm/latest/metrics.html)を見ると、各指標の境界がはっきりする。TTFT はクエリ送信から最初のトークンを受け取るまでの時間で、キュー待ち・prefill 時間・ネットワーク遅延を含む。プロンプトが長くなると KV キャッシュを作る時間が増えるので TTFT も伸びる。e2e latency は TTFT に生成時間（最初のトークンから最後のトークンまで）を足した全体時間だ。
+
+一方、ITL（= TPOT）は `(e2e_latency − TTFT) ÷ (総出力トークン数 − 1)` で、decode 部分だけの特性を見ている。ツールによって TTFT を含めるかどうかが違うようで、ドキュメント自身も「定義が揃うときだけ比較すること」と注意している。1 リクエスト単位の `TPS per user` は `出力トークン数 ÷ e2e_latency` なので TTFT 経由で prefill やネットワーク遅延も入るし、出力が長くなるほど `1 / ITL` に近づく。
+
+公開ベンチマークの [Artificial Analysis](https://artificialanalysis.ai/methodology/performance-benchmarking) を見ると、Output Speed は v3.0.0（2026-11-03）から「出力トークン（reasoning トークン含む）を、リクエスト送信から最後のトークン受信までの全体時間で割ったもの」と定義されていて、TTFT を含む。Time to First Token にはネットワーク遅延が入るため計測場所に敏感で、同社は Google Cloud の us-central1 から計測しているそうだ。また reasoning モデルでは最初の reasoning トークンが TTFT になり、1k / 10k / 100k の入力やツール呼び出しを含むマルチターンではエンドポイントの応答時間だけを分母にして、ツール実行時間は除いている。
+
+要するに、decode だけの tps には入力側の処理もネットワークも入らないが、e2e の tps には TTFT を通じて両方影響してくる。公開ベンチマークの数字を眺める時は、どちらを測っているかを確認しておきたい。
+
+## それでも tps は高いに越したことはない
+
+人間が普通の文章を読む速さは 1 秒に 5〜10 トークンくらいだと分かったけれど、実際の開発で相手にするのは人間がそのまま読む文章だけではない。
+
+コーディングエージェントに作業を頼むと、コードの調査やファイル書き込み、reasoning、ツール呼び出しの往復で出力トークンがどんどん消費される。ターンごとに入力トークンが増えて prefill の待ち時間も乗るし、ツール実行の待ち時間も挟まる。人間が画面の文字を追いかけながら待つときですら、思考や調査の途中経過を含めるとこの基準の速さではとても追いつかない体感がある。だから実用上は、tps は高いに越したことはないと思う。
+
+とはいえ、自分が普通に読める速さの基準を一度計算しておくと、チャットで出力を直接追うときの体感と、エージェントに裏で作業を回させるときの待ち時間を分けて考えやすくなる。ベンチマークの数値を見る時のちょっとした物差しとして、頭に入れておくと便利かもしれない。
+
+<style>
+  .tps-timeline {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 1.25rem 0 0.75rem;
+    overflow: visible;
+    color: var(--home-foreground);
+  }
+  .tps-timeline text {
+    font-family: inherit;
+    fill: currentcolor;
+  }
+  .tl-guides line {
+    stroke: var(--home-nav-border);
+    stroke-dasharray: 3 3;
+    stroke-width: 1;
+    transition: stroke var(--home-theme-duration) var(--home-theme-easing);
+  }
+  .tl-guides .tl-guide-accent {
+    stroke: var(--home-accent);
+    stroke-opacity: 0.65;
+  }
+  .tl-milestones circle {
+    fill: var(--home-foreground);
+    transition: fill var(--home-theme-duration) var(--home-theme-easing);
+  }
+  .tl-milestones .tl-dot-accent,
+  .tl-milestones .tl-label-accent,
+  .tl-brackets .tl-label-accent {
+    fill: var(--home-accent);
+  }
+  .tl-milestones text,
+  .tl-brackets text {
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .tl-box-queue {
+    fill: var(--home-nav-current);
+    stroke: var(--home-nav-border);
+    stroke-dasharray: 4 3;
+    stroke-width: 1;
+    transition:
+      fill var(--home-theme-duration) var(--home-theme-easing),
+      stroke var(--home-theme-duration) var(--home-theme-easing);
+  }
+  .tl-box-prefill {
+    fill: var(--home-background);
+    stroke: var(--home-nav-border);
+    stroke-width: 1.5;
+    transition:
+      fill var(--home-theme-duration) var(--home-theme-easing),
+      stroke var(--home-theme-duration) var(--home-theme-easing);
+  }
+  .tl-box-decode {
+    fill: var(--home-background);
+    stroke: var(--home-accent);
+    stroke-width: 1.5;
+    transition: fill var(--home-theme-duration) var(--home-theme-easing);
+  }
+  .tl-stage-title {
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .tl-stage-sub {
+    font-size: 10.5px;
+    opacity: 0.82;
+  }
+  .tl-arrow {
+    fill: none;
+    stroke: var(--home-accent);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.5;
+  }
+  .tl-tokens rect {
+    fill: var(--home-accent);
+    fill-opacity: 0.28;
+    stroke: var(--home-accent);
+    stroke-width: 1;
+  }
+  .tl-brackets path {
+    fill: none;
+    stroke: var(--home-nav-border);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.5;
+    transition: stroke var(--home-theme-duration) var(--home-theme-easing);
+  }
+  .tl-brackets .tl-bracket-accent {
+    stroke: var(--home-accent);
+  }
+</style>
