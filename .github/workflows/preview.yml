@@ -78,15 +78,28 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PREVIEW_URL: ${{ steps.create-preview.outputs.preview_url }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          gh pr comment "${{ github.event.pull_request.number }}" --edit-last --create-if-none --body "$(cat <<EOF
+          # heredoc の中ではバッククォートがコマンド置換になるため使わない。
+          gh pr comment "$PR_NUMBER" --edit-last --create-if-none --body "$(cat <<EOF
           ## プレビュー
 
-          この PR の Cloudflare Worker Preview（本番とは隔離されています）:
+          | 対象 | URL |
+          | --- | --- |
+          | PR #$PR_NUMBER の Preview | <$PREVIEW_URL> |
 
-          $PREVIEW_URL
+          > [!NOTE]
+          > Cloudflare Access のログインが必要です。
 
-          Cloudflare Access のログインが必要です。PR を閉じると自動で削除されます。
+          <details>
+          <summary>運用</summary>
+
+          - 本番とは隔離された Cloudflare Worker Preview です
+          - PR を閉じると自動で削除されます
+          - push のたびにこのコメントは上書きされます
+          - 上限は Worker あたり 100 Preview で、超えるとデプロイが古い Preview から消えます
+
+          </details>
           EOF
           )"
 
