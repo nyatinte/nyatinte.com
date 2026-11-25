@@ -396,6 +396,21 @@ test("published article pages expose BlogPosting JSON-LD", async () => {
   expect(body).toContain('href="https://nyatinte.com/log/rss.xml"');
 });
 
+test("記事の見出しに同じ id を指すセクションリンクがある", async () => {
+  const slug = await publishedArticleSlug();
+  expect(slug).toBeTruthy();
+  const body = await fetch(new URL(`/log/${slug}`, targetUrl)).then(
+    (response) => response.text(),
+  );
+  const prose = body.slice(body.indexOf('<div class="prose'));
+  const headings = [...prose.matchAll(/<h2 id="([^"]+)">([\s\S]*?)<\/h2>/gu)];
+  const linked = headings.find(
+    ([, id, inner]) =>
+      inner?.includes(`<a href="#${id}"`) && inner.includes("へのリンク"),
+  );
+  expect(linked).toBeDefined();
+});
+
 test("記事ページに X シェアとリンクコピーを出す", async () => {
   const slug = await publishedArticleSlug();
   expect(slug).toBeTruthy();
