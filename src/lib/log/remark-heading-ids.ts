@@ -10,6 +10,7 @@ interface MarkdownNode {
 }
 interface MarkdownTree {
   children?: Array<MarkdownNode>;
+  type: string;
 }
 
 export function remarkHeadingIds() {
