@@ -1,6 +1,10 @@
 export {};
 
 declare global {
+  const __PREVIEW_EDIT__: boolean;
+  const __PREVIEW_PR__: string;
+  const __PREVIEW_SHA__: string;
+
   namespace Cloudflare {
     interface Env {
       ACCESS_AUDIENCE?: string;

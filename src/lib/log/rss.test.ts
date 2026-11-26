@@ -8,6 +8,7 @@ function article(overrides: Partial<Article> & { slug: string }): Article {
     body: "",
     date: "2025-01-02",
     description: "説明",
+    extension: "svx",
     source: "",
     title: "タイトル",
     ...overrides,

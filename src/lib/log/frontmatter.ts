@@ -9,7 +9,7 @@ const extensionPattern = /\.(md|svx)$/u;
 const localImagePattern =
   /^\.\/[a-zA-Z0-9][a-zA-Z0-9._-]*\.(?:png|jpe?g|webp|gif)$/u;
 
-function splitFrontmatter(source: string) {
+export function splitFrontmatter(source: string) {
   const normalized = source.replaceAll("\r\n", "\n");
   if (!normalized.startsWith("---\n")) {
     return null;
@@ -93,6 +93,7 @@ export interface Article {
   body: string;
   date: string;
   description: string;
+  extension: "md" | "svx";
   image?: string;
   slug: string;
   source: string;
@@ -101,8 +102,9 @@ export interface Article {
 }
 
 export function parseArticleSource(filename: string, source: string): Article {
+  const extension = filename.match(extensionPattern)?.[1];
   const slug = filename.replace(extensionPattern, "");
-  if (slug === filename || !slugPattern.test(slug)) {
+  if ((extension !== "md" && extension !== "svx") || !slugPattern.test(slug)) {
     throw new Error(
       `${filename}: file name must be a slug with a .md or .svx extension`,
     );
@@ -134,6 +136,7 @@ export function parseArticleSource(filename: string, source: string): Article {
     body: split.body,
     date: parsed.data.date,
     description: parsed.data.description,
+    extension,
     slug,
     source,
     title: parsed.data.title,

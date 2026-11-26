@@ -197,6 +197,9 @@ importers:
       '@zbsearch/tokenizers':
         specifier: 4.0.4
         version: 4.0.4
+      diff:
+        specifier: ^9.0.0
+        version: 9.0.0
       jose:
         specifier: 6.2.18
         version: 6.2.18
@@ -1967,6 +1970,10 @@ packages:
 
   devtools-protocol@0.0.1182435:
     resolution: {integrity: sha512-EmlkWb62wSbQNE1gRZZsi4KZYRaF5Skpp183LhRU7+sadKR06O1dHCjZmFSEG6Kv7P6S/UYLxcY3NlYwqKM99w==}
+
+  diff@9.0.0:
+    resolution: {integrity: sha512-svtcdpS8CgJyqAjEQIXdb3OjhFVVYjzGAPO8WGCmRbrml64SPw/jJD4GoE98aR7r25A0XcgrK3F02yw9R/vhQw==}
+    engines: {node: '>=0.3.1'}
 
   dom-accessibility-api@0.5.16:
     resolution: {integrity: sha512-X7BJ2yElsnOJ30pZF4uIIDfBEVgF4XEBxL9Bxhy6dnrm5hkzqmsWHGTiHqRiITNhMyFLyAiWndIJP7Z1NTteDg==}
@@ -4412,6 +4419,8 @@ snapshots:
       dequal: 2.0.3
 
   devtools-protocol@0.0.1182435: {}
+
+  diff@9.0.0: {}
 
   dom-accessibility-api@0.5.16: {}
 
