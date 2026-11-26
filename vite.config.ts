@@ -120,13 +120,15 @@ const lint = {
   },
 };
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ command, mode }) => ({
   check: {
     fmt: true,
     lint: false,
   },
   define: {
-    __PREVIEW_EDIT__: JSON.stringify(process.env.PREVIEW_EDIT === "1"),
+    __PREVIEW_EDIT__: JSON.stringify(
+      command === "serve" || process.env.PREVIEW_EDIT === "1",
+    ),
     __PREVIEW_PR__: JSON.stringify(process.env.PREVIEW_PR ?? ""),
     __PREVIEW_SHA__: JSON.stringify(process.env.PREVIEW_SHA ?? ""),
   },
