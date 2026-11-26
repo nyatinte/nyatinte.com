@@ -411,7 +411,7 @@ test("記事の見出しに同じ id を指すセクションリンクがある"
   expect(linked).toBeDefined();
 });
 
-test("記事ページに X シェアとリンクコピーを出す", async () => {
+test("記事ページに X シェアを出す", async () => {
   const slug = await publishedArticleSlug();
   expect(slug).toBeTruthy();
   const body = await fetch(new URL(`/log/${slug}`, targetUrl)).then(
@@ -431,7 +431,7 @@ test("記事ページに X シェアとリンクコピーを出す", async () =>
   expect(body).toContain('rel="noopener noreferrer"');
   expect(body).toContain('target="_blank"');
   expect(body).toContain("X でシェア");
-  expect(body).toContain("リンクをコピー");
+  expect(body).not.toContain("リンクをコピー");
   expect(body).toContain('aria-label="記事の共有"');
 });
 

@@ -1,8 +1,6 @@
 <script lang="ts">
   import xIcon from "@tabler/icons/outline/brand-x.svg?url";
-  import linkIcon from "@tabler/icons/outline/link.svg?url";
   import { xShareUrl } from "../share";
-  import CopyButton from "./copy-button.svelte";
 
   let { title, url }: { title: string; url: string } = $props();
   const shareUrl = $derived(xShareUrl({ title, url }));
@@ -24,7 +22,6 @@
       >X でシェア<span class="share-action-sr">（新しいタブで開く）</span></span
     >
   </a>
-  <CopyButton icon={linkIcon} label="リンクをコピー" text={url} />
 </div>
 
 <style>

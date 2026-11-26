@@ -1,0 +1,179 @@
+---
+title: 人間が 1 秒に読めるトークンはどれくらいか
+description: LLM の tps を見ていて、そもそも人間は 1 秒にどれくらい読めるのか気になったので計算してみた
+date: 2026-11-25
+---
+
+普通の文章を黙読するとき、人間が読める速さはざっくり **1 秒に 5〜10 トークンくらい** になる。
+
+- 英語: **約 5〜6 tokens/秒**
+  - ノンフィクションの黙読は約 238 wpm（[Brysbaert 2019](https://doi.org/10.1016/j.jml.2019.104047)）。[OpenAI Help Center](https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them) の目安は 1 token ≒ 4 文字 ≒ 3/4 語（100 tokens ≒ 75 語 → 1 語 ≒ 1.33 トークン、約 1.3）なので、238 ÷ 60 ≒ 4 語/秒 → × 1.33 ≒ 5.3 tokens/秒になる。
+- 日本語: **約 6〜9 tokens/秒**（代表値は約 8 tokens/秒）
+  - 黙読はだいたい 500〜700 字/分で、平均 653 字/分の研究がある。現行トークナイザの `o200k_base` では約 0.7〜0.8 tokens/字なので、653 字/分 × 0.75 ÷ 60 ≒ 約 8 tokens/秒になる（古い `cl100k_base` ではだいたい 1 トークン/文字）。
+
+## 前提と補足
+
+トークン換算の目安は OpenAI Help Center を中心に置き、英語の黙読速度だけ Brysbaert 2019 を使った。トークン数はモデルのトークナイザによって変わる（Claude や Gemini は別）し、読む対象や読み方でも速度は上下するので、あくまでざっくりの目安として見るのがちょうどいいと思う。
+
+手元の `tiktoken`（`o200k_base`）で軽く実測しても英語 1.39 tokens/語、日本語 0.79 tokens/字で、上の目安とほぼ同じだった。
+
+## tps が指すもの
+
+一口に tps と言っても、何を測っているかは大きく 3 通りに分かれる。
+
+- decode だけの速さ（TPOT や ITL の逆数）
+- TTFT を含めた e2e の出力トークン/秒
+- サーバー全体のスループット
+
+1 回の応答では、まず prefill で入力プロンプトやツール出力を読み、そのあと decode でトークンを 1 つずつ出す。リクエスト送信から最初のトークンが届くまでが TTFT で、キュー待ち・prefill・ネットワーク遅延を含むため、prefill の長さはそのまま TTFT に影響する。
+
+:::figure{eyebrow=TIMELINE title="1 回の応答で起きていることと tps の範囲" note="prefill は入力トークン全体の処理、decode は出力トークンの生成。ツール実行時間は含まない。"}
+<svg class="tps-timeline" viewBox="0 0 576 268" role="img" aria-label="リクエスト送信から最後のトークンまでの時間軸と、TTFT・decode だけ・e2e の範囲を示す図">
+  <g class="tl-guides">
+    <line x1="24" y1="44" x2="24" y2="242" />
+    <line x1="304" y1="44" x2="304" y2="190" class="tl-guide-accent" />
+    <line x1="552" y1="44" x2="552" y2="242" />
+  </g>
+  <g class="tl-milestones">
+    <circle cx="24" cy="44" r="4" />
+    <text x="24" y="26" text-anchor="start">リクエスト送信</text>
+    <circle cx="304" cy="44" r="4.5" class="tl-dot-accent" />
+    <text x="304" y="26" text-anchor="middle" class="tl-label-accent">最初のトークン</text>
+    <circle cx="552" cy="44" r="4" />
+    <text x="552" y="26" text-anchor="end">最後のトークン</text>
+  </g>
+  <g class="tl-stages">
+    <rect x="24" y="64" width="100" height="84" rx="8" class="tl-box-queue" />
+    <text x="74" y="102" text-anchor="middle" class="tl-stage-sub">ネットワーク</text>
+    <text x="74" y="119" text-anchor="middle" class="tl-stage-sub">・キュー</text>
+    <path d="M126 106h10m-3-3 3 3-3 3" class="tl-arrow" />
+    <rect x="138" y="64" width="158" height="84" rx="8" class="tl-box-prefill" />
+    <text x="217" y="92" text-anchor="middle" class="tl-stage-title">prefill</text>
+    <text x="217" y="112" text-anchor="middle" class="tl-stage-sub">入力プロンプトや</text>
+    <text x="217" y="128" text-anchor="middle" class="tl-stage-sub">ツール出力を読む</text>
+    <path d="M298 106h12m-3-3 3 3-3 3" class="tl-arrow" />
+    <rect x="312" y="64" width="240" height="84" rx="8" class="tl-box-decode" />
+    <text x="432" y="90" text-anchor="middle" class="tl-stage-title">decode</text>
+    <text x="432" y="109" text-anchor="middle" class="tl-stage-sub">トークンをひとつずつ出す</text>
+    <g class="tl-tokens">
+      <rect x="364" y="122" width="14" height="12" rx="2.5" />
+      <rect x="383" y="122" width="14" height="12" rx="2.5" />
+      <rect x="402" y="122" width="14" height="12" rx="2.5" />
+      <rect x="421" y="122" width="14" height="12" rx="2.5" />
+      <rect x="440" y="122" width="14" height="12" rx="2.5" />
+      <rect x="459" y="122" width="14" height="12" rx="2.5" />
+      <rect x="478" y="122" width="14" height="12" rx="2.5" />
+    </g>
+  </g>
+  <g class="tl-brackets">
+    <path d="M24 166v10h276v-10" />
+    <text x="162" y="196" text-anchor="middle">TTFT（送信〜最初のトークン）</text>
+    <path d="M308 166v10h244v-10" class="tl-bracket-accent" />
+    <text x="430" y="196" text-anchor="middle" class="tl-label-accent">decode だけ（TPOT の逆数）</text>
+    <path d="M24 218v10h528v-10" />
+    <text x="288" y="248" text-anchor="middle">e2e（送信〜最後のトークン）</text>
+  </g>
+</svg>
+:::
+
+[NVIDIA NIM Benchmarking の指標ドキュメント](https://docs.nvidia.com/nim/benchmarking/llm/latest/metrics.html)でも、decode だけの速さと e2e の出力トークン/秒は区別されていて、ITL は計測ツールによって定義が違う場合があるらしい。公開ベンチマークの [Artificial Analysis](https://artificialanalysis.ai/methodology/performance-benchmarking) の Output Speed は TTFT を含んで計算しており、ツール実行時間は分母に入らない。ベンチマークの数字を見るときは、どちらを測っているかだけは押さえておきたい。
+
+## それでも tps は高いに越したことはない
+
+5〜10 tokens/秒という目安から考えると、20 tokens/秒を超えれば普通に読む速さの上限の 2 倍を超えるので、多くの人にとっては読むより速いペースになる。
+
+ただ、コーディングエージェントではコード調査やファイル書き込みで出力トークンが一気に消費されるので、実用上は tps が高いに越したことはないと思う。とはいえ、人間が普通に読める基準を知っておくと、ベンチマークの数字を見るときの物差しとして便利だ。
+
+<style>
+  .tps-timeline {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 1.25rem 0 0.75rem;
+    overflow: visible;
+    color: var(--home-foreground);
+  }
+  .tps-timeline text {
+    font-family: inherit;
+    fill: currentcolor;
+  }
+  .tl-guides line {
+    stroke: var(--home-nav-border);
+    stroke-dasharray: 3 3;
+    stroke-width: 1;
+    transition: stroke var(--home-theme-duration) var(--home-theme-easing);
+  }
+  .tl-guides .tl-guide-accent {
+    stroke: var(--home-accent);
+    stroke-opacity: 0.65;
+  }
+  .tl-milestones circle {
+    fill: var(--home-foreground);
+    transition: fill var(--home-theme-duration) var(--home-theme-easing);
+  }
+  .tl-milestones .tl-dot-accent,
+  .tl-milestones .tl-label-accent,
+  .tl-brackets .tl-label-accent {
+    fill: var(--home-accent);
+  }
+  .tl-milestones text,
+  .tl-brackets text {
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .tl-box-queue {
+    fill: var(--home-nav-current);
+    stroke: var(--home-nav-border);
+    stroke-dasharray: 4 3;
+    stroke-width: 1;
+    transition:
+      fill var(--home-theme-duration) var(--home-theme-easing),
+      stroke var(--home-theme-duration) var(--home-theme-easing);
+  }
+  .tl-box-prefill {
+    fill: var(--home-background);
+    stroke: var(--home-nav-border);
+    stroke-width: 1.5;
+    transition:
+      fill var(--home-theme-duration) var(--home-theme-easing),
+      stroke var(--home-theme-duration) var(--home-theme-easing);
+  }
+  .tl-box-decode {
+    fill: var(--home-background);
+    stroke: var(--home-accent);
+    stroke-width: 1.5;
+    transition: fill var(--home-theme-duration) var(--home-theme-easing);
+  }
+  .tl-stage-title {
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .tl-stage-sub {
+    font-size: 10.5px;
+    opacity: 0.82;
+  }
+  .tl-arrow {
+    fill: none;
+    stroke: var(--home-accent);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.5;
+  }
+  .tl-tokens rect {
+    fill: var(--home-accent);
+    fill-opacity: 0.28;
+    stroke: var(--home-accent);
+    stroke-width: 1;
+  }
+  .tl-brackets path {
+    fill: none;
+    stroke: var(--home-nav-border);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.5;
+    transition: stroke var(--home-theme-duration) var(--home-theme-easing);
+  }
+  .tl-brackets .tl-bracket-accent {
+    stroke: var(--home-accent);
+  }
+</style>
