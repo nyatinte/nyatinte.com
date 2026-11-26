@@ -8,10 +8,15 @@
     applyEdits,
     createArticlePatch,
     extractBlocks,
+    normalizeSource,
   } from "../log/preview-edit";
   import CopyButton from "./copy-button.svelte";
 
-  let { source, slug }: { source: string; slug: string } = $props();
+  let {
+    extension,
+    source,
+    slug,
+  }: { extension: "md" | "svx"; source: string; slug: string } = $props();
 
   const draftSchema = z.record(z.string(), z.string());
   const storageKey = $derived(
@@ -39,7 +44,8 @@
   const patch = $derived(
     createArticlePatch({
       after: applyEdits(source, editedBlocks),
-      before: source,
+      before: normalizeSource(source),
+      extension,
       pr: __PREVIEW_PR__,
       sha: __PREVIEW_SHA__,
       slug,

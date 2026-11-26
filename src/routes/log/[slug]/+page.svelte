@@ -61,6 +61,7 @@
         {#await import("../../../lib/components/preview-edit.svelte") then { default: PreviewEdit }}
           {#key data.article.slug}
             <PreviewEdit
+              extension={data.article.extension}
               slug={data.article.slug}
               source={data.article.source}
             />

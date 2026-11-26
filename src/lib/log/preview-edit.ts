@@ -31,6 +31,7 @@ export interface ArticleBlock {
 export interface ArticlePatchInput {
   after: string;
   before: string;
+  extension: "md" | "svx";
   pr?: string;
   sha?: string;
   slug: string;
@@ -73,7 +74,12 @@ function parseBody(body: string) {
     .parse(body) as RootNode;
 }
 
-export function extractBlocks(source: string): Array<ArticleBlock> {
+export function normalizeSource(source: string) {
+  return source.replaceAll("\r\n", "\n");
+}
+
+export function extractBlocks(rawSource: string): Array<ArticleBlock> {
+  const source = normalizeSource(rawSource);
   const split = splitFrontmatter(source);
   if (!split) {
     return [];
@@ -99,7 +105,8 @@ export function extractBlocks(source: string): Array<ArticleBlock> {
   return blocks;
 }
 
-export function applyEdits(source: string, edits: Map<number, string>) {
+export function applyEdits(rawSource: string, edits: Map<number, string>) {
+  const source = normalizeSource(rawSource);
   const blocks = extractBlocks(source);
   const replacements: Array<{ end: number; start: number; text: string }> = [];
   for (const [index, text] of edits) {
@@ -120,6 +127,7 @@ export function applyEdits(source: string, edits: Map<number, string>) {
 export function createArticlePatch({
   after,
   before,
+  extension,
   pr,
   sha,
   slug,
@@ -127,7 +135,7 @@ export function createArticlePatch({
   if (before === after) {
     return null;
   }
-  const path = `src/content/log/${slug}/index.svx`;
+  const path = `src/content/log/${slug}/index.${extension}`;
   const diff = createTwoFilesPatch(
     `a/${path}`,
     `b/${path}`,

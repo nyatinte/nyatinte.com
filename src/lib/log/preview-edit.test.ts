@@ -87,6 +87,7 @@ test("creates a git-apply-able patch with preview headers", () => {
   const patch = createArticlePatch({
     after,
     before: source,
+    extension: "svx",
     pr: "123",
     sha: "abcdef1234567890",
     slug: "sample",
@@ -108,6 +109,7 @@ test("omits an unchanged patch and missing header parts", () => {
     createArticlePatch({
       after: source,
       before: source,
+      extension: "svx",
       pr: "123",
       sha: "abcdef1",
       slug: "sample",
@@ -120,8 +122,30 @@ test("omits an unchanged patch and missing header parts", () => {
   const patch = createArticlePatch({
     after,
     before: source,
+    extension: "svx",
     pr: "7",
     slug: "sample",
   });
   expect(patch?.startsWith("# PR #7\n--- a/")).toBe(true);
+});
+
+test("targets the article file extension in the patch", () => {
+  const blocks = extractBlocks(source);
+  const paragraph = blocks.findIndex((block) => block.text === "段落。");
+  const patch = createArticlePatch({
+    after: applyEdits(source, new Map([[paragraph, "変更した段落。"]])),
+    before: source,
+    extension: "md",
+    slug: "sample",
+  });
+  expect(patch).toContain("--- a/src/content/log/sample/index.md");
+});
+
+test("maps blocks correctly for CRLF sources", () => {
+  const crlf = source.replaceAll("\n", "\r\n");
+  const blocks = extractBlocks(crlf);
+  const paragraph = blocks.findIndex((block) => block.text === "段落。");
+  expect(paragraph).toBeGreaterThanOrEqual(0);
+  const after = applyEdits(crlf, new Map([[paragraph, "変更した段落。"]]));
+  expect(after).toBe(source.replace("段落。", "変更した段落。"));
 });
