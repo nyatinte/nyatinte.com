@@ -15,6 +15,7 @@
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
+  const previewEdit = __PREVIEW_EDIT__;
   const title = $derived(`${data.article.title} | nyatinte.com`);
   const Body = $derived(articleComponent(data.article.slug));
 </script>
@@ -56,6 +57,16 @@
       </div>
     </div>
     <div class="article-body">
+      {#if previewEdit}
+        {#await import("../../../lib/components/preview-edit.svelte") then { default: PreviewEdit }}
+          {#key data.article.slug}
+            <PreviewEdit
+              slug={data.article.slug}
+              source={data.article.source}
+            />
+          {/key}
+        {/await}
+      {/if}
       <p class="description">{data.article.description}</p>
       {#if Body}
         <div class="prose" style:--heading-anchor-icon={`url("${linkIcon}")`}>

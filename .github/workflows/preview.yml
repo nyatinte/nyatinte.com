@@ -55,6 +55,10 @@ jobs:
 
       - name: Build Worker
         if: github.event.action != 'closed'
+        env:
+          PREVIEW_EDIT: "1"
+          PREVIEW_PR: ${{ github.event.pull_request.number }}
+          PREVIEW_SHA: ${{ github.event.pull_request.head.sha }}
         run: pnpm build
 
       - name: Create Worker Preview

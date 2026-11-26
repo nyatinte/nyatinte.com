@@ -9,7 +9,7 @@ const extensionPattern = /\.(md|svx)$/u;
 const localImagePattern =
   /^\.\/[a-zA-Z0-9][a-zA-Z0-9._-]*\.(?:png|jpe?g|webp|gif)$/u;
 
-function splitFrontmatter(source: string) {
+export function splitFrontmatter(source: string) {
   const normalized = source.replaceAll("\r\n", "\n");
   if (!normalized.startsWith("---\n")) {
     return null;
