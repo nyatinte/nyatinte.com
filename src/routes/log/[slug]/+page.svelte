@@ -1,4 +1,5 @@
 <script lang="ts">
+  import linkIcon from "@tabler/icons/outline/link.svg?url";
   import ArticleShare from "../../../lib/components/article-share.svelte";
   import ArticleToc from "../../../lib/components/article-toc.svelte";
   import CopyMdxButton from "../../../lib/components/copy-mdx-button.svelte";
@@ -57,7 +58,7 @@
     <div class="article-body">
       <p class="description">{data.article.description}</p>
       {#if Body}
-        <div class="prose">
+        <div class="prose" style:--heading-anchor-icon={`url("${linkIcon}")`}>
           <Body />
         </div>
       {/if}
@@ -157,6 +158,45 @@
     line-height: 1.3;
     letter-spacing: -0.03em;
     scroll-margin-block-start: 6rem;
+  }
+
+  .prose :global(.heading-anchor) {
+    display: inline-block;
+    inline-size: 0.8em;
+    block-size: 0.8em;
+    margin-inline-start: 0.4em;
+    background-color: currentcolor;
+    opacity: 0;
+    mask-image: var(--heading-anchor-icon);
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+  }
+
+  .prose :global(h2:hover .heading-anchor),
+  .prose :global(h3:hover .heading-anchor),
+  .prose :global(h2:focus-within .heading-anchor),
+  .prose :global(h3:focus-within .heading-anchor) {
+    opacity: 0.45;
+  }
+
+  .prose :global(.heading-anchor:focus-visible) {
+    opacity: 0.45;
+    outline: 2px solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  @media (hover: none) {
+    .prose :global(.heading-anchor) {
+      opacity: 0.45;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .prose :global(.heading-anchor) {
+      forced-color-adjust: none;
+      background-color: CanvasText;
+    }
   }
 
   .prose :global(a) {
